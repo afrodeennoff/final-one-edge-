@@ -10,7 +10,7 @@ import { unstable_cache } from 'next/cache'
 import { defaultLayouts } from '@/lib/default-layouts'
 import { formatTimestamp } from '@/lib/date-utils'
 import { v5 as uuidv5 } from 'uuid'
-import { Decimal } from '@prisma/client/runtime/library'
+import { Decimal } from '@/prisma/generated/prisma'
 import { logger } from '@/lib/logger'
 
 type TradeError =
