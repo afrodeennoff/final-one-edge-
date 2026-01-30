@@ -92,8 +92,8 @@ export default function FtmoProcessor({ headers, csvData, processedTrades, setPr
             const trade = createTradeWithDefaults({
                 quantity,
                 instrument: symbol,
-                entryPrice: entryPrice.toString(),
-                closePrice: exitPrice.toString(),
+                entryPrice: parseFloat(entryPrice.toString()),
+                closePrice: parseFloat(exitPrice.toString()),
                 entryDate: openDate.toISOString(),
                 closeDate: closeDate.toISOString(),
                 pnl: profit,

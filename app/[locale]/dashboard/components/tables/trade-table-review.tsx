@@ -832,10 +832,10 @@ export function TradeTableReview({ tradesParam, config }: TradeTableReviewProps)
           />
         ),
         cell: ({ row }) => {
-          const entryPrice = parseFloat(row.original.entryPrice);
+          const entryPrice = row.original.entryPrice;
           return (
             <div className="text-right font-medium">
-              ${entryPrice.toFixed(2)}
+              ${(entryPrice ?? 0).toFixed(2)}
             </div>
           );
         },
@@ -851,10 +851,10 @@ export function TradeTableReview({ tradesParam, config }: TradeTableReviewProps)
           />
         ),
         cell: ({ row }) => {
-          const exitPrice = parseFloat(row.original.closePrice);
+          const exitPrice = row.original.closePrice;
           return (
             <div className="text-right font-medium">
-              ${exitPrice.toFixed(2)}
+              ${(exitPrice ?? 0).toFixed(2)}
             </div>
           );
         },

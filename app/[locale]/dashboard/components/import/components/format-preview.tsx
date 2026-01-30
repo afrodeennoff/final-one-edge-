@@ -383,7 +383,7 @@ export function FormatPreview({
   // Handle streaming results from first useObject
   useEffect(() => {
     if (object1) {
-      const newTrades = object1.filter((trade): trade is NonNullable<typeof trade> => trade !== undefined) as Trade[];
+      const newTrades = object1.filter((trade): trade is NonNullable<typeof trade> => trade !== undefined) as Partial<Trade>[];
       const uniqueTrades = newTrades.filter(newTrade =>
         !processedTradesRef.current.some(existingTrade =>
           existingTrade.entryDate === newTrade.entryDate &&
@@ -408,7 +408,7 @@ export function FormatPreview({
   // Handle streaming results from second useObject
   useEffect(() => {
     if (object2) {
-      const newTrades = object2.filter((trade): trade is NonNullable<typeof trade> => trade !== undefined) as Trade[];
+      const newTrades = object2.filter((trade): trade is NonNullable<typeof trade> => trade !== undefined) as Partial<Trade>[];
       const uniqueTrades = newTrades.filter(newTrade =>
         !processedTradesRef.current.some(existingTrade =>
           existingTrade.entryDate === newTrade.entryDate &&

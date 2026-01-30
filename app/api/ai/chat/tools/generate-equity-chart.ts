@@ -36,8 +36,9 @@ export const generateEquityChart = tool({
     maxAccounts = 8 
   }) => {
     console.log(`[generateEquityChart] TOOL CALLED - accountNumbers: ${accountNumbers}, startDate: ${startDate}, endDate: ${endDate}, showIndividual: ${showIndividual}, timezone: ${timezone}`)
-    
-    let trades = await getTradesAction();
+
+    const paginatedTrades = await getTradesAction();
+    let trades = paginatedTrades.trades;
     
     // Filter by account numbers if specified
     if (accountNumbers.length > 0) {

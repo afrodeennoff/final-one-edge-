@@ -468,9 +468,9 @@ export default function QuantowerOrderProcessor({ csvData, headers, processedTra
               entryId: openPosition.entryOrders.map(o => o.orderId).join('-'),
               closeId: openPosition.exitOrders.map(o => o.orderId).join('-'),
               instrument: getFinalInstrumentSymbol(symbol),
-              entryPrice: openPosition.averageEntryPrice.toFixed(2),
-              closePrice: (openPosition.exitOrders.reduce((sum, o) => sum + o.price * o.quantity, 0) / 
-                           openPosition.exitOrders.reduce((sum, o) => sum + o.quantity, 0)).toFixed(2),
+              entryPrice: parseFloat(openPosition.averageEntryPrice.toFixed(2)),
+              closePrice: parseFloat((openPosition.exitOrders.reduce((sum, o) => sum + o.price * o.quantity, 0) / 
+                           openPosition.exitOrders.reduce((sum, o) => sum + o.quantity, 0)).toFixed(2)),
               entryDate: parseDateTime(openPosition.entryDate),
               closeDate: parseDateTime(dateTime),
               pnl: pnl,

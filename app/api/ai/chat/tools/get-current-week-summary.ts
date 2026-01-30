@@ -45,11 +45,11 @@ export const getCurrentWeekSummary = tool({
         const now = new Date();
         const currentWeekStart = startOfWeek(now, { weekStartsOn: 1 });
         const currentWeekEnd = endOfWeek(now, { weekStartsOn: 1 });
-        
+
         console.log(`[getCurrentWeekSummary] Current week: ${format(currentWeekStart, 'yyyy-MM-dd')} to ${format(currentWeekEnd, 'yyyy-MM-dd')}`);
-        
-        const trades = await getTradesAction();
-        const filteredTrades = trades.filter(trade => {
+
+        const paginatedTrades = await getTradesAction();
+        const filteredTrades = paginatedTrades.trades.filter(trade => {
             const tradeDate = new Date(trade.entryDate);
             return tradeDate >= currentWeekStart && tradeDate <= currentWeekEnd;
         });

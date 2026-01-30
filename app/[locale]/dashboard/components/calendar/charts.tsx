@@ -59,7 +59,7 @@ export function Charts({ dayData, isWeekly = false }: ChartsProps) {
     // Calculate P&L for each account
     const accountPnL = dayData.trades.reduce((acc, trade) => {
       const accountNumber = trade.accountNumber || 'Unknown'
-      const totalPnL = new Decimal(trade.pnl).toNumber() - (trade.commission ? new Decimal(trade.commission).toNumber() : 0)
+      const totalPnL = trade.pnl - (trade.commission || 0)
       acc[accountNumber] = (acc[accountNumber] || 0) + totalPnL
       return acc
     }, {} as Record<string, number>);

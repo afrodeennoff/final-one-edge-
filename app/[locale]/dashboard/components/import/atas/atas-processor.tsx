@@ -301,11 +301,10 @@ export default function AtasProcessor({
             case "entryPrice":
             case "closePrice":
               if (cellValue) {
-                // Convert to string and remove commas
                 const priceString = String(cellValue).replace(/,/g, "");
-                item[key] = priceString;
+                item[key] = parseFloat(priceString);
               } else {
-                item[key] = "0";
+                item[key] = 0;
               }
               break;
             case "accountNumber":

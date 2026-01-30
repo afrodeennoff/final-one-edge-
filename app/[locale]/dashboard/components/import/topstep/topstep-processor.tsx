@@ -82,7 +82,7 @@ export default function TopstepProcessor({ headers, csvData, processedTrades, se
                                 isValidTrade = false;
                                 return;
                             }
-                            item[key] = price.toString();
+                            item[key] = price;
                             break;
                         case 'instrument':
                             if (!cellValue) {

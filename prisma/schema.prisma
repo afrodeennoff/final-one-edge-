@@ -116,6 +116,7 @@ model Account {
   startingBalance  Float    @default(0)
   balanceRequired  Float?
   drawdownThreshold Float   @default(0)
+  dailyLoss        Float    @default(0)
   profitTarget     Float    @default(0)
   buffer           Float    @default(0)
   considerBuffer   Boolean  @default(true)

@@ -237,9 +237,10 @@ export const getAccountPerformance = tool({
   }),
   execute: async ({ startDate, endDate, minTrades = 1 }: { startDate?: string, endDate?: string, minTrades?: number }) => {
     console.log(`[getAccountPerformance] startDate: ${startDate}, endDate: ${endDate}, minTrades: ${minTrades}`);
-    
-    let trades = await getTradesAction();
-    
+
+    const paginatedTrades = await getTradesAction();
+    let trades = paginatedTrades.trades;
+
     // Filter trades by date range if provided
     if (startDate || endDate) {
       trades = trades.filter(trade => {

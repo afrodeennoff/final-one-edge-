@@ -233,9 +233,9 @@ export default function RithmicOrderProcessor({ csvData, headers, processedTrade
                 entryId: openPosition.entryOrders.map(o => o.orderId).join('-'),
                 closeId: openPosition.exitOrders.map(o => o.orderId).join('-'),
                 instrument: symbol,
-                entryPrice: openPosition.averageEntryPrice.toFixed(5),
-                closePrice: (openPosition.exitOrders.reduce((sum, o) => sum + o.price * o.quantity, 0) / 
-                             openPosition.exitOrders.reduce((sum, o) => sum + o.quantity, 0)).toFixed(5),
+                entryPrice: parseFloat(openPosition.averageEntryPrice.toFixed(5)),
+                closePrice: parseFloat((openPosition.exitOrders.reduce((sum, o) => sum + o.price * o.quantity, 0) / 
+                             openPosition.exitOrders.reduce((sum, o) => sum + o.quantity, 0)).toFixed(5)),
                 entryDate: parseDate(openPosition.entryDate).toISOString(),
                 closeDate: parseDate(timestamp).toISOString(),
                 pnl: pnl,

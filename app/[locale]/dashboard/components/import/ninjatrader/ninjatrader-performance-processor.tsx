@@ -268,12 +268,12 @@ export default function NinjaTraderPerformanceProcessor({ headers, csvData, setP
               if (entryPriceError) {
                 return; // Entry price is required
               }
-              item[key] = entryPrice.toString();
+              item[key] = parseFloat(entryPrice.toString());
               break;
             case 'closePrice':
               const { price: closePrice, error: closePriceError } = formatPriceValue(cellValue);
               // Close price can be missing for open trades
-              item[key] = closePriceError ? undefined : closePrice.toString();
+              item[key] = closePriceError ? undefined : parseFloat(closePrice.toString());
               break;
             case 'pnl':
               const { pnl, error } = formatCurrencyValue(cellValue);
