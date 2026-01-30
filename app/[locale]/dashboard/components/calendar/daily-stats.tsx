@@ -9,8 +9,9 @@ import {
 } from "@/components/ui/card"
 import { CalendarEntry } from "@/app/[locale]/dashboard/types/calendar"
 import { useI18n } from '@/locales/client'
-import { DailyMood } from './daily-mood'
+import Decimal from 'decimal.js'
 
+interface DailyStatsProps {
   dayData: CalendarEntry | undefined;
   isWeekly?: boolean;
 }
@@ -46,24 +47,24 @@ export function DailyStats({ dayData, isWeekly = false }: DailyStatsProps) {
     }
 
     // Calculate P&L for each account
-    const accountPnL = dayData.trades.reduce((acc, trade) => {
+    const accountPnL = dayData.trades.reduce((acc: Record<string, number>, trade: any) => {
       const accountNumber = trade.accountNumber || 'Unknown'
       const totalPnL = new Decimal(trade.pnl).toNumber() - (trade.commission ? new Decimal(trade.commission).toNumber() : 0)
       acc[accountNumber] = (acc[accountNumber] || 0) + totalPnL
       return acc
     }, {} as Record<string, number>)
 
-    const totalPnL = Object.values(accountPnL).reduce((sum, pnl) => sum + pnl, 0)
-    const avgTimeInPosition = dayData.trades.reduce((sum, trade) => sum + trade.timeInPosition, 0) / dayData.trades.length
+    const totalPnL = Object.values(accountPnL).reduce((sum: number, pnl: number) => sum + pnl, 0)
+    const avgTimeInPosition = dayData.trades.reduce((sum: number, trade: any) => sum + (trade.timeInPosition as number), 0) / dayData.trades.length
     const accountCount = Object.keys(accountPnL).length
 
     // Add sorting and equity curve
-    const sortedTrades = dayData.trades.sort((a, b) => new Date(a.entryDate).getTime() - new Date(b.entryDate).getTime());
-    const equity = [0];
-    let cumulative = 0;
-    sortedTrades.forEach(trade => {
-      cumulative += trade.pnl - (trade.commission || 0);
-      equity.push(cunew Decimal(mulative)).toNumber(); (trade.commission ? newDecimal).toNumber():
+    const sortedTrades = dayData.trades.sort((a: any, b: any) => new Date(a.entryDate).getTime() - new Date(b.entryDate).getTime());
+    const equity: number[] = [0];
+    let cumulative: number = 0;
+    sortedTrades.forEach((trade: any) => {
+      cumulative += (trade.pnl as number) - ((trade.commission as number) || 0);
+      equity.push(cumulative);
     });
 
     // Calculate max drawdown
