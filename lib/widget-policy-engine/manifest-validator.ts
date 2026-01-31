@@ -1,4 +1,4 @@
-import Ajv, { type ValidateFunction } from 'ajv'
+import Ajv, { type ValidateFunction, type AnySchema } from 'ajv'
 import addFormats from 'ajv-formats'
 import manifestSchema from '../../schemas/widget-policy-manifest.schema.json'
 import inputSchema from '../../schemas/widget-input.schema.json'
@@ -176,7 +176,7 @@ export class SchemaValidator {
     }
   }
 
-  addCustomSchema(keyword: string, schema: unknown): void {
+  addCustomSchema(keyword: string, schema: AnySchema | AnySchema[]): void {
     this.ajv.addSchema(schema, keyword)
   }
 }
