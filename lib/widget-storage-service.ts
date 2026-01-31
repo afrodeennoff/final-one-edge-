@@ -156,6 +156,9 @@ class WidgetStorageService {
       ...layout,
       desktop: layout.desktop as unknown as Prisma.JsonArray,
       mobile: layout.mobile as unknown as Prisma.JsonArray,
+      version: layout.version || 1,
+      checksum: null,
+      deviceId: null,
     }
   }
 
