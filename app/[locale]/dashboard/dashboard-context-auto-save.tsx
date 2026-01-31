@@ -15,9 +15,15 @@ import type { DashboardLayout } from '@/prisma/generated/prisma'
 
 const toPrismaLayout = (layout: DashboardLayoutWithWidgets): DashboardLayout => {
     return {
-        ...layout,
+        id: layout.id,
+        userId: layout.userId,
         desktop: layout.desktop as unknown as Prisma.JsonArray,
         mobile: layout.mobile as unknown as Prisma.JsonArray,
+        version: layout.version ?? 1,
+        checksum: null,
+        deviceId: null,
+        createdAt: layout.createdAt,
+        updatedAt: layout.updatedAt,
     }
 }
 
