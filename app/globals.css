@@ -260,195 +260,163 @@
     user-select: none;
   }
 
-  /* Responsive Container System */
-  .container-responsive {
+  /* Responsive Container System - Fluid and Mobile-First */
+  .container-fluid {
     width: 100%;
-    margin-left: auto;
     margin-right: auto;
-    padding-left: 1rem;
-    padding-right: 1rem;
+    margin-left: auto;
+    padding-right: var(--fluid-container-padding, 1rem);
+    padding-left: var(--fluid-container-padding, 1rem);
   }
 
   @media (min-width: 640px) {
-    .container-responsive {
+    .container-fluid {
+      --fluid-container-padding: 1.5rem;
       max-width: 640px;
     }
   }
 
   @media (min-width: 768px) {
-    .container-responsive {
+    .container-fluid {
+      --fluid-container-padding: 2rem;
       max-width: 768px;
-      padding-left: 1.5rem;
-      padding-right: 1.5rem;
     }
   }
 
   @media (min-width: 1024px) {
-    .container-responsive {
+    .container-fluid {
       max-width: 1024px;
-      padding-left: 2rem;
-      padding-right: 2rem;
     }
   }
 
   @media (min-width: 1280px) {
-    .container-responsive {
+    .container-fluid {
       max-width: 1280px;
     }
   }
 
   @media (min-width: 1536px) {
-    .container-responsive {
-      max-width: 1536px;
+    .container-fluid {
+      max-width: 1440px;
     }
   }
 
-  /* Touch-Friendly Utilities */
-  .touch-target {
-    min-width: 44px;
-    min-height: 44px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+  /* Aspect Ratio Utilities for Responsive Media */
+  .aspect-video {
+    aspect-ratio: 16 / 9;
   }
 
-  .touch-target-lg {
-    min-width: 48px;
-    min-height: 48px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+  .aspect-square {
+    aspect-ratio: 1 / 1;
   }
 
-  /* Responsive Grid System */
-  .grid-responsive {
+  .aspect-portrait {
+    aspect-ratio: 3 / 4;
+  }
+
+  /* Fluid Spacing Grid */
+  .grid-fluid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(clamp(250px, 30vw, 400px), 1fr));
+    gap: clamp(1rem, 3vw, 2.5rem);
   }
 
-  @media (min-width: 768px) {
-    .grid-responsive {
-      gap: 1.5rem;
+  /* Touch-Optimized Interactives */
+  .touch-optimized {
+    min-height: 48px;
+    min-width: 48px;
+    padding: 0.75rem 1.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Responsive Text Truncation */
+  .text-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .text-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Ultra fluid typography overrides */
+  @layer base {
+    html {
+      font-size: 16px;
+    }
+
+    @media (min-width: 1920px) {
+      html {
+        font-size: 18px;
+      }
+    }
+
+    @media (min-width: 2560px) {
+      html {
+        font-size: 20px;
+      }
     }
   }
 
-  @media (min-width: 1024px) {
-    .grid-responsive {
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
-      gap: 2rem;
-    }
+  /* Enhanced Scroll Behavior */
+  .scroll-smooth-native {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
   }
 
-  /* Responsive Flex Wrapping */
-  .flex-responsive {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
+  /* Improved Touch Targets for Form Elements */
+  input[type="checkbox"],
+  input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
   }
 
-  @media (min-width: 768px) {
-    .flex-responsive {
-      gap: 1.5rem;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .flex-responsive {
-      flex-wrap: nowrap;
-      gap: 2rem;
-    }
-  }
-
-  /* Fluid Spacing Utilities */
-  .spacing-fluid-vertical {
-    padding-top: clamp(2rem, 4vw, 6rem);
-    padding-bottom: clamp(2rem, 4vw, 6rem);
-  }
-
-  .spacing-fluid-horizontal {
-    padding-left: clamp(1rem, 2vw, 3rem);
-    padding-right: clamp(1rem, 2vw, 3rem);
-  }
-
-  /* Safe Area Insets for Mobile Devices */
-  .safe-area-insets {
-    padding-top: env(safe-area-inset-top);
+  /* Safe Area Utilities */
+  .pb-safe {
     padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .px-safe {
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
   }
 
-  .safe-area-insets-top {
-    padding-top: env(safe-area-inset-top);
-  }
-
-  .safe-area-insets-bottom {
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-
-  /* Responsive Typography */
-  .text-responsive {
-    font-size: clamp(1rem, 2vw, 1.125rem);
-    line-height: 1.6;
-  }
-
-  .text-responsive-lg {
-    font-size: clamp(1.125rem, 2.5vw, 1.5rem);
-    line-height: 1.5;
-  }
-
-  .text-responsive-xl {
-    font-size: clamp(1.5rem, 4vw, 2.5rem);
-    line-height: 1.2;
-  }
-
-  .text-responsive-2xl {
-    font-size: clamp(2rem, 5vw, 4rem);
-    line-height: 1.1;
-  }
-
-  .text-responsive-hero {
-    font-size: clamp(2.5rem, 8vw, 6rem);
-    line-height: 1;
-    font-weight: 700;
-  }
-
-  /* Hide on Scroll for Mobile */
-  @media (max-width: 768px) {
-    .hide-on-scroll {
-      transition: transform 0.3s ease-in-out;
-    }
-
-    .hide-on-scroll.hidden {
-      transform: translateY(-100%);
-    }
-  }
-
-  /* Focus Visible Utilities for Accessibility */
   .focus-ring {
-    outline: 2px solid hsl(var(--ring));
-    outline-offset: 2px;
-  }
-
-  .focus-ring:focus-visible {
     outline: 2px solid hsl(var(--ring));
     outline-offset: 2px;
   }
 
   /* Reduced Motion */
   @media (prefers-reduced-motion: reduce) {
-    .motion-reduce {
-      animation: none !important;
-      transition: none !important;
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
     }
   }
+}
 
-  /* High Contrast Mode */
-  @media (prefers-contrast: high) {
-    .high-contrast-border {
-      border: 2px solid currentColor;
-    }
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .high-contrast-border {
+    border: 2px solid currentColor;
   }
 }
 
@@ -742,48 +710,52 @@
     z-index: 9999;
   }
 }
+
 /* Landing Page Styles */
 @layer utilities {
   .landing-selection ::selection {
-      background-color: #2dd4bf;
-      color: black;
+    background-color: #2dd4bf;
+    color: black;
   }
-  
+
   .noise {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      content: "";
-      opacity: 0.03;
-      z-index: 9999;
-      pointer-events: none;
-      background: url('https://grainy-gradients.vercel.app/noise.svg');
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    content: "";
+    opacity: 0.03;
+    z-index: 9999;
+    pointer-events: none;
+    background: url('https://grainy-gradients.vercel.app/noise.svg');
   }
-  
+
   .grid-pattern {
-      background-image: linear-gradient(to right, #111 1px, transparent 1px),
-                        linear-gradient(to bottom, #111 1px, transparent 1px);
-      background-size: 40px 40px;
+    background-image: linear-gradient(to right, #111 1px, transparent 1px),
+      linear-gradient(to bottom, #111 1px, transparent 1px);
+    background-size: 40px 40px;
   }
 
   /* Custom Scrollbar for landing */
   .landing-scrollbar::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
+    width: 8px;
+    height: 8px;
   }
+
   .landing-scrollbar::-webkit-scrollbar-track {
-      background: #050505;
+    background: #050505;
   }
+
   .landing-scrollbar::-webkit-scrollbar-thumb {
-      background: #222;
-      border-radius: 4px;
+    background: #222;
+    border-radius: 4px;
   }
+
   .landing-scrollbar::-webkit-scrollbar-thumb:hover {
-      background: #333;
+    background: #333;
   }
-  
+
   .text-shadow-glow {
     text-shadow: 0 0 20px rgba(45, 212, 191, 0.5);
   }

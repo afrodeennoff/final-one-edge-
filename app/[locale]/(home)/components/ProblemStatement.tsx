@@ -4,8 +4,8 @@ import { motion } from 'framer-motion';
 
 const ProblemStatement: React.FC = () => {
     return (
-        <section id="problem" className="py-32 px-6 bg-[#040404] border-t border-white/5 relative">
-            <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-24 items-start">
+        <section id="problem" className="py-fluid-xl px-fluid-sm bg-[#040404] border-t border-white/5 relative">
+            <div className="container-fluid grid lg:grid-cols-2 gap-fluid-xl items-start">
                 <motion.div
                     initial={{ opacity: 0, x: -30 }}
                     whileInView={{ opacity: 1, x: 0 }}
@@ -17,11 +17,11 @@ const ProblemStatement: React.FC = () => {
                         <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></div>
                         <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-400">System Failure Detected</span>
                     </div>
-                    <h2 className="text-4xl md:text-6xl font-bold mb-8 tracking-tighter leading-[0.95] text-white">
+                    <h2 className="text-fluid-3xl md:text-fluid-5xl font-bold mb-fluid-sm tracking-tighter leading-[0.95] text-white">
                         PnL is a <br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-teal-200">Lagging Indicator.</span>
                     </h2>
-                    <div className="space-y-8 text-zinc-400 text-lg leading-relaxed max-w-lg font-light">
+                    <div className="space-y-fluid-sm text-zinc-400 text-fluid-base leading-relaxed max-w-lg font-light">
                         <p>
                             Your bank account tells you <em>what</em> happened. It doesn't tell you <em>why</em>.
                             Legacy journals are static graveyards of data that fail to capture the most critical variable in trading: <strong className="text-white font-medium">State of Mind.</strong>

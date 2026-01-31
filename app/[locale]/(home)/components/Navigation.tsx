@@ -3,6 +3,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useUserStore } from '@/store/user-store';
+import { useI18n } from "@/locales/client";
+import Link from 'next/link';
 
 interface NavigationProps {
     onAccessPortal: () => void;
@@ -10,6 +13,8 @@ interface NavigationProps {
 
 const Navigation: React.FC<NavigationProps> = ({ onAccessPortal }) => {
     const [scrolled, setScrolled] = useState(false);
+    const user = useUserStore(state => state.supabaseUser);
+    const t = useI18n();
 
     useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -21,6 +26,7 @@ const Navigation: React.FC<NavigationProps> = ({ onAccessPortal }) => {
         { name: 'Philosophy', href: '#problem' },
         { name: 'Methodology', href: '#how-it-works' },
         { name: 'Infrastructure', href: '#features' },
+        { name: t('landing.navbar.pricing'), href: '/pricing' },
     ];
 
     return (
@@ -31,7 +37,7 @@ const Navigation: React.FC<NavigationProps> = ({ onAccessPortal }) => {
                 }`}
         >
             <div className="max-w-7xl mx-auto px-6 md:px-10 flex items-center justify-between">
-                <div className="flex items-center gap-3 cursor-pointer group" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                <Link href="/" className="flex items-center gap-3 cursor-pointer group" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
                     <div className="relative w-8 h-8 flex items-center justify-center">
                         <div className="absolute inset-0 bg-teal-500 blur-xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
                         <svg width="24" height="24" viewBox="0 0 32 32" fill="none" className="text-white relative z-10 transition-transform duration-500 group-hover:rotate-180">
@@ -40,7 +46,7 @@ const Navigation: React.FC<NavigationProps> = ({ onAccessPortal }) => {
                         </svg>
                     </div>
                     <span className="text-lg font-bold tracking-tighter text-white group-hover:text-teal-400 transition-colors uppercase">Qunt Edge</span>
-                </div>
+                </Link>
 
                 <div className="hidden lg:flex items-center gap-10 text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">
                     {links.map((link) => (
@@ -56,18 +62,29 @@ const Navigation: React.FC<NavigationProps> = ({ onAccessPortal }) => {
                 </div>
 
                 <div className="flex items-center gap-6">
-                    <button
-                        onClick={onAccessPortal}
-                        className="hidden md:block text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 hover:text-white transition-colors"
-                    >
-                        Login
-                    </button>
-                    <button
-                        onClick={onAccessPortal}
-                        className="bg-white text-black px-6 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-teal-400 transition-all duration-300 shadow-[0_0_15px_-5px_rgba(255,255,255,0.3)]"
-                    >
-                        Portal
-                    </button>
+                    {!user ? (
+                        <>
+                            <button
+                                onClick={onAccessPortal}
+                                className="hidden md:block text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 hover:text-white transition-colors"
+                            >
+                                {t('landing.navbar.signIn')}
+                            </button>
+                            <button
+                                onClick={onAccessPortal}
+                                className="bg-white text-black px-6 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-teal-400 transition-all duration-300 shadow-[0_0_15px_-5px_rgba(255,255,255,0.3)]"
+                            >
+                                {t('landing.cta')}
+                            </button>
+                        </>
+                    ) : (
+                        <Link
+                            href="/dashboard"
+                            className="bg-white text-black px-6 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-teal-400 transition-all duration-300 shadow-[0_0_15px_-5px_rgba(255,255,255,0.3)]"
+                        >
+                            {t('landing.navbar.dashboard')}
+                        </Link>
+                    )}
                 </div>
             </div>
         </motion.nav>

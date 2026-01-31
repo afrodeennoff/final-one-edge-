@@ -238,6 +238,26 @@ export default function Navbar() {
                 },
             ],
         },
+        {
+            title: t('landing.navbar.developers'),
+            children: [
+                {
+                    path: "https://github.com/afrodeennoff/lassttry-edge-",
+                    title: t('landing.navbar.openSource'),
+                    icon: <Github className="h-4 w-4" />,
+                },
+                {
+                    path: "/updates", // Point to updates as documentation for now
+                    title: t('landing.navbar.documentation'),
+                    icon: <FileText className="h-4 w-4" />,
+                },
+                {
+                    path: "/updates", // Placeholder for API
+                    title: t('landing.navbar.api'),
+                    icon: <Cpu className="h-4 w-4" />,
+                },
+            ],
+        },
     ]
 
     return (
@@ -292,17 +312,11 @@ export default function Navbar() {
                                 </NavigationMenuContent>
                             </NavigationMenuItem>
                             <NavigationMenuItem onMouseEnter={() => setHoveredItem('pricing')} onMouseLeave={() => setHoveredItem(null)}>
-                                <NavigationMenuTrigger className='bg-transparent'>{t('landing.navbar.pricing')}</NavigationMenuTrigger>
-                                <NavigationMenuContent onMouseEnter={() => setHoveredItem('pricing')} onMouseLeave={() => setHoveredItem(null)}>
-                                    <ul className="grid gap-3 p-6 md:w-[500px] lg:w-[600px] list-none">
-                                        <ListItem href="#pricing" title={t('pricing.basic.name')} icon={<Sun className="h-4 w-4" />}>
-                                            {t('pricing.basic.description')}
-                                        </ListItem>
-                                        <ListItem href="#pricing" title={t('pricing.plus.name')} icon={<Crown className="h-4 w-4" />}>
-                                            {t('pricing.plus.description')}
-                                        </ListItem>
-                                    </ul>
-                                </NavigationMenuContent>
+                                <Link href="/pricing" legacyBehavior passHref>
+                                    <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                                        {t('landing.navbar.pricing')}
+                                    </NavigationMenuLink>
+                                </Link>
                             </NavigationMenuItem>
                             <NavigationMenuItem onMouseEnter={() => setHoveredItem('updates')} onMouseLeave={() => setHoveredItem(null)}>
                                 <NavigationMenuTrigger className='bg-transparent'>{t('landing.navbar.updates')}</NavigationMenuTrigger>
@@ -318,11 +332,32 @@ export default function Navbar() {
                                 </NavigationMenuContent>
                             </NavigationMenuItem>
 
+                            <NavigationMenuItem onMouseEnter={() => setHoveredItem('developers')} onMouseLeave={() => setHoveredItem(null)}>
+                                <NavigationMenuTrigger className='bg-transparent'>{t('landing.navbar.developers')}</NavigationMenuTrigger>
+                                <NavigationMenuContent onMouseEnter={() => setHoveredItem('developers')} onMouseLeave={() => setHoveredItem(null)}>
+                                    <ul className="grid gap-3 p-4 md:w-[500px] lg:w-[600px] list-none">
+                                        <ListItem href="https://github.com/afrodeennoff/lassttry-edge-" title={t('landing.navbar.openSource')} icon={<Github className="h-4 w-4" />}>
+                                            {t('landing.navbar.openSourceDescription')}
+                                        </ListItem>
+                                        <ListItem href="/updates" title={t('landing.navbar.documentation')} icon={<FileText className="h-4 w-4" />}>
+                                            {t('landing.navbar.documentationDescription')}
+                                        </ListItem>
+                                        <ListItem href="/updates" title={t('landing.navbar.api')} icon={<Cpu className="h-4 w-4" />}>
+                                            {t('landing.navbar.apiDescription')}
+                                        </ListItem>
+                                    </ul>
+                                </NavigationMenuContent>
+                            </NavigationMenuItem>
+
                         </NavigationMenuList>
                         <Separator orientation="vertical" className="h-6 mx-2 sm:mx-4" />
-                        {!user && (
+                        {!user ? (
                             <Button variant="ghost" className="text-sm font-medium hover:text-accent-foreground touch-target h-9 px-3 sm:px-4" asChild>
                                 <Link href={"/authentication"}>{t('landing.navbar.signIn')}</Link>
+                            </Button>
+                        ) : (
+                            <Button variant="ghost" className="text-sm font-medium hover:text-accent-foreground touch-target h-9 px-3 sm:px-4" asChild>
+                                <Link href={"/dashboard"}>{t('landing.navbar.dashboard')}</Link>
                             </Button>
                         )}
                     </NavigationMenu>
@@ -517,13 +552,23 @@ export default function Navbar() {
                                 className="mt-auto border-t pt-8"
                                 variants={itemVariant}
                             >
-                                <Link
-                                    className="text-xl text-primary"
-                                    href="/authentication"
-                                    onClick={closeMenu}
-                                >
-                                    {t('landing.navbar.signIn')}
-                                </Link>
+                                {!user ? (
+                                    <Link
+                                        className="text-xl text-primary"
+                                        href="/authentication"
+                                        onClick={closeMenu}
+                                    >
+                                        {t('landing.navbar.signIn')}
+                                    </Link>
+                                ) : (
+                                    <Link
+                                        className="text-xl text-primary"
+                                        href="/dashboard"
+                                        onClick={closeMenu}
+                                    >
+                                        {t('landing.navbar.dashboard')}
+                                    </Link>
+                                )}
                             </motion.li>
 
                             <motion.li variants={itemVariant}>

@@ -35,7 +35,7 @@ const AnalysisDemo: React.FC = () => {
     }, []);
 
     return (
-        <section className="py-32 px-6 relative bg-[#050505] border-t border-white/5">
+        <section id="performance-visualization" className="py-32 px-6 relative bg-[#050505] border-t border-white/5">
             <div className="absolute inset-0 bg-grid-pattern opacity-[0.02] pointer-events-none"></div>
 
             <div className="max-w-7xl mx-auto relative z-10">
@@ -52,7 +52,7 @@ const AnalysisDemo: React.FC = () => {
                             </span>
                             <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-teal-500 font-mono">Live Interceptor</h2>
                         </div>
-                        <h3 className="text-4xl md:text-5xl font-bold tracking-tight text-white leading-tight">
+                        <h3 className="text-fluid-2xl md:text-fluid-4xl font-bold tracking-tight text-white leading-tight">
                             Predictive <span className="text-zinc-600">Intervention.</span>
                         </h3>
                     </motion.div>

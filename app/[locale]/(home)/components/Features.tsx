@@ -78,6 +78,9 @@ const Features: React.FC = () => {
 
     return (
         <section id="features" className="py-32 px-6 bg-[#030303] relative border-t border-white/5">
+            <div id="data-import" className="absolute -top-32" />
+            <div id="daily-performance" className="absolute -top-32" />
+            <div id="ai-journaling" className="absolute -top-32" />
             <div className="max-w-7xl mx-auto">
                 <div className="mb-24 flex flex-col md:flex-row justify-between items-end gap-6">
                     <div>

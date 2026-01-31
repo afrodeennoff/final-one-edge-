@@ -55,9 +55,9 @@ const Hero: React.FC<HeroProps> = ({ onStart }) => {
                 initial="hidden"
                 animate="show"
                 style={{ scale }}
-                className="max-w-7xl mx-auto relative z-10"
+                className="container-fluid relative z-10"
             >
-                <motion.div variants={item} className="mb-8">
+                <motion.div variants={item} className="mb-fluid-sm">
                     <div className="inline-flex items-center gap-3 px-4 py-1.5 bg-zinc-900/50 border border-white/5 rounded-full backdrop-blur-md">
                         <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse shadow-[0_0_8px_#2dd4bf]"></span>
                         <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-zinc-400">Institutional Intelligence Layer</span>
@@ -66,14 +66,14 @@ const Hero: React.FC<HeroProps> = ({ onStart }) => {
 
                 <motion.h1
                     variants={item}
-                    className="text-7xl md:text-9xl font-bold tracking-tighter mb-8 leading-[0.85] text-white"
+                    className="text-fluid-7xl lg:text-fluid-9xl font-bold tracking-tighter mb-fluid-sm leading-[0.85] text-white"
                 >
                     Qunt <span className="text-transparent bg-clip-text bg-gradient-to-b from-teal-400 to-teal-700">Edge.</span>
                 </motion.h1>
 
                 <motion.p
                     variants={item}
-                    className="text-xl md:text-2xl text-zinc-400 max-w-2xl mx-auto mb-12 leading-relaxed font-light"
+                    className="text-fluid-lg md:text-fluid-xl text-zinc-400 max-w-2xl mx-auto mb-fluid-md leading-relaxed font-light"
                 >
                     Stop auditing the money. Audit the execution. <br />
                     <span className="text-zinc-600">The clinical intelligence layer for professional discretionary traders.</span>
@@ -81,7 +81,7 @@ const Hero: React.FC<HeroProps> = ({ onStart }) => {
 
                 <motion.div
                     variants={item}
-                    className="flex flex-col sm:flex-row items-center justify-center gap-6"
+                    className="flex flex-col sm:flex-row items-center justify-center gap-fluid-sm"
                 >
                     <button
                         onClick={onStart}
