@@ -63,98 +63,105 @@ export function DashboardHeader() {
     const currentLayout = layouts || { desktop: [], mobile: [] };
 
     return (
-        <header className="h-16 border-b border-white/5 bg-[#020202]/80 backdrop-blur-md flex items-center justify-between px-4 md:px-8 sticky top-0 z-40 overflow-hidden">
+        <header className="h-16 border-b border-white/5 bg-[#020202]/95 backdrop-blur-md flex items-center justify-between px-4 md:px-8 sticky top-0 z-50 overflow-hidden">
             {/* Left Side: Sidebar Toggle & Title */}
-            <div className="flex items-center gap-4 flex-shrink-0">
+            <div className="flex items-center gap-4 flex-shrink-0 min-w-[200px]">
                 <button onClick={toggleSidebar} className="p-2 text-zinc-500 hover:text-white lg:hidden">
                     <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h7" /></svg>
                 </button>
                 <div className="flex items-baseline gap-3">
-                    <h1 className="text-sm font-bold text-white tracking-wide uppercase">{title}</h1>
-                    <div className="h-4 w-px bg-white/10 hidden md:block" />
-                    <span className="text-[10px] text-zinc-600 font-mono hidden md:inline-block">LIVE TERMINAL</span>
+                    <h1 className="text-sm font-bold text-white tracking-wide uppercase whitespace-nowrap">{title}</h1>
                 </div>
             </div>
 
-            {/* Right Side: Actions */}
-            <div className="flex items-center gap-3">
-                {/* Search / Command Menu */}
-                <FilterCommandMenu variant="navbar" />
+            {/* Center: Essential Metrics */}
+            <div className="hidden lg:flex flex-1 justify-center px-4">
+                <PnLSummary />
+            </div>
 
-                {/* Edit Layout Group */}
-                {title === 'Overview' && (
-                    <div className="flex items-center gap-1.5 p-1 bg-white/5 rounded-lg border border-white/5">
-                        <AddWidgetSheet
-                            onAddWidget={addWidget}
-                            isCustomizing={isCustomizing}
-                            trigger={
-                                <button className="text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-md text-zinc-400 hover:text-white transition-colors flex items-center gap-2">
-                                    <span className="">+ ADD WIDGET</span>
-                                </button>
-                            }
-                        />
+            {/* Right Side: Actions & Configuration */}
+            <div className="flex items-center gap-3 flex-shrink-0 justify-end min-w-[200px]">
 
-                        <button
-                            onClick={toggleCustomizing}
-                            className={cn(
-                                "text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-md transition-all duration-300 border",
-                                isCustomizing
-                                    ? "bg-teal-500 text-black border-teal-500 shadow-[0_0_15px_rgba(45,212,191,0.3)]"
-                                    : "text-zinc-400 border-transparent hover:text-white hover:bg-white/5"
-                            )}
-                        >
-                            {isCustomizing ? 'LOCK LAYOUT' : 'EDIT LAYOUT'}
-                        </button>
+                {/* Global Utilities Group */}
+                <div className="flex items-center gap-1">
+                    <FilterCommandMenu variant="navbar" />
 
-                        {isCustomizing && autoSaveStatus.hasPending && (
-                            <button
-                                onClick={flushPendingSaves}
-                                className="p-1.5 text-teal-400 hover:bg-teal-400/10 rounded-md transition-all animate-pulse"
-                                title="Save Changes"
-                            >
-                                <CloudUpload className="w-3.5 h-3.5" />
-                            </button>
-                        )}
+                    <button
+                        onClick={handleRefresh}
+                        disabled={isLoading}
+                        className="p-2 text-zinc-500 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+                        title="Manual Sync"
+                    >
+                        <RefreshCw className={cn("w-4 h-4", (isRefreshing || isLoading) && "animate-spin")} />
+                    </button>
 
-                        {!autoSaveStatus.hasPending && isCustomizing && (
-                            <div className="px-2 text-teal-500/60">
-                                <CheckCircle2 className="w-3.5 h-3.5" />
-                            </div>
-                        )}
+                    <DailySummaryModal />
+                </div>
 
-                        <div className="w-px h-4 bg-white/10 mx-1" />
-                        <ShareButton currentLayout={currentLayout} />
-                    </div>
-                )}
+                <div className="h-6 w-px bg-white/10 mx-1 hidden sm:block" />
 
-                {/* Import & Sub Group */}
+                {/* Operations & Status Group */}
                 <div className="hidden sm:flex items-center gap-2">
                     <ImportButton />
 
                     {!isPlusUser() && (
                         <Link href="/dashboard/billing">
-                            <button className="h-8 px-4 gap-2 rounded-lg bg-teal-500/10 border border-teal-500/20 text-teal-500 text-[9px] font-black uppercase tracking-widest hover:border-teal-500/50 hover:bg-teal-500/20 transition-all flex items-center">
-                                <Sparkles className="w-3 h-3 animate-pulse" />
+                            <button className="h-8 px-4 gap-2 rounded-lg bg-teal-500/10 border border-teal-500/20 text-teal-500 text-[9px] font-black uppercase tracking-widest hover:border-teal-500/50 hover:bg-teal-500/20 transition-all flex items-center group">
+                                <Sparkles className="w-3 h-3 animate-pulse group-hover:scale-110 transition-transform" />
                                 <span>UPGRADE</span>
                             </button>
                         </Link>
                     )}
                 </div>
 
-                <div className="h-6 w-px bg-white/10 mx-1 hidden sm:block" />
+                {/* Customization Group (Conditional) */}
+                {title === 'Overview' && (
+                    <>
+                        <div className="h-6 w-px bg-white/10 mx-1 hidden md:block" />
+                        <div className="flex items-center gap-1.5 p-1 bg-white/5 rounded-lg border border-white/5">
+                            <AddWidgetSheet
+                                onAddWidget={addWidget}
+                                isCustomizing={isCustomizing}
+                                trigger={
+                                    <button className="text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-white/5 transition-colors flex items-center gap-2">
+                                        <span>+ ADD</span>
+                                    </button>
+                                }
+                            />
 
-                {/* Sync & Daily Group */}
-                <div className="flex items-center gap-1.5 bg-black/40 p-1 rounded-lg border border-white/5">
-                    <button
-                        onClick={handleRefresh}
-                        disabled={isLoading}
-                        className="p-1.5 text-zinc-500 hover:text-white rounded-md transition-colors"
-                        title="Manual Sync"
-                    >
-                        <RefreshCw className={cn("w-3.5 h-3.5", (isRefreshing || isLoading) && "animate-spin")} />
-                    </button>
-                    <DailySummaryModal />
-                </div>
+                            <button
+                                onClick={toggleCustomizing}
+                                className={cn(
+                                    "text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-md transition-all duration-300 border",
+                                    isCustomizing
+                                        ? "bg-teal-500 text-black border-teal-500 shadow-[0_0_15px_rgba(45,212,191,0.3)]"
+                                        : "text-zinc-400 border-transparent hover:text-white hover:bg-white/5"
+                                )}
+                            >
+                                {isCustomizing ? 'LOCK' : 'EDIT'}
+                            </button>
+
+                            {isCustomizing && autoSaveStatus.hasPending && (
+                                <button
+                                    onClick={flushPendingSaves}
+                                    className="p-1.5 text-teal-400 hover:bg-teal-400/10 rounded-md transition-all animate-pulse"
+                                    title="Save Changes"
+                                >
+                                    <CloudUpload className="w-4 h-4" />
+                                </button>
+                            )}
+
+                            {!autoSaveStatus.hasPending && isCustomizing && (
+                                <div className="px-2 text-teal-500/60">
+                                    <CheckCircle2 className="w-4 h-4" />
+                                </div>
+                            )}
+
+                            <div className="w-px h-4 bg-white/10 mx-1" />
+                            <ShareButton currentLayout={currentLayout} />
+                        </div>
+                    </>
+                )}
             </div>
         </header>
     );
