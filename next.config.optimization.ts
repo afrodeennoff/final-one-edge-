@@ -10,11 +10,9 @@ const nextConfig: NextConfig = {
       'framer-motion',
       'd3',
     ],
+    optimizeCss: true,
   },
-  
-  // Optimize CSS
-  optimizeCss: true,
-  
+
   // Split chunks for better caching
   webpack: (config, { isServer }) => {
     // Improve chunk splitting
@@ -26,7 +24,7 @@ const nextConfig: NextConfig = {
           cacheGroups: {
             default: false,
             vendors: false,
-            
+
             // Framework chunk
             framework: {
               name: 'framework',
@@ -35,11 +33,11 @@ const nextConfig: NextConfig = {
               priority: 40,
               enforce: true,
             },
-            
+
             // Libraries chunk
             lib: {
               test: /[\\/]node_modules[\\/]/,
-              name(module) {
+              name(module: any) {
                 const match = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)
                 if (match) {
                   const packageName = match[1]
@@ -57,7 +55,7 @@ const nextConfig: NextConfig = {
               minChunks: 1,
               reuseExistingChunk: true,
             },
-            
+
             // Common shared modules
             common: {
               name: 'common',
@@ -70,13 +68,13 @@ const nextConfig: NextConfig = {
         },
       }
     }
-    
+
     return config
   },
-  
+
   // Compress output
   compress: true,
-  
+
   // Remove console in production
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production' ? {
