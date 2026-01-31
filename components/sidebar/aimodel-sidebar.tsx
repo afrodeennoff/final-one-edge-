@@ -53,9 +53,9 @@ export function AIModelSidebar() {
         const tab = searchParams.get('tab');
 
         if (pathname === '/dashboard' || pathname.includes('/dashboard')) {
-            if (tab === 'table') setActiveTab('Trades');
+            if (tab === 'table') setActiveTab('Journal');
             else if (tab === 'accounts') setActiveTab('Accounts');
-            else if (pathname.includes('strategies')) setActiveTab('Journal');
+            else if (pathname.includes('strategies')) setActiveTab('Strategies');
             else if (pathname.includes('reports')) setActiveTab('Reports');
             else if (pathname.includes('behavior')) setActiveTab('Behavior');
             else if (pathname.includes('data')) setActiveTab('Data');
@@ -81,9 +81,9 @@ export function AIModelSidebar() {
             title: 'Inventory',
             items: [
                 { label: 'Dashboard', href: '/dashboard?tab=widgets', icon: <LayoutDashboard className="w-5 h-5" /> },
-                { label: 'Trades', href: '/dashboard?tab=table', icon: <TrendingUp className="w-5 h-5" /> },
+                { label: 'Journal', href: '/dashboard?tab=table', icon: <TrendingUp className="w-5 h-5" /> },
                 { label: 'Accounts', href: '/dashboard?tab=accounts', icon: <Activity className="w-5 h-5" /> },
-                { label: 'Journal', href: '/dashboard/strategies', icon: <BookOpen className="w-5 h-5" /> },
+                { label: 'Strategies', href: '/dashboard/strategies', icon: <BookOpen className="w-5 h-5" /> },
             ]
         },
         {
@@ -140,7 +140,7 @@ export function AIModelSidebar() {
                         : { width: open ? 260 : 80, x: 0 }
                 }
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className="bg-[#030303] border-r border-white/5 flex flex-col z-50 flex-shrink-0 shadow-2xl fixed lg:relative h-full overflow-visible group/sidebar"
+                className="bg-[#030303] border-r border-white/5 flex flex-col z-50 flex-shrink-0 shadow-2xl fixed lg:sticky lg:top-0 h-screen overflow-visible group/sidebar"
             >
                 {!isMobile && (
                     <button

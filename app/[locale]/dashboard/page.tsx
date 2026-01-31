@@ -28,40 +28,6 @@ export default function Home() {
     <div className="w-full h-full relative">
       <Tabs value={activeTab} className="w-full h-full relative z-10">
 
-        <div className="px-6 pt-4 flex items-center justify-between">
-          <div className="flex items-center gap-1 p-1 bg-black/20 backdrop-blur-xl rounded-2xl border border-white/5 shadow-2xl">
-            <Link href="?tab=widgets">
-              <div className={cn(
-                "px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 cursor-pointer",
-                activeTab === "widgets"
-                  ? "bg-accent-teal text-white shadow-[0_0_20px_rgba(45,212,191,0.3)]"
-                  : "text-fg-muted hover:text-fg-primary hover:bg-white/5"
-              )}>
-                Dashboard
-              </div>
-            </Link>
-            <Link href="?tab=table">
-              <div className={cn(
-                "px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 cursor-pointer",
-                activeTab === "table"
-                  ? "bg-accent-teal text-white shadow-[0_0_20px_rgba(45,212,191,0.3)]"
-                  : "text-fg-muted hover:text-fg-primary hover:bg-white/5"
-              )}>
-                Journal
-              </div>
-            </Link>
-            <Link href="?tab=accounts">
-              <div className={cn(
-                "px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 cursor-pointer",
-                activeTab === "accounts"
-                  ? "bg-accent-teal text-white shadow-[0_0_20px_rgba(45,212,191,0.3)]"
-                  : "text-fg-muted hover:text-fg-primary hover:bg-white/5"
-              )}>
-                Accounts
-              </div>
-            </Link>
-          </div>
-        </div>
 
         <TabsContent value="table" className="h-[calc(100vh-120px)] p-4 mt-2">
           <div className="w-full h-full glass rounded-3xl overflow-hidden border border-white/5 shadow-2xl">
