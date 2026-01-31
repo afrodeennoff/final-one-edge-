@@ -77,18 +77,18 @@ const Features: React.FC = () => {
     ];
 
     return (
-        <section id="features" className="py-32 px-6 bg-[#030303] relative border-t border-white/5">
+        <section id="features" className="py-fluid-xl px-fluid-sm bg-[#030303] relative border-t border-white/5">
             <div id="data-import" className="absolute -top-32" />
             <div id="daily-performance" className="absolute -top-32" />
             <div id="ai-journaling" className="absolute -top-32" />
-            <div className="max-w-7xl mx-auto">
-                <div className="mb-24 flex flex-col md:flex-row justify-between items-end gap-6">
+            <div className="container-fluid">
+                <div className="mb-fluid-xl flex flex-col md:flex-row justify-between items-end gap-fluid-sm">
                     <div>
                         <motion.h2
                             initial={{ opacity: 0, x: -15 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
-                            className="text-4xl md:text-5xl font-bold tracking-tighter mb-4 text-white"
+                            className="text-fluid-2xl md:text-fluid-4xl font-bold tracking-tighter mb-fluid-xs text-white"
                         >
                             Powerful Trading Infrastructure
                         </motion.h2>
@@ -116,7 +116,7 @@ const Features: React.FC = () => {
                     initial="hidden"
                     whileInView="show"
                     viewport={{ once: true, margin: "-100px" }}
-                    className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+                    className="grid-fluid"
                 >
                     {features.map((f, i) => (
                         <motion.div

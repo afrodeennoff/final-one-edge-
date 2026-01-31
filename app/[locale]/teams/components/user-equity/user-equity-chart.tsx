@@ -1,6 +1,7 @@
 'use client'
 
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, AreaChart, Area } from 'recharts'
+import { cn } from '@/lib/utils'
 
 interface EquityCurveData {
   date: string
@@ -46,7 +47,7 @@ function groupTradesByDay(equityCurve: EquityCurveData[]): DailyEquityData[] {
   // Calculate cumulative PnL and sort by date
   const sortedDates = Object.keys(dailyGroups).sort()
   let cumulativePnL = 0
-  
+
   return sortedDates.map(date => {
     cumulativePnL += dailyGroups[date].dailyPnL
     return {
@@ -59,10 +60,10 @@ function groupTradesByDay(equityCurve: EquityCurveData[]): DailyEquityData[] {
 // Helper to generate "nice" ticks for the X axis (dates)
 function getSmartDateTicks(dailyData: DailyEquityData[]) {
   if (!dailyData.length) return []
-  
+
   const totalDays = dailyData.length
   let step = 1
-  
+
   // Decide step based on number of days
   if (totalDays > 365) step = 30 // Monthly for >1 year
   else if (totalDays > 90) step = 7 // Weekly for >3 months
@@ -73,12 +74,12 @@ function getSmartDateTicks(dailyData: DailyEquityData[]) {
   for (let i = 0; i < dailyData.length; i += step) {
     ticks.push(dailyData[i].date)
   }
-  
+
   // Always include the last date if not already included
   if (dailyData.length > 0 && !ticks.includes(dailyData[dailyData.length - 1].date)) {
     ticks.push(dailyData[dailyData.length - 1].date)
   }
-  
+
   return ticks
 }
 
@@ -115,163 +116,86 @@ export function UserEquityChart({ equityCurve, userId, totalPnL, showDailyView =
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
-      if (showDailyView) {
-        const dailyPnL = payload[0]?.payload?.dailyPnL || 0
-        const cumulativeValue = payload[0]?.payload?.cumulativePnL || 0
-        const tradeCount = payload[0]?.payload?.tradeCount || 0
-        
-        // Format date for display
-        const date = new Date(label)
-        const formattedDate = date.toLocaleDateString('en-US', { 
-          month: 'short', 
-          day: 'numeric',
-          year: date.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
-        })
-        
-        return (
-          <div className="rounded-lg border bg-background p-2 shadow-xs">
-            <div className="grid gap-2">
-              <div className="flex flex-col">
-                <span className="text-[0.70rem] uppercase text-muted-foreground">
-                  Date
-                </span>
-                <span className="font-bold text-muted-foreground">
-                  {formattedDate}
-                </span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-[0.70rem] uppercase text-muted-foreground">
-                  Daily P&L
-                </span>
-                <span className="font-bold text-foreground">
-                  {dailyPnL >= 0 ? '+' : ''}{dailyPnL.toFixed(2)}
-                </span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-[0.70rem] uppercase text-muted-foreground">
-                  Cumulative
-                </span>
-                <span className="font-bold text-foreground">
-                  {cumulativeValue >= 0 ? '+' : ''}{cumulativeValue.toFixed(2)}
-                </span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-[0.70rem] uppercase text-muted-foreground">
-                  Trades
-                </span>
-                <span className="font-bold text-foreground">
-                  {tradeCount}
-                </span>
-              </div>
+      const data = payload[0]?.payload
+      const date = new Date(showDailyView ? label : data.date)
+      const formattedDate = date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: date.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
+      })
+
+      return (
+        <div className="bg-zinc-950/90 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-2xl min-w-[140px]">
+          <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mb-2 font-mono">
+            {showDailyView ? formattedDate : `OP #${data.tradeNumber}`}
+          </p>
+          <div className="flex flex-col gap-1.5">
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-[10px] text-zinc-400 font-bold uppercase">Growth</span>
+              <span className={cn("text-[11px] font-black italic", data.cumulativePnL >= 0 ? "text-teal-400" : "text-rose-500")}>
+                {data.cumulativePnL >= 0 ? '+' : ''}${data.cumulativePnL.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              </span>
             </div>
+            {!showDailyView && (
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-[10px] text-zinc-500 font-bold uppercase">Delta</span>
+                <span className={cn("text-[10px] font-black font-mono", data.pnl >= 0 ? "text-teal-400/70" : "text-rose-500/70")}>
+                  {data.pnl >= 0 ? '+' : ''}${data.pnl.toFixed(0)}
+                </span>
+              </div>
+            )}
           </div>
-        )
-      } else {
-        // Trade view tooltip
-        const pnlValue = payload[0]?.value || 0
-        const cumulativeValue = payload[0]?.payload?.cumulativePnL || 0
-        
-        return (
-          <div className="rounded-lg border bg-background p-2 shadow-xs">
-            <div className="grid gap-2">
-              <div className="flex flex-col">
-                <span className="text-[0.70rem] uppercase text-muted-foreground">
-                  Trade #{payload[0]?.payload?.tradeNumber || 'N/A'}
-                </span>
-                <span className="font-bold text-muted-foreground">
-                  {label}
-                </span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-[0.70rem] uppercase text-muted-foreground">
-                  P&L
-                </span>
-                <span className="font-bold text-foreground">
-                  {pnlValue >= 0 ? '+' : ''}{pnlValue.toFixed(2)}
-                </span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-[0.70rem] uppercase text-muted-foreground">
-                  Cumulative
-                </span>
-                <span className="font-bold text-foreground">
-                  {cumulativeValue >= 0 ? '+' : ''}{cumulativeValue.toFixed(2)}
-                </span>
-              </div>
-            </div>
-          </div>
-        )
-      }
+        </div>
+      )
     }
     return null
   }
 
+  const chartId = `color-${userId.replace(/[^a-zA-Z0-9-_]/g, '')}`
+  const mainColor = totalPnL >= 0 ? "#14b8a6" : "#f43f5e"
+
   return (
-    <div className="h-32">
+    <div className="h-full w-full">
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart 
+        <AreaChart
           data={chartData}
-          margin={{ left: 10, right: 8, top: 8, bottom: 24 }}
+          margin={{ left: 0, right: 0, top: 4, bottom: 0 }}
         >
           <defs>
-            <linearGradient id={`color-${userId.replace(/[^a-zA-Z0-9-_]/g, '')}`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor={totalPnL >= 0 ? "#10b981" : "#ef4444"} stopOpacity={0.3}/>
-              <stop offset="95%" stopColor={totalPnL >= 0 ? "#10b981" : "#ef4444"} stopOpacity={0}/>
+            <linearGradient id={chartId} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor={mainColor} stopOpacity={0.2} />
+              <stop offset="95%" stopColor={mainColor} stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid 
-            strokeDasharray="3 3" 
-            className="text-border dark:opacity-[0.12] opacity-[0.2]"
+          <CartesianGrid
+            strokeDasharray="3 3"
+            vertical={false}
+            stroke="#ffffff"
+            strokeOpacity={0.03}
           />
-          <XAxis 
+          <XAxis
             dataKey={showDailyView ? "date" : "tradeNumber"}
-            tickLine={false}
-            axisLine={false}
-            height={24}
-            tickMargin={8}
-            ticks={xTicks}
-            tick={{ 
-              fontSize: 11,
-              fill: 'currentColor'
-            }}
-            tickFormatter={showDailyView ? (value) => {
-              const date = new Date(value)
-              const now = new Date()
-              const isCurrentYear = date.getFullYear() === now.getFullYear()
-              
-              if (isCurrentYear) {
-                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-              } else {
-                return date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' })
-              }
-            } : (value) => `#${value}`}
+            hide={true}
           />
-          <YAxis 
-            tickLine={false}
-            axisLine={false}
-            width={60}
-            tickMargin={4}
-            tick={{ 
-              fontSize: 11,
-              fill: 'currentColor'
-            }}
-            tickFormatter={(value) => Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD', notation: 'compact', maximumFractionDigits: 2 }).format(value)}
+          <YAxis
+            hide={true}
+            domain={['dataMin - 100', 'dataMax + 100']}
           />
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip content={<CustomTooltip />} cursor={{ stroke: mainColor, strokeWidth: 1, strokeDasharray: '4 4' }} />
           <Area
             type="monotone"
             dataKey="cumulativePnL"
-            stroke={totalPnL >= 0 ? "#10b981" : "#ef4444"}
+            stroke={mainColor}
             fillOpacity={1}
-            fill={`url(#color-${userId})`}
+            fill={`url(#${chartId})`}
             strokeWidth={2}
             dot={false}
-            isAnimationActive={false}
-            activeDot={{ r: 3, style: { fill: totalPnL >= 0 ? "#10b981" : "#ef4444" } }}
-            connectNulls={false}
+            isAnimationActive={true}
+            animationDuration={1500}
+            activeDot={{ r: 3, style: { fill: mainColor, filter: `drop-shadow(0 0 5px ${mainColor})` } }}
           />
         </AreaChart>
       </ResponsiveContainer>
     </div>
   )
-} 
+}

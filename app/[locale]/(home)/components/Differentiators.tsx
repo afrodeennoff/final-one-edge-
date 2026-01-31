@@ -26,15 +26,15 @@ const Differentiators: React.FC = () => {
     };
 
     return (
-        <section className="py-24 px-6 bg-black relative">
+        <section className="py-fluid-xl px-fluid-sm bg-black relative">
             <div className="absolute inset-0 bg-grid-pattern opacity-[0.03] pointer-events-none"></div>
-            <div className="max-w-7xl mx-auto relative z-10">
+            <div className="container-fluid relative z-10">
                 <div className="text-center mb-20">
                     <motion.h2
                         initial={{ opacity: 0, y: 15 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="text-3xl md:text-5xl font-bold mb-6 tracking-tight text-white"
+                        className="text-fluid-2xl md:text-fluid-4xl font-bold mb-fluid-xs tracking-tight text-white"
                     >
                         The Qunt Edge Difference
                     </motion.h2>

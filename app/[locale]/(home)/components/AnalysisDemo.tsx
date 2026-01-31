@@ -35,10 +35,10 @@ const AnalysisDemo: React.FC = () => {
     }, []);
 
     return (
-        <section id="performance-visualization" className="py-32 px-6 relative bg-[#050505] border-t border-white/5">
+        <section id="performance-visualization" className="py-fluid-xl px-fluid-sm relative bg-[#050505] border-t border-white/5">
             <div className="absolute inset-0 bg-grid-pattern opacity-[0.02] pointer-events-none"></div>
 
-            <div className="max-w-7xl mx-auto relative z-10">
+            <div className="container-fluid relative z-10">
                 <div className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-10">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}

@@ -260,25 +260,28 @@
     user-select: none;
   }
 
-  /* Responsive Container System - Fluid and Mobile-First */
+  /* Responsive Container System - Sophisticated Fluid Approach */
   .container-fluid {
     width: 100%;
-    margin-right: auto;
-    margin-left: auto;
-    padding-right: var(--fluid-container-padding, 1rem);
-    padding-left: var(--fluid-container-padding, 1rem);
+    margin-inline: auto;
+    padding-inline: clamp(1rem, 5vw, 3rem);
+    max-width: 100%;
   }
 
-  @media (min-width: 640px) {
+  @media (min-width: 320px) {
     .container-fluid {
-      --fluid-container-padding: 1.5rem;
-      max-width: 640px;
+      max-width: 100%;
+    }
+  }
+
+  @media (min-width: 480px) {
+    .container-fluid {
+      max-width: 480px;
     }
   }
 
   @media (min-width: 768px) {
     .container-fluid {
-      --fluid-container-padding: 2rem;
       max-width: 768px;
     }
   }
@@ -289,19 +292,33 @@
     }
   }
 
-  @media (min-width: 1280px) {
+  @media (min-width: 1200px) {
     .container-fluid {
-      max-width: 1280px;
+      max-width: 1200px;
     }
   }
 
-  @media (min-width: 1536px) {
+  @media (min-width: 1440px) {
     .container-fluid {
       max-width: 1440px;
     }
   }
 
-  /* Aspect Ratio Utilities for Responsive Media */
+  @media (min-width: 1920px) {
+    .container-fluid {
+      max-width: 1800px;
+    }
+  }
+
+  /* Fluid Grid System - Auto-adapting layout engine */
+  .grid-fluid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, clamp(280px, 30vw, 450px)), 1fr));
+    gap: var(--fluid-gap, clamp(1rem, 2.5vw, 2.5rem));
+    width: 100%;
+  }
+
+  /* Fixed Aspect Ratio Utilities for Dynamic Responsiveness */
   .aspect-video {
     aspect-ratio: 16 / 9;
   }
@@ -312,6 +329,12 @@
 
   .aspect-portrait {
     aspect-ratio: 3 / 4;
+  }
+
+  /* Container Query Entry Points (Modern adaptation) */
+  .cq-container {
+    container-type: inline-size;
+    width: 100%;
   }
 
   /* Fluid Spacing Grid */

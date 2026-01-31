@@ -16,7 +16,8 @@ import {
   Eye,
   Settings,
   XCircle,
-  Trash2
+  Trash2,
+  Users
 } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
@@ -108,51 +109,44 @@ export function TeamManagement({
   const [firstTeamId, setFirstTeamId] = useState<string | null>(null);
 
   useEffect(() => {
-    // Optimization: Skip navigation redundancy if we already have initial data and we are on the root
-    if (initialUserTeams && initialManagedTeams && pathname.endsWith('/teams/dashboard')) {
+    // Only auto-redirect if we are exactly on the teams/dashboard root
+    const isRoot = pathname.endsWith('/teams/dashboard') || pathname.endsWith('/teams/dashboard/');
+    if (!isRoot) return;
+
+    if (initialUserTeams && initialManagedTeams) {
       let targetId = null;
       if (initialUserTeams.ownedTeams.length > 0) targetId = initialUserTeams.ownedTeams[0].id
       else if (initialUserTeams.joinedTeams.length > 0) targetId = initialUserTeams.joinedTeams[0].id
       else if (initialManagedTeams.length > 0) targetId = initialManagedTeams[0].id
 
       if (targetId) setFirstTeamId(targetId)
-      return;
-    }
+    } else {
+      const loadInitialData = async () => {
+        setIsLoading(true)
+        const teamsResult = await getUserTeams()
+        const managedResult = await getUserTeamAccess()
 
-    const loadInitialData = async () => {
-      // If we are not yet on a team dashboard, we try to redirect to the first team
-      if (!pathname.endsWith('/teams/dashboard')) {
-        return;
-      }
-      // Get user's teams
-      const teamsResult = await getUserTeams()
-      const managedResult = await getUserTeamAccess()
-
-      if (teamsResult.success) {
-        // Check owned teams first
-        if (teamsResult.ownedTeams && teamsResult.ownedTeams.length > 0) {
-          setFirstTeamId(teamsResult.ownedTeams[0].id)
-          return
+        if (teamsResult.success) {
+          if (teamsResult.ownedTeams && teamsResult.ownedTeams.length > 0) {
+            setFirstTeamId(teamsResult.ownedTeams[0].id)
+          } else if (teamsResult.joinedTeams && teamsResult.joinedTeams.length > 0) {
+            setFirstTeamId(teamsResult.joinedTeams[0].id)
+          }
         }
-        // If no owned teams, check joined teams
-        else if (teamsResult.joinedTeams && teamsResult.joinedTeams.length > 0) {
-          setFirstTeamId(teamsResult.joinedTeams[0].id)
-          return
+        if (!firstTeamId && managedResult.success && managedResult.managedTeams && managedResult.managedTeams.length > 0) {
+          setFirstTeamId(managedResult.managedTeams[0].id)
         }
+        setIsLoading(false)
       }
-
-      // If still no team found, check managed teams
-      if (!firstTeamId && managedResult.success && managedResult.managedTeams && managedResult.managedTeams.length > 0) {
-        setFirstTeamId(managedResult.managedTeams[0].id)
-      }
-
+      loadInitialData()
     }
-    loadInitialData()
-    // If we found a team, redirect to it
-    if (firstTeamId) {
+  }, [pathname, initialUserTeams, initialManagedTeams])
+
+  useEffect(() => {
+    if (firstTeamId && (pathname.endsWith('/teams/dashboard') || pathname.endsWith('/teams/dashboard/'))) {
       redirect(`/teams/dashboard/${firstTeamId}`)
     }
-  }, [firstTeamId, pathname, initialUserTeams, initialManagedTeams])
+  }, [firstTeamId, pathname])
   const t = useI18n()
 
   // State
@@ -676,22 +670,114 @@ export function TeamManagement({
 
   const filteredTeams = Array.from(allTeams.values())
 
+  // If we are on a specific team page, we don't render the selection grid here
+  // The layout will render the specific team page as children
+  const isSpecificTeamPage = pathname.includes('/teams/dashboard/') && pathname.split('/').pop() !== 'dashboard';
+
+  if (isSpecificTeamPage) {
+    return null;
+  }
+
   if (isLoading) {
     return (
-      <div className="container mx-auto py-8 px-4">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-500"></div>
       </div>
     )
   }
 
   return (
-    <div className="mx-auto py-8">
+    <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">{t('teams.management.component.title')}</h1>
-        <p className="text-muted-foreground mt-2">{t('teams.management.component.description')}</p>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h1 className="text-4xl font-black tracking-tighter text-white uppercase italic">
+            {t('teams.management.component.title')}
+          </h1>
+          <p className="text-zinc-500 mt-2 max-w-lg">
+            {t('teams.management.component.description')}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Dialog open={joinDialogOpen} onOpenChange={setJoinDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="rounded-xl border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/10 transition-all">
+                <Plus className="h-4 w-4 mr-2" />
+                Join Team
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-zinc-950 border-white/10">
+              <DialogHeader>
+                <DialogTitle className="text-white">Join a Team</DialogTitle>
+                <DialogDescription className="text-zinc-500">
+                  Enter the team ID provided by your team owner.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <Label htmlFor="teamId" className="text-zinc-400">Team ID</Label>
+                  <Input
+                    id="teamId"
+                    value={joinTeamId}
+                    onChange={(e) => setJoinTeamId(e.target.value)}
+                    placeholder="Enter team ID..."
+                    className="bg-white/5 border-white/10 text-white placeholder:text-zinc-600 focus:border-teal-500/50"
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setJoinDialogOpen(false)} className="rounded-lg">Cancel</Button>
+                <Button
+                  onClick={handleJoinTeam}
+                  disabled={isSubmitting}
+                  className="bg-teal-500 hover:bg-teal-600 text-black font-bold rounded-lg"
+                >
+                  {isSubmitting ? "Joining..." : "Join Team"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-teal-500 hover:bg-teal-600 text-black font-bold rounded-xl shadow-[0_0_20px_rgba(20,184,166,0.2)] transition-all">
+                <Plus className="h-4 w-4 mr-2" />
+                Create Team
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-zinc-950 border-white/10">
+              <DialogHeader>
+                <DialogTitle className="text-white">Create New Team</DialogTitle>
+                <DialogDescription className="text-zinc-500">
+                  Build your own trading team and manage multiple accounts.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <Label htmlFor="create-name" className="text-zinc-400">Team Name</Label>
+                  <Input
+                    id="create-name"
+                    value={newTeamName}
+                    onChange={(e) => setNewTeamName(e.target.value)}
+                    placeholder="Enter team name..."
+                    className="bg-white/5 border-white/10 text-white placeholder:text-zinc-600 focus:border-teal-500/50"
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setCreateDialogOpen(false)} className="rounded-lg">Cancel</Button>
+                <Button
+                  onClick={handleCreateTeam}
+                  disabled={isSubmitting}
+                  className="bg-teal-500 hover:bg-teal-600 text-black font-bold rounded-lg"
+                >
+                  {isSubmitting ? "Creating..." : "Create Team"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
 
@@ -705,500 +791,247 @@ export function TeamManagement({
           const isActive = pathname.includes(`/teams/dashboard/${team.id}`)
 
           return (
-            <Card key={team.id} className={cn(
-              "cursor-pointer transition-colors shadow-xs hover:shadow-md",
-              isActive
-                ? "border-primary ring-2 ring-primary/20"
-                : "hover:border-primary/50"
+            <Card key={team.id} variant="default" className={cn(
+              "group/team transition-all duration-500",
+              isActive && "ring-1 ring-teal-500/50 shadow-[0_0_40px_rgba(20,184,166,0.1)]"
             )}>
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <div className="flex items-center gap-4 min-w-0 flex-1">
                     <div className={cn(
-                      "rounded-full h-2 w-2 shrink-0",
-                      getStatusIndicator(access, isOwner)
-                    )} />
+                      "h-10 w-10 rounded-xl flex items-center justify-center text-white ring-1 ring-white/10 bg-white/5 group-hover/team:bg-teal-500/10 group-hover/team:ring-teal-500/30 transition-all",
+                      isActive && "bg-teal-500/20 ring-teal-500/50 text-teal-400"
+                    )}>
+                      <Building2 className="h-5 w-5" />
+                    </div>
                     <div className="min-w-0 flex-1">
                       <CardTitle className={cn(
-                        "text-sm truncate flex items-center gap-2",
-                        isActive && "text-primary"
+                        "text-lg font-bold truncate tracking-tight",
+                        isActive ? "text-teal-400" : "text-white"
                       )}>
                         {team.name}
-                        {isActive && (
-                          <Badge variant="default" className="text-[10px] px-1.5 py-0 h-4">
-                            {t('teams.management.active')}
-                          </Badge>
-                        )}
                       </CardTitle>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {getAccessLabel(access, isOwner)}
-                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge variant="outline" className={cn(
+                          "text-[10px] uppercase tracking-widest font-mono py-0 h-4 border-white/5 bg-white/5",
+                          isOwner ? "text-yellow-500 border-yellow-500/20" :
+                            access === 'admin' ? "text-blue-500 border-blue-500/20" :
+                              "text-zinc-500"
+                        )}>
+                          {getAccessLabel(access, isOwner)}
+                        </Badge>
+                        {isActive && (
+                          <span className="flex h-1.5 w-1.5 rounded-full bg-teal-500 animate-pulse" />
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="pt-0 space-y-3">
-                <div className="flex justify-between items-baseline text-sm">
-                  <span className="text-muted-foreground">{t('dashboard.teams.traders')}</span>
-                  <span className="font-medium">{team.traderIds.length}</span>
+
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-white/5 rounded-lg p-3 border border-white/5 group-hover/team:border-white/10 transition-colors">
+                    <span className="text-[10px] uppercase tracking-widest text-zinc-500 block mb-1">{t('dashboard.teams.traders')}</span>
+                    <span className="text-xl font-bold text-white">{team.traderIds.length}</span>
+                  </div>
+                  <div className="bg-white/5 rounded-lg p-3 border border-white/5 group-hover/team:border-white/10 transition-colors">
+                    <span className="text-[10px] uppercase tracking-widest text-zinc-500 block mb-1">{t('teams.management.created')}</span>
+                    <span className="text-xs font-mono text-zinc-400">{formatDate(team.createdAt)}</span>
+                  </div>
                 </div>
 
-                <div className="flex justify-between items-baseline text-sm">
-                  <span className="text-muted-foreground">{t('teams.management.created')}</span>
-                  <span className="text-xs">{formatDate(team.createdAt)}</span>
-                </div>
+                <div className="pt-2 flex gap-2">
+                  <Button
+                    asChild
+                    className={cn(
+                      "flex-1 font-bold rounded-lg transition-all",
+                      isActive
+                        ? "bg-teal-500 hover:bg-teal-600 text-black"
+                        : "bg-white/5 hover:bg-white/10 text-white border border-white/10"
+                    )}
+                  >
+                    <Link href={`/teams/dashboard/${team.id}`} className="flex items-center justify-center">
+                      <Eye className="h-4 w-4 mr-2" />
+                      {isActive ? "Viewing" : t('teams.dashboard.view')}
+                    </Link>
+                  </Button>
 
-                <Separator />
-
-                <div className="flex gap-2 flex-wrap">
-                  {/* Manage button - only for owners and admins */}
                   {(isOwner || access === 'admin') && (
                     <Button
                       variant="outline"
-                      size="sm"
-                      className="flex-1 text-xs"
-                      onClick={async () => {
-                        setSelectedTeam(team)
-                        setRenameTeamName(team.name)
-                        setManageDialogOpen(true)
-                        // Load pending invitations when dialog opens
-                        setTimeout(async () => {
-                          await loadPendingInvitations()
-                        }, 100)
+                      size="icon"
+                      className="w-10 h-10 rounded-lg border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/10 text-zinc-400 hover:text-white transition-all"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedTeam(team);
+                        setRenameTeamName(team.name);
+                        setManageDialogOpen(true);
+                        setTimeout(() => loadPendingInvitations(), 100);
                       }}
                     >
-                      <Settings className="h-3 w-3 mr-1" />
-                      {t('teams.management.manage')}
+                      <Settings className="h-4 w-4" />
                     </Button>
-                  )}
-
-                  {/* View button - for all team members (owners, admins, regular members, managed teams) */}
-                  {(isOwner || isJoined || isManaged) && (
-                    <Button
-                      asChild
-                      variant="outline"
-                      size="sm"
-                      className="flex-1 text-xs"
-                    >
-                      <Link href={`/teams/dashboard/${team.id}`} className="flex items-center">
-                        <Eye className="h-3 w-3 mr-1" />
-                        {t('teams.dashboard.view')}
-                      </Link>
-                    </Button>
-                  )}
-
-                  {/* Delete button - only for owners */}
-                  {isOwner && (
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="destructive" size="sm" className="flex-1 text-xs">
-                          <Trash2 className="h-3 w-3 mr-1" />
-                          {t('teams.management.delete')}
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent className="w-[95vw] sm:w-full">
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>{t('teams.management.deleteTeam')}</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            {t('teams.management.deleteConfirm').replace('{name}', team.name)}
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleDeleteTeam(team.id)}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                          >
-                            {t('teams.management.deleteTeam')}
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  )}
-
-                  {/* Leave button - for joined/managed teams that are not owners */}
-                  {(isJoined || isManaged) && !isOwner && (
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="outline" size="sm" className="flex-1 text-xs">
-                          <UserMinus className="h-3 w-3 mr-1" />
-                          {t('teams.management.leave')}
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent className="w-[95vw] sm:w-full">
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>{t('teams.management.leave')}</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            {t('teams.management.leaveConfirm')}
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleLeaveTeam(team.id)}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                          >
-                            {t('teams.management.leave')}
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
                   )}
                 </div>
               </CardContent>
             </Card>
           )
         })}
-
-        {/* Create New Team Card - only show if there's at least one team */}
-        {filteredTeams.length > 0 && (
-          <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
-            <DialogTrigger asChild>
-              <Card className="cursor-pointer transition-colors shadow-xs hover:shadow-md border-dashed border-2 border-muted-foreground/25 hover:border-primary/50">
-                <CardContent className="flex flex-col items-center justify-center h-48 p-6">
-                  <Plus className="h-12 w-12 text-muted-foreground mb-4" />
-                  <CardTitle className="text-lg text-center mb-2">
-                    {t('teams.management.component.createButtonText')}
-                  </CardTitle>
-                  <p className="text-sm text-muted-foreground text-center">
-                    {t('teams.management.createTeamDescription')}
-                  </p>
-                </CardContent>
-              </Card>
-            </DialogTrigger>
-            <DialogContent className="max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
-              <DialogHeader>
-                <DialogTitle>{t('teams.management.createTeamTitle')}</DialogTitle>
-                <DialogDescription>
-                  {t('teams.management.createTeamDialogDescription')}
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="team-name">{t('teams.management.teamName')}</Label>
-                  <Input
-                    id="team-name"
-                    value={newTeamName}
-                    onChange={(e) => setNewTeamName(e.target.value)}
-                    placeholder={t('teams.management.enterTeamName')}
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setCreateDialogOpen(false)}>
-                  {t('teams.management.cancel')}
-                </Button>
-                <Button onClick={handleCreateTeam} disabled={isSubmitting}>
-                  {isSubmitting ? t('teams.management.saving') : t('teams.management.createTeamTitle')}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        )}
       </div>
 
-      {/* Empty State */}
       {filteredTeams.length === 0 && (
-        <div className="text-center py-12">
-          <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">
-            {t('teams.management.component.emptyStateMessage')}
-          </h3>
-          <p className="text-muted-foreground mb-4">
-            {t('teams.management.getStarted')}
+        <div className="flex flex-col items-center justify-center py-24 text-center border-2 border-dashed border-white/5 rounded-3xl bg-white/[0.01]">
+          <div className="h-20 w-20 rounded-full bg-white/5 flex items-center justify-center mb-6">
+            <Users className="h-10 w-10 text-zinc-700" />
+          </div>
+          <h2 className="text-2xl font-bold text-white">No teams yet</h2>
+          <p className="text-zinc-500 mt-2 max-w-xs mx-auto">
+            Create a team to start managing multiple traders and accounts together.
           </p>
-          {(
-            <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  {t('teams.management.component.createButtonText')}
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
-                <DialogHeader>
-                  <DialogTitle>{t('teams.management.createTeamTitle')}</DialogTitle>
-                  <DialogDescription>
-                    {t('teams.management.createTeamDialogDescription')}
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="team-name">{t('teams.management.teamName')}</Label>
-                    <Input
-                      id="team-name"
-                      value={newTeamName}
-                      onChange={(e) => setNewTeamName(e.target.value)}
-                      placeholder={t('teams.management.enterTeamName')}
-                    />
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setCreateDialogOpen(false)}>
-                    {t('teams.management.cancel')}
-                  </Button>
-                  <Button onClick={handleCreateTeam} disabled={isSubmitting}>
-                    {isSubmitting ? t('teams.management.saving') : t('teams.management.startSubscription')}
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          )}
         </div>
       )}
 
-      {/* Manage Team Dialog */}
-      <Dialog open={manageDialogOpen} onOpenChange={(open) => {
-        setManageDialogOpen(open)
-        // Refresh data when dialog is closed to get updated manager IDs
-        if (!open) {
-          loadTeamData()
-        }
-      }}>
-        <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col w-[95vw] sm:w-full">
-          <DialogHeader className="shrink-0">
-            <DialogTitle>{t('teams.management.manageTitle').replace('{name}', selectedTeam?.name || '')}</DialogTitle>
-            <DialogDescription>
-              {t('teams.management.manageDescription')}
-            </DialogDescription>
+      {/* Management Dialog */}
+      <Dialog open={manageDialogOpen} onOpenChange={setManageDialogOpen}>
+        <DialogContent className="max-w-4xl bg-zinc-950 border-white/10 h-[90vh] overflow-hidden flex flex-col p-0">
+          <DialogHeader className="p-6 border-b border-white/5">
+            <DialogTitle className="text-2xl font-bold text-white flex items-center gap-3">
+              <Settings className="h-6 w-6 text-teal-400" />
+              Manage Team: {selectedTeam?.name}
+            </DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-6 overflow-y-auto flex-1 pr-2 -mr-2 px-1">
-            {/* Rename Team Section */}
-            <div>
-              <h4 className="font-medium mb-3">{t('teams.rename.title')}</h4>
-              <div className="flex gap-2">
-                <Input
-                  placeholder={t('teams.rename.placeholder')}
-                  value={renameTeamName}
-                  onChange={(e) => setRenameTeamName(e.target.value)}
-                  className="flex-1"
-                />
+          <div className="flex-1 overflow-y-auto p-6 space-y-8 no-scrollbar">
+            {/* Rename Section */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-bold uppercase tracking-widest text-zinc-500">Settings</h3>
+              <div className="flex gap-4 items-end">
+                <div className="flex-1 space-y-2">
+                  <Label htmlFor="rename" className="text-zinc-400">Team Name</Label>
+                  <Input
+                    id="rename"
+                    value={renameTeamName}
+                    onChange={(e) => setRenameTeamName(e.target.value)}
+                    className="bg-white/5 border-white/10 focus:border-teal-500/50"
+                  />
+                </div>
                 <Button
                   onClick={handleRenameTeam}
-                  disabled={isSubmitting || !renameTeamName.trim()}
-                  size="sm"
+                  disabled={isSubmitting}
+                  className="bg-white/10 hover:bg-white/20 text-white font-bold"
                 >
-                  {isSubmitting ? t('teams.management.saving') : t('teams.management.rename')}
+                  {isSubmitting ? "Saving..." : "Rename"}
                 </Button>
               </div>
             </div>
 
-            <Separator />
+            <Separator className="bg-white/5" />
 
-            {/* Traders Section */}
-            <div>
-              <h4 className="font-medium mb-3">{t('teams.traders')}</h4>
-
-              {/* Current Traders */}
-              <div className="mb-4">
-                <h5 className="text-sm font-medium text-muted-foreground mb-2">{t('teams.traders.current')}</h5>
-                <div className="space-y-2">
-                  {(selectedTeam?.traders.length || 0) === 0 ? (
-                    <p className="text-sm text-muted-foreground">{t('teams.traders.noTraders')}</p>
-                  ) : (
-                    <div className="space-y-1">
-                      {selectedTeam?.traders.map((trader: { id: string; email: string }) => (
-                        <div key={trader.id} className="flex items-center justify-between bg-muted/50 p-2 rounded-md text-sm">
-                          <span>{trader.email}</span>
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline">{t('teams.management.member')}</Badge>
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button variant="ghost" size="sm" className="h-6 w-6 p-0 hover:bg-destructive hover:text-destructive-foreground">
-                                  <UserMinus className="h-3 w-3" />
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent className="w-[95vw] sm:w-full">
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>{t('teams.management.removeTrader')}</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    {t('teams.management.removeTraderConfirm').replace('{email}', trader.email)}
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-                                  <AlertDialogAction
-                                    onClick={() => handleRemoveTrader(trader.id)}
-                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                  >
-                                    {t('teams.management.removeTraderAction')}
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Add New Trader */}
-              <div>
-                <h5 className="text-sm font-medium text-muted-foreground mb-2">{t('teams.traders.addNew')}</h5>
-                <p className="text-sm text-muted-foreground mb-3">
-                  {t('teams.traders.add.description')}
-                </p>
+            {/* Traders Management */}
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-bold uppercase tracking-widest text-zinc-500">Traders</h3>
                 <div className="flex gap-2">
                   <Input
-                    placeholder={t('teams.traders.add.placeholder')}
+                    placeholder="Trader email..."
                     value={newTraderEmail}
                     onChange={(e) => setNewTraderEmail(e.target.value)}
-                    className="flex-1"
+                    className="w-64 bg-white/5 border-white/10"
                   />
                   <Button
                     onClick={handleAddTrader}
-                    disabled={isSubmitting || !newTraderEmail.trim()}
-                    size="sm"
+                    disabled={isSubmitting}
+                    className="bg-teal-500 hover:bg-teal-600 text-black font-bold"
                   >
-                    {isSubmitting ? t('teams.management.saving') : <UserPlus className="h-4 w-4" />}
+                    Invite
                   </Button>
                 </div>
               </div>
 
-              {/* Pending Invitations */}
-              <div className="mt-4">
-                <h5 className="text-sm font-medium text-muted-foreground mb-2">{t('teams.invitations.pending')}</h5>
-                {pendingInvitations.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">{t('teams.management.noPendingInvitations')}</p>
-                ) : (
-                  <div className="space-y-1">
-                    {pendingInvitations.map((invitation) => (
-                      <div key={invitation.id} className="flex items-center justify-between bg-muted/50 p-2 rounded-md text-sm">
-                        <span>{invitation.email}</span>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline">{t('teams.management.pending')}</Badge>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button variant="ghost" size="sm" className="h-6 w-6 p-0 hover:bg-destructive hover:text-destructive-foreground">
-                                <XCircle className="h-3 w-3" />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent className="w-[95vw] sm:w-full">
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>{t('teams.management.cancelInvitation')}</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  {t('teams.management.cancelInvitationConfirm').replace('{email}', invitation.email)}
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => handleCancelInvitation(invitation.id)}
-                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                >
-                                  {t('teams.management.cancelInvitationAction')}
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
+              <div className="grid gap-3">
+                {selectedTeam?.traders.map((trader) => (
+                  <div key={trader.id} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5 group/trader">
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-lg bg-zinc-800 flex items-center justify-center text-xs font-bold text-zinc-400 font-mono">
+                        {trader.email[0].toUpperCase()}
                       </div>
-                    ))}
+                      <span className="text-sm text-zinc-300">{trader.email}</span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      onClick={() => handleRemoveTrader(trader.id)}
+                      className="text-zinc-600 hover:text-red-400 hover:bg-red-500/10 h-8 w-8 p-0"
+                    >
+                      <UserMinus className="h-4 w-4" />
+                    </Button>
                   </div>
+                ))}
+
+                {pendingInvitations.map((inv) => (
+                  <div key={inv.id} className="flex items-center justify-between p-3 rounded-xl bg-teal-500/5 border border-teal-500/10">
+                    <div className="flex items-center gap-3">
+                      <span className="flex h-2 w-2 rounded-full bg-teal-500 animate-pulse" />
+                      <span className="text-sm text-teal-400">{inv.email}</span>
+                      <Badge variant="outline" className="text-[10px] py-0 border-teal-500/20 text-teal-500">PENDING</Badge>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      onClick={() => handleCancelInvitation(inv.id)}
+                      className="text-zinc-600 hover:text-red-400 hover:bg-red-500/10 h-8 w-8 p-0"
+                    >
+                      <XCircle className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+
+                {!selectedTeam?.traders.length && !pendingInvitations.length && (
+                  <div className="text-center py-8 text-zinc-600 text-sm">No traders in this team yet.</div>
                 )}
               </div>
             </div>
 
-            <Separator />
+            <Separator className="bg-white/5" />
 
-            {/* Managers Section */}
-            <div>
-              <h4 className="font-medium mb-3">{t('teams.managers')}</h4>
-
-              {/* Current Managers */}
-              <div className="mb-4">
-                <h5 className="text-sm font-medium text-muted-foreground mb-2">{t('teams.managers.current')}</h5>
-                <div className="space-y-2">
-                  {(selectedTeam?.managers.length || 0) === 0 ? (
-                    <p className="text-sm text-muted-foreground">{t('teams.managers.noManagers')}</p>
-                  ) : (
-                    <div className="space-y-1">
-                      {selectedTeam?.managers.map((manager) => (
-                        <div key={manager.id} className="flex items-center justify-between bg-muted/50 p-2 rounded-md text-sm">
-                          <span>{manager.email}</span>
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline">
-                              {manager.access === 'admin' ? t('dashboard.teams.admin') : t('dashboard.teams.viewer')}
-                            </Badge>
-                            <Select
-                              value={manager.access}
-                              onValueChange={(value: 'admin' | 'viewer') => handleUpdateManagerAccess(manager.managerId, value)}
-                            >
-                              <SelectTrigger className="w-20 h-6 text-xs">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="viewer">{t('dashboard.teams.viewer')}</SelectItem>
-                                <SelectItem value="admin">{t('dashboard.teams.admin')}</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button variant="ghost" size="sm" className="h-6 w-6 p-0 hover:bg-destructive hover:text-destructive-foreground">
-                                  <UserMinus className="h-3 w-3" />
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent className="w-[95vw] sm:w-full">
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>{t('teams.management.removeManager')}</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    {t('teams.management.removeManagerConfirm').replace('{email}', manager.email)}
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-                                  <AlertDialogAction
-                                    onClick={() => handleRemoveManager(manager.managerId)}
-                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                  >
-                                    {t('teams.management.removeManagerAction')}
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+            {/* Danger Zone */}
+            <div className="space-y-4 pt-4">
+              <h3 className="text-sm font-bold uppercase tracking-widest text-red-500/50">Danger Zone</h3>
+              <div className="p-6 rounded-2xl border border-red-500/10 bg-red-500/5 flex items-center justify-between">
+                <div>
+                  <h4 className="font-bold text-white">Delete Team</h4>
+                  <p className="text-sm text-zinc-500">All data and relationships will be permanently removed.</p>
                 </div>
-              </div>
-
-              {/* Add New Manager */}
-              <div>
-                <h5 className="text-sm font-medium text-muted-foreground mb-2">{t('teams.managers.addNew')}</h5>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder={t('dashboard.teams.managerEmail')}
-                    value={newManagerEmail}
-                    onChange={(e) => setNewManagerEmail(e.target.value)}
-                    className="flex-1"
-                  />
-                  <Select value={newManagerAccess} onValueChange={(value: 'admin' | 'viewer') => setNewManagerAccess(value)}>
-                    <SelectTrigger className="w-32">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="viewer">{t('dashboard.teams.viewer')}</SelectItem>
-                      <SelectItem value="admin">{t('dashboard.teams.admin')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Button onClick={handleAddManager} disabled={isSubmitting}>
-                    {isSubmitting ? t('teams.management.saving') : <UserPlus className="h-4 w-4" />}
-                  </Button>
-                </div>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" className="font-bold">Delete permanently</Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="bg-zinc-950 border-white/10">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle className="text-white">Absolutly sure?</AlertDialogTitle>
+                      <AlertDialogDescription className="text-zinc-500">
+                        This will permanently delete the team "{selectedTeam?.name}" and all trader connections.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel className="rounded-lg">Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => selectedTeam && handleDeleteTeam(selectedTeam.id)}
+                        className="bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg"
+                      >
+                        Delete Team
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </div>
           </div>
 
-          <DialogFooter className="shrink-0 mt-4">
-            <Button variant="outline" onClick={() => setManageDialogOpen(false)}>
-              {t('teams.management.close')}
+          <div className="p-6 border-t border-white/5 bg-zinc-950">
+            <Button onClick={() => setManageDialogOpen(false)} className="w-full bg-white/5 hover:bg-white/10 text-white font-bold">
+              Close Settings
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

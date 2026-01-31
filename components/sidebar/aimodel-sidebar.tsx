@@ -86,6 +86,7 @@ export function AIModelSidebar() {
             if (pathname.includes('analytics')) setActiveTab('Team Analytics');
             else if (pathname.includes('traders')) setActiveTab('Team Traders');
             else if (pathname.includes('members')) setActiveTab('Team Members');
+            else if (pathname.endsWith('/teams/dashboard') || pathname.endsWith('/teams/dashboard/')) setActiveTab('All Teams');
             else setActiveTab('Team Overview');
         }
 
@@ -124,10 +125,11 @@ export function AIModelSidebar() {
             groups.push({
                 title: 'Team Management',
                 items: [
-                    { label: 'Team Overview', href: slug ? `/teams/dashboard/${slug}` : "/teams/dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
+                    { label: 'All Teams', href: '/teams/dashboard', icon: <Building2 className="w-5 h-5" /> },
+                    { label: 'Team Overview', href: slug ? `/teams/dashboard/${slug}` : "/teams/dashboard", icon: <LayoutDashboard className="w-5 h-5" />, disabled: !slug },
                     { label: 'Team Analytics', href: slug ? `/teams/dashboard/${slug}/analytics` : "/teams/dashboard", icon: <BarChart3 className="w-5 h-5" />, disabled: !slug },
                     { label: 'Team Traders', href: slug ? `/teams/dashboard/${slug}/traders` : "/teams/dashboard", icon: <TrendingUp className="w-5 h-5" />, disabled: !slug },
-                    { label: 'Team Members', href: slug ? `/teams/dashboard/${slug}/members` : "/teams/manage", icon: <Users className="w-5 h-5" /> },
+                    { label: 'Team Members', href: slug ? `/teams/dashboard/${slug}/members` : "/teams/manage", icon: <Users className="w-5 h-5" />, disabled: !slug },
                 ]
             });
         } else {

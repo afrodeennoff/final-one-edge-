@@ -12,14 +12,14 @@ const HowItWorks: React.FC = () => {
     ];
 
     return (
-        <section id="how-it-works" className="py-32 px-6 bg-[#050505] relative overflow-hidden border-t border-white/5">
-            <div className="max-w-7xl mx-auto">
+        <section id="how-it-works" className="py-fluid-xl px-fluid-sm bg-[#050505] relative overflow-hidden border-t border-white/5">
+            <div className="container-fluid">
                 <div className="text-center mb-24 relative z-10">
                     <motion.h2
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="text-4xl md:text-5xl font-bold tracking-tighter mb-4 text-white"
+                        className="text-fluid-2xl md:text-fluid-4xl font-bold tracking-tighter mb-fluid-xs text-white"
                     >
                         The Optimization Pipeline
                     </motion.h2>

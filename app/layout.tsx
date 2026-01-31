@@ -109,8 +109,8 @@ export async function generateMetadata({
     // ---------- OTHER ----------
     other: { google: "notranslate" },
     authors: [{ name: "TIMON" }],
-      creator: "TIMON",
-      publisher: "TIMON",
+    creator: "TIMON",
+    publisher: "TIMON",
     formatDetection: { email: false, address: false, telephone: false },
   };
 }
@@ -130,17 +130,22 @@ export default async function RootLayout({
       style={{ ["--theme-intensity" as string]: "100%" }}
     >
       <head>
-        {/* Responsive Meta Tags */}
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximumScale=5, userScalable=yes, viewport-fit=cover" />
+        {/* Resource Hinting for Performance */}
+        <link rel="dns-prefetch" href="https://qunt-edge.vercel.app" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+
+        {/* Mobile-First Meta Tags */}
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
+        <meta name="theme-color" content="#040404" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="format-detection" content="telephone=no, address=no, email=no" />
 
-        {/* Prevent Google Translate */}
+        {/* Accessibility & SEO */}
         <meta name="google" content="notranslate" />
-        <meta name="googlebot" content="notranslate" />
-        <meta name="googlebot-news" content="notranslate" />
+        <meta name="robots" content="index, follow" />
 
         {/* Apply stored theme before paint to avoid blank flash */}
         <Script id="init-theme" strategy="beforeInteractive">

@@ -4,9 +4,9 @@ import { motion } from 'framer-motion';
 
 const Qualification: React.FC = () => {
     return (
-        <section className="py-32 px-6 border-t border-white/5 bg-[#050505]">
-            <div className="max-w-6xl mx-auto">
-                <div className="grid md:grid-cols-2 gap-2 bg-white/5 border border-white/5 p-2 rounded-sm overflow-hidden">
+        <section className="py-fluid-xl px-fluid-sm border-t border-white/5 bg-[#050505]">
+            <div className="container-fluid">
+                <div className="grid md:grid-cols-2 gap-2 bg-white/5 border border-white/5 p-1 md:p-2 rounded-sm overflow-hidden">
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
