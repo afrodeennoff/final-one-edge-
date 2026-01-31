@@ -1,6 +1,6 @@
 "use client"
 
-import React, { createContext, useContext, useState, useCallback, useMemo } from 'react'
+import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react'
 import { useUserStore } from '@/store/user-store'
 import { useData } from '@/context/data-provider'
 import { useI18n } from "@/locales/client"
@@ -10,6 +10,10 @@ import { toast } from "sonner"
 import { defaultLayouts } from "@/lib/default-layouts"
 import { Prisma, DashboardLayout } from "@/prisma/generated/prisma"
 import { DashboardLayoutWithWidgets } from '@/store/user-store'
+import { widgetStorageService, StorageResult } from '@/lib/widget-storage-service'
+import { optimisticWidgetManager, WidgetLayoutChange } from '@/lib/widget-optimistic-updates'
+import { widgetConflictResolver, ConflictResolution } from '@/lib/widget-conflict-resolution'
+import { widgetMigrationService } from '@/lib/widget-migration-service'
 
 // --- Helper Functions (Moved from WidgetCanvas) ---
 
@@ -60,18 +64,22 @@ interface DashboardContextType {
     layouts: DashboardLayoutWithWidgets | null
     currentLayout: Widget[]
     activeLayout: 'desktop' | 'mobile'
+    saveStatus: 'idle' | 'saving' | 'saved' | 'error'
+    lastSaveTime: Date | null
 
     // Actions
-    addWidget: (type: WidgetType, size?: WidgetSize) => void
-    removeWidget: (id: string) => void
-    changeWidgetType: (id: string, newType: WidgetType) => void
-    changeWidgetSize: (id: string, newSize: WidgetSize) => void
-    removeAllWidgets: () => void
-    restoreDefaultLayout: () => void
+    addWidget: (type: WidgetType, size?: WidgetSize) => Promise<void>
+    removeWidget: (id: string) => Promise<void>
+    changeWidgetType: (id: string, newType: WidgetType) => Promise<void>
+    changeWidgetSize: (id: string, newSize: WidgetSize) => Promise<void>
+    removeAllWidgets: () => Promise<void>
+    restoreDefaultLayout: () => Promise<void>
     handleLayoutChange: (layout: LayoutItem[]) => void
+    syncLayout: () => Promise<void>
 
     // Helpers
     isMobile: boolean
+    isSaving: boolean
 }
 
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined)
