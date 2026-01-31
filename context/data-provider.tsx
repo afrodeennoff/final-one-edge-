@@ -416,8 +416,8 @@ export const DataProvider: React.FC<{
       }
 
       if (adminView) {
-        const trades = await getTradesAction(adminView.userId as string, false);
-        setTrades(trades as PrismaTrade[]);
+        const paginatedTrades = await getTradesAction(adminView.userId as string, 1, 50, false);
+        setTrades(paginatedTrades.trades as PrismaTrade[]);
         // RESET ALL OTHER STATES
         setUser(null);
         setSubscription(null);
@@ -481,16 +481,16 @@ export const DataProvider: React.FC<{
         if (cachedTrades && Array.isArray(cachedTrades) && cachedTrades.length > 0) {
           setTrades(cachedTrades);
         } else {
-          const trades = await getTradesAction(userId, false);
-          const safeTrades = Array.isArray(trades) ? trades : [];
+          const paginatedTrades = await getTradesAction(userId, 1, 50, false);
+          const safeTrades = Array.isArray(paginatedTrades.trades) ? paginatedTrades.trades : [];
           setTrades(safeTrades);
           setTradesCache(userId, safeTrades).catch((err) =>
             console.error("[DataProvider] Failed to cache trades in IndexedDB (loadData)", err),
           );
         }
       } else {
-        const trades = await getTradesAction();
-        setTrades(Array.isArray(trades) ? trades : []);
+        const paginatedTrades = await getTradesAction();
+        setTrades(Array.isArray(paginatedTrades.trades) ? paginatedTrades.trades : []);
       }
 
       // Step 3: Fetch user data
@@ -616,8 +616,8 @@ export const DataProvider: React.FC<{
           }
         }
 
-        const trades = await getTradesAction(userId, force);
-        const safeTrades = Array.isArray(trades) ? trades : [];
+        const paginatedTrades = await getTradesAction(userId, 1, 50, force);
+        const safeTrades = Array.isArray(paginatedTrades.trades) ? paginatedTrades.trades : [];
         setTrades(safeTrades);
 
         if (process.env.NODE_ENV === "development") {
