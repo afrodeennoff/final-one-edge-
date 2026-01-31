@@ -10,6 +10,7 @@ import { toast } from "sonner"
 import { defaultLayouts } from "@/lib/default-layouts"
 import { DashboardLayoutWithWidgets } from '@/store/user-store'
 import { useAutoSave } from '@/hooks/use-auto-save'
+import type { Prisma } from '@/prisma/generated/prisma'
 
 // --- Helper Functions (Moved from WidgetCanvas) ---
 

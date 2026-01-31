@@ -5,6 +5,11 @@ import { Prisma } from "@/prisma/generated/prisma";
 import { User as SupabaseUser } from "@supabase/supabase-js";
 import { Group, Account } from "@/context/data-provider";
 import { Widget } from "@/app/[locale]/dashboard/types/dashboard";
+
+// Re-export Widget types for use in other modules
+export type { Widget };
+export type { WidgetType, WidgetSize, LayoutItem, Layouts, LayoutState } from "@/app/[locale]/dashboard/types/dashboard";
+
 import {
   deleteGroupAction,
   saveGroupAction,
@@ -26,6 +31,7 @@ export type DashboardLayoutWithWidgets = {
   userId: string;
   desktop: Widget[];
   mobile: Widget[];
+  version?: number;
   createdAt: Date;
   updatedAt: Date;
 };

@@ -150,7 +150,9 @@ export class AutoSaveService {
         
         if (this.saveHistory.size > 100) {
           const oldestKey = this.saveHistory.keys().next().value
-          this.saveHistory.delete(oldestKey)
+          if (oldestKey !== undefined) {
+            this.saveHistory.delete(oldestKey)
+          }
         }
 
         logger.info('[AutoSave] Layout saved successfully', {

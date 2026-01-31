@@ -29,7 +29,6 @@ export type WidgetType =
   | 'tradingScore'
   | 'expectancy'
   | 'riskMetrics'
-// | 'marketChart'
 export type WidgetSize = 'tiny' | 'small' | 'small-long' | 'medium' | 'large' | 'extra-large'
 
 export interface LayoutItem {
@@ -44,6 +43,10 @@ export interface Widget extends LayoutItem {
   type: WidgetType
   size: WidgetSize
   static?: boolean
+  minW?: number
+  minH?: number
+  maxW?: number
+  maxH?: number
 }
 
 export interface Layouts {

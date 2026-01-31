@@ -1,0 +1,65 @@
+
+> quntedge@0.3 typecheck
+> tsc --noEmit
+
+app/[locale]/dashboard/config/widget-registry.tsx(350,14): error TS2739: Type '{ weekdayPnlChart: { type: "weekdayPnlChart"; defaultSize: "medium"; allowedSizes: ("small" | "small-long" | "medium" | "large" | "extra-large")[]; category: "charts"; previewHeight: number; getComponent: ({ size }: { ...; }) => Element; getPreview: () => Element; }; ... 28 more ...; riskMetrics: { ...; }; }' is missing the following properties from type 'Record<WidgetType, WidgetConfig>': chart, statistics, calendar, mindset, tradeJournal
+app/[locale]/dashboard/dashboard-context-auto-save.tsx(15,62): error TS2304: Cannot find name 'DashboardLayout'.
+app/[locale]/dashboard/dashboard-context-auto-save.tsx(106,38): error TS2304: Cannot find name 'DashboardLayout'.
+app/[locale]/dashboard/dashboard-context-auto-save.tsx(109,27): error TS1345: An expression of type 'void' cannot be tested for truthiness.
+app/[locale]/dashboard/dashboard-context-auto-save.tsx(110,24): error TS2358: The left-hand side of an 'instanceof' expression must be of type 'any', an object type or a type parameter.
+app/[locale]/dashboard/dashboard-context.tsx(17,62): error TS2304: Cannot find name 'DashboardLayout'.
+app/[locale]/dashboard/dashboard-context.tsx(116,27): error TS1345: An expression of type 'void' cannot be tested for truthiness.
+app/[locale]/dashboard/dashboard-context.tsx(117,24): error TS2358: The left-hand side of an 'instanceof' expression must be of type 'any', an object type or a type parameter.
+lib/__tests__/auto-save-service.test.ts(1,65): error TS2307: Cannot find module 'vitest' or its corresponding type declarations.
+lib/__tests__/auto-save-service.test.ts(2,27): error TS2459: Module '"../auto-save-service"' declares 'OfflineQueueManager' locally, but it is not exported.
+lib/__tests__/auto-save-service.test.ts(12,9): error TS2739: Type '{ desktop: never[]; mobile: never[]; userId: string; id: string; createdAt: Date; updatedAt: Date; }' is missing the following properties from type '{ desktop: JsonValue; mobile: JsonValue; version: number; id: string; createdAt: Date; updatedAt: Date; userId: string; checksum: string | null; deviceId: string | null; }': version, checksum, deviceId
+lib/__tests__/auto-save-service.test.ts(72,21): error TS2322: Type '(value: unknown) => void' is not assignable to type '() => void'.
+  Target signature provides too few arguments. Expected 1 or more, but got 0.
+lib/__tests__/auto-save-service.test.ts(412,21): error TS2322: Type '(value: unknown) => void' is not assignable to type '() => void'.
+  Target signature provides too few arguments. Expected 1 or more, but got 0.
+lib/database-health-check.ts(19,7): error TS2353: Object literal may only specify known properties, and 'family' does not exist in type 'ClientConfig'.
+lib/widget-conflict-resolution.ts(119,49): error TS2339: Property 'updatedAt' does not exist on type 'Widget'.
+lib/widget-conflict-resolution.ts(120,48): error TS2339: Property 'updatedAt' does not exist on type 'Widget'.
+lib/widget-encryption.ts(38,9): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(algorithm: AlgorithmIdentifier | EcdhKeyDeriveParams | HkdfParams | Pbkdf2Params, baseKey: CryptoKey, derivedKeyType: AlgorithmIdentifier | ... 3 more ... | AesDerivedKeyParams, extractable: boolean, keyUsages: Iterable<...>): Promise<...>', gave the following error.
+    Type 'Uint8Array<ArrayBufferLike>' is not assignable to type 'BufferSource'.
+      Type 'Uint8Array<ArrayBufferLike>' is not assignable to type 'ArrayBufferView<ArrayBuffer>'.
+        Types of property 'buffer' are incompatible.
+          Type 'ArrayBufferLike' is not assignable to type 'ArrayBuffer'.
+            Type 'SharedArrayBuffer' is missing the following properties from type 'ArrayBuffer': resizable, resize, detached, transfer, transferToFixedLength
+  Overload 2 of 2, '(algorithm: AlgorithmIdentifier | EcdhKeyDeriveParams | HkdfParams | Pbkdf2Params, baseKey: CryptoKey, derivedKeyType: AlgorithmIdentifier | ... 3 more ... | AesDerivedKeyParams, extractable: boolean, keyUsages: KeyUsage[]): Promise<...>', gave the following error.
+    Type 'Uint8Array<ArrayBufferLike>' is not assignable to type 'BufferSource'.
+      Type 'Uint8Array<ArrayBufferLike>' is not assignable to type 'ArrayBufferView<ArrayBuffer>'.
+        Types of property 'buffer' are incompatible.
+          Type 'ArrayBufferLike' is not assignable to type 'ArrayBuffer'.
+            Type 'SharedArrayBuffer' is missing the following properties from type 'ArrayBuffer': resizable, resize, detached, transfer, transferToFixedLength
+lib/widget-encryption.ts(181,9): error TS2322: Type 'any' is not assignable to type 'never'.
+lib/widget-encryption.ts(198,11): error TS2322: Type 'any' is not assignable to type 'never'.
+lib/widget-migration-service.ts(82,9): error TS2353: Object literal may only specify known properties, and 'schemaVersion' does not exist in type '{ id: string; userId: string; desktop: Widget[]; mobile: Widget[]; version?: number | undefined; createdAt: Date; updatedAt: Date; }'.
+lib/widget-optimistic-updates.ts(167,28): error TS2345: Argument of type '(() => Promise<T>)[]' is not assignable to parameter of type 'T[]'.
+  Type '() => Promise<T>' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to '() => Promise<T>'.
+lib/widget-optimistic-updates.ts(169,7): error TS2322: Type '(() => Promise<T>)[]' is not assignable to type 'T[]'.
+  Type '() => Promise<T>' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to '() => Promise<T>'.
+lib/widget-persistence-manager.ts(229,34): error TS7053: Element implicitly has an 'any' type because expression of type '"loadFromDatabase"' can't be used to index type 'WidgetStorageService'.
+  Property 'loadFromDatabase' does not exist on type 'WidgetStorageService'.
+lib/widget-storage-service.ts(155,5): error TS2739: Type '{ desktop: JsonArray; mobile: JsonArray; id: string; userId: string; version?: number | undefined; createdAt: Date; updatedAt: Date; }' is missing the following properties from type '{ desktop: JsonValue; mobile: JsonValue; version: number; id: string; createdAt: Date; updatedAt: Date; userId: string; checksum: string | null; deviceId: string | null; }': checksum, deviceId
+lib/widget-storage-service.ts(265,41): error TS2352: Conversion of type '{ desktop: JsonValue; mobile: JsonValue; version: number; id: string; createdAt: Date; updatedAt: Date; userId: string; checksum: string | null; deviceId: string | null; }' to type 'DashboardLayoutWithWidgets' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Types of property 'desktop' are incompatible.
+    Type 'JsonValue' is not comparable to type 'Widget[]'.
+      Type 'JsonArray' is not comparable to type 'Widget[]'.
+        Type 'JsonValue' is not comparable to type 'Widget'.
+          Type 'JsonValue[]' is missing the following properties from type 'Widget': type, size, i, x, and 3 more.
+lib/widget-storage-service.ts(266,16): error TS2352: Conversion of type '{ desktop: JsonValue; mobile: JsonValue; version: number; id: string; createdAt: Date; updatedAt: Date; userId: string; checksum: string | null; deviceId: string | null; }' to type 'DashboardLayoutWithWidgets' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Types of property 'desktop' are incompatible.
+    Type 'JsonValue' is not comparable to type 'Widget[]'.
+      Type 'JsonArray' is not comparable to type 'Widget[]'.
+        Type 'JsonValue' is not comparable to type 'Widget'.
+          Type 'JsonValue[]' is missing the following properties from type 'Widget': type, size, i, x, and 3 more.
+lib/widget-validator.ts(149,10): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'Record<WidgetType, WidgetConfig>'.
+lib/widget-validator.ts(183,20): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'Record<WidgetType, WidgetConfig>'.
+lib/widget-version-service.ts(173,7): error TS2322: Type '{ id: string; version: number; desktop: unknown; mobile: unknown; checksum: string; description?: string | undefined; deviceId: string; changeType: string; createdAt: Date; }[]' is not assignable to type 'LayoutVersion[]'.
+  Type '{ id: string; version: number; desktop: unknown; mobile: unknown; checksum: string; description?: string | undefined; deviceId: string; changeType: string; createdAt: Date; }' is not assignable to type 'LayoutVersion'.
+    Types of property 'desktop' are incompatible.
+      Type 'unknown' is not assignable to type 'Widget[]'.

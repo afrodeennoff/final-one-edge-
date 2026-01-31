@@ -23,12 +23,36 @@ export interface ValidationWarning {
 
 class WidgetValidator {
   private readonly VALID_WIDGET_TYPES: WidgetType[] = [
-    'chart',
-    'statistics',
-    'calendar',
-    'mindset',
-    'riskMetrics',
-    'tradeJournal'
+    'equityChart',
+    'pnlChart',
+    'timeOfDayChart',
+    'timeInPositionChart',
+    'weekdayPnlChart',
+    'pnlBySideChart',
+    'pnlPerContractChart',
+    'pnlPerContractDailyChart',
+    'tickDistribution',
+    'dailyTickTarget',
+    'commissionsPnl',
+    'calendarWidget',
+    'averagePositionTime',
+    'cumulativePnl',
+    'longShortPerformance',
+    'tradePerformance',
+    'winningStreak',
+    'profitFactor',
+    'statisticsWidget',
+    'tradeTableReview',
+    'chatWidget',
+    'tradeDistribution',
+    'propFirm',
+    'timeRangePerformance',
+    'tagWidget',
+    'riskRewardRatio',
+    'mindsetWidget',
+    'tradingScore',
+    'expectancy',
+    'riskMetrics'
   ]
 
   private readonly VALID_SIZES: WidgetSize[] = [
