@@ -97,9 +97,8 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     }, [layouts, activeLayout])
 
     const handleLayoutChange = useCallback((layout: LayoutItem[]) => {
-        // We need layouts and a user ID to save
         const userId = user?.id || supabaseUser?.id
-        if (!userId || !isCustomizing || !setLayouts || !layouts) return
+        if (!userId || !setLayouts || !layouts) return
 
         console.log('[DashboardContext] handleLayoutChange', layout)
 
@@ -126,14 +125,19 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
                 updatedAt: new Date()
             })
 
-            saveDashboardLayout(toPrismaLayout(updatedLayouts))
+            saveDashboardLayout(toPrismaLayout(updatedLayouts)).catch((error) => {
+                console.error('[DashboardContext] Failed to save layout:', error)
+                toast.error(t('widgets.saveError'), { 
+                    description: error instanceof Error ? error.message : t('widgets.saveErrorDescription') 
+                })
+            })
 
             if (isUserAction) setIsUserAction(false)
         } catch (error) {
             console.error('Error updating layout:', error)
             setLayouts(layouts)
         }
-    }, [user?.id, supabaseUser?.id, isCustomizing, setLayouts, layouts, activeLayout, isMobile, isUserAction, saveDashboardLayout])
+    }, [user?.id, supabaseUser?.id, setLayouts, layouts, activeLayout, isMobile, isUserAction, saveDashboardLayout, t])
 
     const addWidget = useCallback(async (type: WidgetType, size: WidgetSize = 'medium') => {
         const userId = user?.id || supabaseUser?.id
@@ -203,22 +207,38 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
         setLayouts(newLayouts)
 
         if (userId) {
-            await saveDashboardLayout(toPrismaLayout(newLayouts))
+            try {
+                await saveDashboardLayout(toPrismaLayout(newLayouts))
+            } catch (error) {
+                console.error('[DashboardContext] Failed to save layout after removing widget:', error)
+                toast.error(t('widgets.saveError'), { 
+                    description: error instanceof Error ? error.message : t('widgets.saveErrorDescription') 
+                })
+            }
         }
-    }, [user?.id, supabaseUser?.id, layouts, activeLayout, setLayouts, saveDashboardLayout])
+    }, [user?.id, supabaseUser?.id, layouts, activeLayout, setLayouts, saveDashboardLayout, t])
 
     const changeWidgetType = useCallback(async (i: string, newType: WidgetType) => {
-        if (!user?.id || !layouts) return
+        const userId = user?.id || supabaseUser?.id
+        if (!userId || !layouts) return
         const updatedWidgets = layouts[activeLayout].map(widget =>
             widget.i === i ? { ...widget, type: newType } : widget
         )
         const newLayouts = { ...layouts, [activeLayout]: updatedWidgets, updatedAt: new Date() }
         setLayouts(newLayouts)
-        await saveDashboardLayout(toPrismaLayout(newLayouts))
-    }, [user?.id, layouts, activeLayout, setLayouts, saveDashboardLayout])
+        try {
+            await saveDashboardLayout(toPrismaLayout(newLayouts))
+        } catch (error) {
+            console.error('[DashboardContext] Failed to save layout after changing widget type:', error)
+            toast.error(t('widgets.saveError'), { 
+                description: error instanceof Error ? error.message : t('widgets.saveErrorDescription') 
+            })
+        }
+    }, [user?.id, supabaseUser?.id, layouts, activeLayout, setLayouts, saveDashboardLayout, t])
 
     const changeWidgetSize = useCallback(async (i: string, newSize: WidgetSize) => {
-        if (!user?.id || !layouts) return
+        const userId = user?.id || supabaseUser?.id
+        if (!userId || !layouts) return
         const widget = layouts[activeLayout].find(w => w.i === i)
         if (!widget) return
 
@@ -232,17 +252,26 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
         const newLayouts = { ...layouts, [activeLayout]: updatedWidgets, updatedAt: new Date() }
         setLayouts(newLayouts)
         await saveDashboardLayout(toPrismaLayout(newLayouts))
-    }, [user?.id, layouts, activeLayout, setLayouts, saveDashboardLayout])
+    }, [user?.id, supabaseUser?.id, layouts, activeLayout, setLayouts, saveDashboardLayout])
 
     const removeAllWidgets = useCallback(async () => {
-        if (!user?.id || !layouts) return
+        const userId = user?.id || supabaseUser?.id
+        if (!userId || !layouts) return
         const newLayouts = { ...layouts, desktop: [], mobile: [], updatedAt: new Date() }
         setLayouts(newLayouts)
-        await saveDashboardLayout(toPrismaLayout(newLayouts))
-    }, [user?.id, layouts, setLayouts, saveDashboardLayout])
+        try {
+            await saveDashboardLayout(toPrismaLayout(newLayouts))
+        } catch (error) {
+            console.error('[DashboardContext] Failed to save layout after removing all widgets:', error)
+            toast.error(t('widgets.saveError'), { 
+                description: error instanceof Error ? error.message : t('widgets.saveErrorDescription') 
+            })
+        }
+    }, [user?.id, supabaseUser?.id, layouts, setLayouts, saveDashboardLayout, t])
 
     const restoreDefaultLayout = useCallback(async () => {
-        if (!user?.id || !layouts) return
+        const userId = user?.id || supabaseUser?.id
+        if (!userId || !layouts) return
         const newLayouts = {
             ...layouts,
             desktop: defaultLayouts.desktop as unknown as Widget[],
@@ -252,7 +281,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
         setLayouts(newLayouts)
         await saveDashboardLayout(toPrismaLayout(newLayouts))
         toast.success(t('widgets.restoredDefaultsTitle'), { description: t('widgets.restoredDefaultsDescription') })
-    }, [user?.id, layouts, setLayouts, saveDashboardLayout, t])
+    }, [user?.id, supabaseUser?.id, layouts, setLayouts, saveDashboardLayout, t])
 
     return (
         <DashboardContext.Provider value={{

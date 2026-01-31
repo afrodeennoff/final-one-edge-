@@ -636,6 +636,9 @@ export default {
   "widgets.removeWidgetConfirm": "Are you sure?",
   "widgets.removeWidgetDescription":
     "This will remove the widget from your dashboard. You can add it back later if needed.",
+  "widgets.saveError": "Save Error",
+  "widgets.saveErrorDescription":
+    "Failed to save widget changes. Please try again.",
   "widgets.dragToMove": "Drag to move",
   "widgets.changeSize": "Change Size",
   "widgets.clickToAdd": "Click to add",

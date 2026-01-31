@@ -1593,7 +1593,8 @@ export const DataProvider: React.FC<{
 
   const saveDashboardLayout = useCallback(
     async (layout: PrismaDashboardLayout) => {
-      if (!supabaseUser?.id) return;
+      const userId = user?.id || supabaseUser?.id;
+      if (!userId) return;
 
       try {
         setDashboardLayout(layout as unknown as DashboardLayoutWithWidgets);
@@ -1607,7 +1608,7 @@ export const DataProvider: React.FC<{
         throw error;
       }
     },
-    [supabaseUser?.id, setDashboardLayout]
+    [user?.id, supabaseUser?.id, setDashboardLayout]
   );
 
   const contextValue: DataContextType = {

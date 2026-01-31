@@ -637,6 +637,9 @@ export default {
   "widgets.removeWidgetConfirm": "Êtes-vous sûr ?",
   "widgets.removeWidgetDescription":
     "Cela supprimera le widget de votre tableau de bord. Vous pourrez le rajouter plus tard si nécessaire.",
+  "widgets.saveError": "Erreur de sauvegarde",
+  "widgets.saveErrorDescription":
+    "Échec de la sauvegarde des modifications du widget. Veuillez réessayer.",
   "widgets.dragToMove": "Glisser pour déplacer",
   "widgets.changeSize": "Changer la taille",
   "widgets.clickToAdd": "Cliquer pour ajouter",
