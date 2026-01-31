@@ -265,8 +265,13 @@ class WidgetStorageService {
       const dbLayout = await getDashboardLayout(userId)
       
       if (dbLayout) {
-        this.saveToLocalStorage(userId, dbLayout as DashboardLayoutWithWidgets)
-        return dbLayout as DashboardLayoutWithWidgets
+        const layout = {
+          ...dbLayout,
+          desktop: dbLayout.desktop as unknown as Widget[],
+          mobile: dbLayout.mobile as unknown as Widget[]
+        }
+        this.saveToLocalStorage(userId, layout)
+        return layout
       }
       
       const localLayout = this.loadFromLocalStorage(userId)
