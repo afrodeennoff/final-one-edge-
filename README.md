@@ -363,7 +363,7 @@ Read the full license text in the [LICENSE](LICENSE) file.
 
 ### Get Help
 
-- 💬 **Discord Community**: [Join our Discord](https://discord.gg/a5YVF5Ec2n) for real-time support
+- 💬 **Discord Community**: Join our Discord for real-time support
 - 📚 **GitHub Discussions**: Ask questions and share ideas
 - 🐛 **Issue Tracker**: Report bugs and request features
 - 📖 **Documentation**: Check our comprehensive guides

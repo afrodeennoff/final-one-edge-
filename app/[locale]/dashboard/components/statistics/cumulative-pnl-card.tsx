@@ -35,29 +35,35 @@ export default function CumulativePnlCard({ size = 'medium' }: CumulativePnlCard
     }
   }
 
-  const paddingClass = size === 'tiny' ? 'p-2' : 'p-3'
+  const cardSize = size === 'tiny' ? 'sm' : 'md'
   const textSizeClass = size === 'tiny' ? 'text-xs' : 'text-sm'
-  const valueSizeClass = size === 'tiny' ? 'text-sm' : 'text-base'
+  const valueSizeClass = size === 'tiny' ? 'text-lg' : 'text-2xl'
+  const iconSize = size === 'tiny' ? 'h-4 w-4' : 'h-5 w-5'
 
   return (
-    <Card className="h-full flex flex-col">
-      <CardContent className={cn("flex-1 flex flex-col justify-center", paddingClass)}>
+    <Card size={cardSize} variant="default" hover className="h-full flex flex-col">
+      <CardContent className={cn("flex-1 flex flex-col justify-center space-y-4")}>
         {/* Main P&L Display */}
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            {isPositive ? (
-              <TrendingUp className="h-5 w-5 text-green-500" />
-            ) : (
-              <TrendingDown className="h-5 w-5 text-red-500" />
-            )}
-            <span className="font-semibold text-sm text-muted-foreground">
+            <div className={cn(
+              "rounded-lg p-2 transition-colors",
+              isPositive ? "bg-green-500/10" : "bg-red-500/10"
+            )}>
+              {isPositive ? (
+                <TrendingUp className={cn(iconSize, "text-green-500")} />
+              ) : (
+                <TrendingDown className={cn(iconSize, "text-red-500")} />
+              )}
+            </div>
+            <span className={cn("font-semibold", textSizeClass, "text-muted-foreground")}>
               {t('statistics.profitLoss.net')}
             </span>
           </div>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                <Info className="h-3.5 w-3.5 text-muted-foreground" />
+                <Info className={cn("text-muted-foreground", size === 'tiny' ? "h-3 w-3" : "h-3.5 w-3.5")} />
               </TooltipTrigger>
               <TooltipContent side="bottom" sideOffset={5} className="max-w-[300px]">
                 {t('widgets.cumulativePnl.tooltip')}
@@ -68,15 +74,15 @@ export default function CumulativePnlCard({ size = 'medium' }: CumulativePnlCard
 
         {/* Large Net P&L Value */}
         <div className={cn(
-          "text-center font-bold font-mono mb-3",
+          "text-center font-bold font-mono",
           isPositive ? "text-green-500" : "text-red-500",
-          size === 'tiny' ? "text-xl" : "text-2xl"
+          valueSizeClass
         )}>
           {isPositive ? '+' : '-'}{formatCurrency(netPnl)}
         </div>
 
         {/* Breakdown */}
-        <div className="space-y-1.5 border-t border-dashed pt-2">
+        <div className="space-y-2 border-t border-dashed pt-4">
           <div className={cn("flex justify-between items-center", textSizeClass)}>
             <span className="text-muted-foreground">{t('statistics.profitLoss.profits')}</span>
             <span className="font-medium text-green-500 font-mono">{formatCurrency(grossWin)}</span>
