@@ -258,9 +258,10 @@ export const getTimeOfDayPerformance = tool({
   }),
   execute: async ({ startDate, endDate, timezone = 'UTC' }: { startDate?: string, endDate?: string, timezone?: string }) => {
     console.log(`[getTimeOfDayPerformance] startDate: ${startDate}, endDate: ${endDate}, timezone: ${timezone}`);
-    
-    let trades = await getTradesAction();
-    
+
+    const paginatedTrades = await getTradesAction();
+    let trades = paginatedTrades.trades;
+
     // Filter trades by date range if provided
     if (startDate || endDate) {
       trades = trades.filter(trade => {
@@ -270,7 +271,7 @@ export const getTimeOfDayPerformance = tool({
         return tradeDate >= start && tradeDate <= end;
       });
     }
-    
+
     return analyzeTimeOfDay(trades, timezone);
   }
 }); 

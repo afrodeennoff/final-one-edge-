@@ -7,8 +7,8 @@ export const getMostTradedInstruments = tool({
     description: 'Get the most traded instruments',
     inputSchema: z.object({}),
     execute: async () => {
-        const trades = await getTradesAction();
-        const instruments = trades.map(trade => trade.instrument);
+        const paginatedTrades = await getTradesAction();
+        const instruments = paginatedTrades.trades.map(trade => trade.instrument);
         const instrumentCount = instruments.reduce((acc, instrument) => {
             acc[instrument] = (acc[instrument] || 0) + 1;
             return acc;

@@ -51,15 +51,15 @@ export const getWeekSummaryForDate = tool({
             // Calculate week boundaries (Monday to Sunday)
             const weekStart = startOfWeek(inputDate, { weekStartsOn: 1 });
             const weekEnd = endOfWeek(inputDate, { weekStartsOn: 1 });
-            
+
             console.log(`[getWeekSummaryForDate] Input date: ${date}, Week: ${format(weekStart, 'yyyy-MM-dd')} to ${format(weekEnd, 'yyyy-MM-dd')}`);
-            
-            const trades = await getTradesAction();
-            const filteredTrades = trades.filter(trade => {
+
+            const paginatedTrades = await getTradesAction();
+            const filteredTrades = paginatedTrades.trades.filter(trade => {
                 const tradeDate = new Date(trade.entryDate);
                 return tradeDate >= weekStart && tradeDate <= weekEnd;
             });
-            
+
             return {
                 inputDate: format(inputDate, 'yyyy-MM-dd'),
                 weekPeriod: `${format(weekStart, 'MMM d')} - ${format(weekEnd, 'MMM d, yyyy')}`,

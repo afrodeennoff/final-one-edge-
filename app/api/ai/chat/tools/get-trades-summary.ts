@@ -45,10 +45,10 @@ export const getTradesSummary = tool({
     }),
     execute: async ({ startDate, endDate }: { startDate: string, endDate: string }) => {
       console.log(`[getTradeSummary] startDate: ${startDate}, endDate: ${endDate}`)
-      const trades = await getTradesAction();
+      const paginatedTrades = await getTradesAction();
       const start = new Date(startDate);
       const end = new Date(endDate);
-      const filteredTrades = trades.filter(trade => {
+      const filteredTrades = paginatedTrades.trades.filter(trade => {
         const tradeDate = new Date(trade.entryDate);
         return tradeDate >= start && tradeDate <= end;
       });

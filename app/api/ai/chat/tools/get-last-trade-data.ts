@@ -19,7 +19,8 @@ export const getLastTradesData = tool({
     }),
     execute: async ({ number, startDate, endDate, accountNumber }) => {
         console.log(`Getting last ${number} trade(s)`)
-        let trades = await getTradesAction();
+        const paginatedTrades = await getTradesAction();
+        let trades = paginatedTrades.trades;
         if (accountNumber) {
             trades = trades.filter(trade => trade.accountNumber === accountNumber);
         }

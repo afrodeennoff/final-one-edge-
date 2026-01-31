@@ -14,7 +14,8 @@ export const getTradesDetails = tool({
     }),
     execute: async ({ instrument, startDate, endDate, accountNumber, side }: { instrument?: string, startDate?: string, endDate?: string, accountNumber?: string, side?: string }) => {
         console.log(`[getTradeDetails] instrument: ${instrument}, startDate: ${startDate}, endDate: ${endDate}, accountNumber: ${accountNumber}, side: ${side}`)
-        let trades = await getTradesAction();
+        const paginatedTrades = await getTradesAction();
+        let trades = paginatedTrades.trades;
         if (accountNumber) {
             trades = trades.filter(trade => trade.accountNumber === accountNumber);
         }

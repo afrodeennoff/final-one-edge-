@@ -184,9 +184,10 @@ export const getPerformanceTrends = tool({
   }),
   execute: async ({ startDate, endDate }: { startDate?: string, endDate?: string }) => {
     console.log(`[getPerformanceTrends] startDate: ${startDate}, endDate: ${endDate}`);
-    
-    let trades = await getTradesAction();
-    
+
+    const paginatedTrades = await getTradesAction();
+    let trades = paginatedTrades.trades;
+
     // Filter trades by date range if provided
     if (startDate || endDate) {
       trades = trades.filter(trade => {
@@ -196,7 +197,7 @@ export const getPerformanceTrends = tool({
         return tradeDate >= start && tradeDate <= end;
       });
     }
-    
+
     return analyzeTrends(trades);
   }
 }); 

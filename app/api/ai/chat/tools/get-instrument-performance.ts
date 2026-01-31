@@ -264,9 +264,10 @@ export const getInstrumentPerformance = tool({
   }),
   execute: async ({ startDate, endDate, minTrades = 1 }: { startDate?: string, endDate?: string, minTrades?: number }) => {
     console.log(`[getInstrumentPerformance] startDate: ${startDate}, endDate: ${endDate}, minTrades: ${minTrades}`);
-    
-    let trades = await getTradesAction();
-    
+
+    const paginatedTrades = await getTradesAction();
+    let trades = paginatedTrades.trades;
+
     // Filter trades by date range if provided
     if (startDate || endDate) {
       trades = trades.filter(trade => {
@@ -276,12 +277,12 @@ export const getInstrumentPerformance = tool({
         return tradeDate >= start && tradeDate <= end;
       });
     }
-    
+
     const analysis = analyzeInstruments(trades);
-    
+
     // Filter out instruments with fewer than minTrades
     analysis.instruments = analysis.instruments.filter(instrument => instrument.totalTrades >= minTrades);
-    
+
     return analysis;
   }
 }); 
