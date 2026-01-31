@@ -32,6 +32,7 @@ export type DashboardLayoutWithWidgets = {
   desktop: Widget[];
   mobile: Widget[];
   version?: number;
+  schemaVersion?: number;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -91,13 +92,13 @@ export const useUserStore = create<UserStore>()(
         set({
           subscription: subscription
             ? {
-                id: subscription.id,
-                email: subscription.email,
-                plan: subscription.plan,
-                status: subscription.status,
-                endDate: subscription.endDate,
-                trialEndsAt: subscription.trialEndsAt,
-              }
+              id: subscription.id,
+              email: subscription.email,
+              plan: subscription.plan,
+              status: subscription.status,
+              endDate: subscription.endDate,
+              trialEndsAt: subscription.trialEndsAt,
+            }
             : null,
         }),
       setTags: (tags) => set({ tags }),
