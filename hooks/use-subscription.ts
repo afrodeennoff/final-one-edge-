@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import React, { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase'
 import type { User } from '@supabase/supabase-js'
 
 export interface SubscriptionInfo {
@@ -79,8 +79,9 @@ export function useSubscription() {
             ? Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
             : 0
 
-          const isInGracePeriod =
+          const isInGracePeriod = Boolean(
             endDate && daysUntilExpiry >= -GRACE_PERIOD_DAYS && daysUntilExpiry < 0
+          )
 
           const isTrial = data.status === 'TRIAL' && trialEndsAt && trialEndsAt > now
 
@@ -100,7 +101,7 @@ export function useSubscription() {
             },
             daysUntilExpiry,
             isInGracePeriod,
-            isTrial,
+            isTrial: Boolean(isTrial),
           })
         }
       } catch (err) {

@@ -1,5 +1,3 @@
-'use server'
-
 import { NextRequest, NextResponse } from 'next/server'
 import { whop } from '@/lib/whop'
 import { PrismaClient } from '@/prisma/generated/prisma'
@@ -14,7 +12,7 @@ interface WebhookEvent {
   id: string
   type: string
   data: any
-  created_at: number
+  created_at?: number
 }
 
 interface WebhookProcessingResult {

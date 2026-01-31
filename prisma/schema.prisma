@@ -4,8 +4,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  schemas   = ["public"]
+  provider = "postgresql"
+  schemas  = ["public"]
 }
 
 // ============================================================================
@@ -13,47 +13,47 @@ datasource db {
 // ============================================================================
 
 model User {
-  id               String              @id @default(cuid())
-  email            String              @unique
-  auth_user_id     String              @unique
-  isFirstConnection Boolean             @default(true)
-  isBeta           Boolean             @default(false)
-  language         String              @default("en")
-  etpToken         String?
-  etpTokenHash     String?             @unique
-  etpTokenExpiresAt DateTime?
-  thorToken        String?
-  thorTokenHash     String?            @unique
+  id                 String           @id @default(cuid())
+  email              String           @unique
+  auth_user_id       String           @unique
+  isFirstConnection  Boolean          @default(true)
+  isBeta             Boolean          @default(false)
+  language           String           @default("en")
+  etpToken           String?
+  etpTokenHash       String?          @unique
+  etpTokenExpiresAt  DateTime?
+  thorToken          String?
+  thorTokenHash      String?          @unique
   thorTokenExpiresAt DateTime?
-  referral         Referral?
-  subscription     Subscription?
-  dashboardLayout  DashboardLayout?
+  referral           Referral?        @relation("UserReferral")
+  subscription       Subscription?    @relation("UserSubscription")
+  dashboardLayout    DashboardLayout? @relation("UserDashboardLayout")
 
-  createdAt        DateTime            @default(now())
-  updatedAt        DateTime            @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  accounts              Account[]
-  businesses            Business[]
-  teams                 Team[]
-  teamMemberships       TeamMember[]
-  organizations         Organization[]
-  teamSubscriptions     TeamSubscription[]
-  businessSubscriptions BusinessSubscription[]
-  comments              Comment[]
-  groups                Group[]
-  moods                 Mood[]
-  notifications         Notification[]
-  orders                Order[]
-  posts                 Post[]
-  synchronizations      Synchronization[]
-  tags                  Tag[]
-  votes                 Vote[]
-  paymentTransactions   PaymentTransaction[]
-  invoices              Invoice[]
-  refunds               Refund[]
-  subscriptionEvents    SubscriptionEvent[]
-  paymentMethods        PaymentMethod[]
-  usageMetrics          UsageMetric[]
+  accounts              Account[]              @relation("UserAccounts")
+  businesses            Business[]             @relation("UserBusinesses")
+  teams                 Team[]                 @relation("UserTeams")
+  teamMemberships       TeamMember[]           @relation("UserTeamMemberships")
+  organizations         Organization[]         @relation("UserOrganizations")
+  teamSubscriptions     TeamSubscription[]     @relation("UserTeamSubscriptions")
+  businessSubscriptions BusinessSubscription[] @relation("UserBusinessSubscriptions")
+  comments              Comment[]              @relation("UserComments")
+  groups                Group[]                @relation("UserGroups")
+  moods                 Mood[]                 @relation("UserMoods")
+  notifications         Notification[]         @relation("UserNotifications")
+  orders                Order[]                @relation("UserOrders")
+  posts                 Post[]                 @relation("UserPosts")
+  synchronizations      Synchronization[]      @relation("UserSynchronizations")
+  tags                  Tag[]                  @relation("UserTags")
+  votes                 Vote[]                 @relation("UserVotes")
+  paymentTransactions   PaymentTransaction[]   @relation("UserPaymentTransactions")
+  invoices              Invoice[]              @relation("UserInvoices")
+  refunds               Refund[]               @relation("UserRefunds")
+  subscriptionEvents    SubscriptionEvent[]    @relation("UserSubscriptionEvents")
+  paymentMethods        PaymentMethod[]        @relation("UserPaymentMethods")
+  usageMetrics          UsageMetric[]          @relation("UserUsageMetrics")
 
   @@index([email])
   @@schema("public")
@@ -65,10 +65,10 @@ model Referral {
   slug            String   @unique
   referredUserIds String[] @default([])
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation("UserReferral", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([slug])
@@ -76,62 +76,63 @@ model Referral {
 }
 
 model Subscription {
-  id          String    @id @unique @default(uuid())
-  email       String    @unique
-  plan        String
-  status      String    @default("ACTIVE")
-  interval    String?
+  id       String  @id @unique @default(uuid())
+  email    String  @unique
+  plan     String
+  status   String  @default("ACTIVE")
+  interval String?
 
   userId      String    @unique
   endDate     DateTime?
   trialEndsAt DateTime?
 
-  createdAt   DateTime  @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation("UserSubscription", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([email])
   @@schema("public")
 }
 
 model DashboardLayout {
-  id        String   @id @default(uuid())
-  userId    String   @unique
+  id     String @id @default(uuid())
+  userId String @unique
 
-  desktop   Json     @default("[]")
-  mobile    Json     @default("[]")
+  desktop Json @default("[]")
+  mobile  Json @default("[]")
 
-  version   Int      @default(1)
-  checksum  String?  
-  deviceId  String?
+  version  Int     @default(1)
+  checksum String?
+  deviceId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user                User                    @relation(fields: [userId], references: [auth_user_id], onDelete: Cascade)
-  versionHistory      LayoutVersion[]
+  user           User            @relation("UserDashboardLayout", fields: [userId], references: [auth_user_id], onDelete: Cascade)
+  versionHistory LayoutVersion[]
 
   @@index([userId])
   @@schema("public")
 }
 
 model LayoutVersion {
-  id          String   @id @default(uuid())
-  layoutId    String
+  id       String @id @default(uuid())
+  layoutId String
 
-  desktop     Json     @default("[]")
-  mobile      Json     @default("[]")
-  
+  desktop Json @default("[]")
+  mobile  Json @default("[]")
+
   version     Int
   checksum    String
   description String?
-  
-  deviceId    String
-  changeType  String   @default("manual") // manual, auto, migration, conflict_resolution
-  
-  createdAt   DateTime @default(now())
 
-  layout      DashboardLayout @relation(fields: [layoutId], references: [id], onDelete: Cascade)
+  deviceId   String
+  changeType String @default("manual") // manual, auto, migration, conflict_resolution
+
+  createdAt DateTime @default(now())
+
+  layout DashboardLayout @relation(fields: [layoutId], references: [id], onDelete: Cascade)
 
   @@index([layoutId])
   @@index([layoutId, version])
@@ -143,70 +144,70 @@ model LayoutVersion {
 // ============================================================================
 
 model Account {
-  id               String   @id @unique @default(uuid())
-  number           String
-  userId           String
+  id     String @id @unique @default(uuid())
+  number String
+  userId String
 
-  propfirm         String   @default("")
-  accountSize      String?
-  accountSizeName  String?
+  propfirm        String  @default("")
+  accountSize     String?
+  accountSizeName String?
 
-  startingBalance  Float    @default(0)
-  balanceRequired  Float?
+  startingBalance   Float   @default(0)
+  balanceRequired   Float?
   drawdownThreshold Float   @default(0)
-  dailyLoss        Float    @default(0)
-  profitTarget     Float    @default(0)
-  buffer           Float    @default(0)
-  considerBuffer   Boolean  @default(true)
+  dailyLoss         Float   @default(0)
+  profitTarget      Float   @default(0)
+  buffer            Float   @default(0)
+  considerBuffer    Boolean @default(true)
 
-  trailingDrawdown Boolean  @default(false)
+  trailingDrawdown   Boolean @default(false)
   trailingStopProfit Float?
-  trailing         String?
+  trailing           String?
 
-  isPerformance    Boolean  @default(false)
-  evaluation       Boolean  @default(true)
+  isPerformance Boolean @default(false)
+  evaluation    Boolean @default(true)
 
-  payoutCount      Int      @default(0)
-  minPayout        Float?
-  maxPayout        String?
-  profitSharing    Float?
-  payoutBonus      Float?
-  payoutPolicy     String?
+  payoutCount   Int     @default(0)
+  minPayout     Float?
+  maxPayout     String?
+  profitSharing Float?
+  payoutBonus   Float?
+  payoutPolicy  String?
 
-  consistencyPercentage Float? @default(30)
+  consistencyPercentage   Float? @default(30)
   minTradingDaysForPayout Int?
-  minDays          Int?
-  minPnlToCountAsDay Float?
+  minDays                 Int?
+  minPnlToCountAsDay      Float?
 
-  activationFees   Float?
-  price            Float?
-  priceWithPromo   Float?
-  promoPercentage  Float?
-  promoType        PromoType?
+  activationFees  Float?
+  price           Float?
+  priceWithPromo  Float?
+  promoPercentage Float?
+  promoType       PromoType?
 
   tradingNewsAllowed Boolean @default(true)
-  rulesDailyLoss   String?
+  rulesDailyLoss     String?
 
-  autoRenewal       Boolean  @default(false)
-  paymentFrequency  PaymentFrequency?
-  renewalNotice     Int?
-  nextPaymentDate   DateTime?
+  autoRenewal      Boolean           @default(false)
+  paymentFrequency PaymentFrequency?
+  renewalNotice    Int?
+  nextPaymentDate  DateTime?
 
   isRecursively     String?
   maxFundedAccounts Int?
 
-  resetDate         DateTime?
-  shouldConsiderTradesBeforeReset Boolean @default(true)
+  resetDate                       DateTime?
+  shouldConsiderTradesBeforeReset Boolean   @default(true)
 
-  groupId           String?
-  group             Group?   @relation(fields: [groupId], references: [id])
+  groupId String?
+  group   Group?  @relation(fields: [groupId], references: [id])
 
-  createdAt         DateTime @default(now())
+  createdAt DateTime @default(now())
 
-  trades            Trade[]
-  payouts           Payout[]
+  trades  Trade[]
+  payouts Payout[]
 
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation("UserAccounts", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([number, userId])
   @@index([number])
@@ -216,39 +217,39 @@ model Account {
 }
 
 model Trade {
-  id              String   @id @unique @default(uuid())
-  accountNumber   String
-  userId          String
+  id            String @id @unique @default(uuid())
+  accountNumber String
+  userId        String
 
-  instrument      String
-  side            String?  @default("")
-  quantity        Int
+  instrument String
+  side       String? @default("")
+  quantity   Int
 
-  entryPrice      Float
-  closePrice      Float
-  pnl             Float
-  commission      Float    @default(0)
+  entryPrice Float
+  closePrice Float
+  pnl        Float
+  commission Float @default(0)
 
-  entryId         String?  @default("")
-  closeId         String?  @default("")
+  entryId String? @default("")
+  closeId String? @default("")
 
-  entryDate       String
-  closeDate       String
+  entryDate String
+  closeDate String
 
-  timeInPosition  Float    @default(0)
+  timeInPosition Float @default(0)
 
-  comment         String?
-  tags            String[] @default([])
-  groupId         String?  @default("")
+  comment String?
+  tags    String[] @default([])
+  groupId String?  @default("")
 
-  imageBase64     String?
+  imageBase64       String?
   imageBase64Second String?
-  images          String[] @default([])
-  videoUrl        String?
+  images            String[] @default([])
+  videoUrl          String?
 
-  createdAt       DateTime @default(now())
+  createdAt DateTime @default(now())
 
-  account         Account  @relation(fields: [accountNumber, userId], references: [number, userId], onDelete: Cascade)
+  account Account @relation(fields: [accountNumber, userId], references: [number, userId], onDelete: Cascade)
 
   @@index([accountNumber])
   @@index([groupId])
@@ -259,15 +260,15 @@ model Trade {
 }
 
 model Group {
-  id        String   @id @default(uuid())
-  name      String
-  userId    String
+  id     String @id @default(uuid())
+  name   String
+  userId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  accounts  Account[]
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accounts Account[]
+  user     User      @relation("UserGroups", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([name, userId])
   @@index([userId])
@@ -275,41 +276,41 @@ model Group {
 }
 
 model Payout {
-  id            String   @id @default(uuid())
+  id            String @id @default(uuid())
   accountId     String
   accountNumber String
 
-  amount        Float
-  status        String   @default("PENDING")
+  amount Float
+  status String @default("PENDING")
 
-  date          DateTime
-  createdAt     DateTime @default(now())
+  date      DateTime
+  createdAt DateTime @default(now())
 
-  account       Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
   @@index([accountNumber])
   @@schema("public")
 }
 
 model Order {
-  id                String   @id @default(uuid())
-  accountId         String
-  orderId           String   @unique
-  userId            String
+  id        String @id @default(uuid())
+  accountId String
+  orderId   String @unique
+  userId    String
 
-  symbol            String
-  instrumentType    String
-  orderAction       String
+  symbol         String
+  instrumentType String
+  orderAction    String
 
-  quantity          Int
+  quantity           Int
   averageFilledPrice Float
-  isOpeningOrder    Boolean
+  isOpeningOrder     Boolean
 
-  time              DateTime
+  time DateTime
 
-  createdAt         DateTime @default(now())
+  createdAt DateTime @default(now())
 
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation("UserOrders", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([accountId])
   @@index([userId])
@@ -317,21 +318,21 @@ model Order {
 }
 
 model Synchronization {
-  id             String    @id @default(uuid())
-  userId         String
-  service        String
-  accountId      String
+  id        String @id @default(uuid())
+  userId    String
+  service   String
+  accountId String
 
-  lastSyncedAt   DateTime
-  dailySyncTime  DateTime?
+  lastSyncedAt  DateTime
+  dailySyncTime DateTime?
 
   token          String?
   tokenExpiresAt DateTime?
 
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation("UserSynchronizations", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, service, accountId])
   @@index([userId])
@@ -353,20 +354,20 @@ model TickDetails {
 }
 
 model TradeAnalytics {
-  id                 String   @id @default(uuid())
-  tradeId            String   @unique
+  id      String @id @default(uuid())
+  tradeId String @unique
 
-  mae                Float    @default(0)
-  mfe                Float    @default(0)
+  mae                Float  @default(0)
+  mfe                Float  @default(0)
   entryPriceFromData Float?
   priceDifference    Float?
   riskRewardRatio    Float?
   efficiency         Float?
 
-  dataSource         String   @default("DATABENTO")
+  dataSource String @default("DATABENTO")
 
-  computedAt         DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  computedAt DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@index([tradeId])
   @@index([computedAt])
@@ -379,14 +380,14 @@ model HistoricalData {
   databentSymbol String
   timestamp      DateTime
 
-  open           Float
-  high           Float
-  low            Float
-  close          Float
-  volume         Int
+  open   Float
+  high   Float
+  low    Float
+  close  Float
+  volume Int
 
-  dataSource     String   @default("DATABENTO")
-  createdAt      DateTime @default(now())
+  dataSource String   @default("DATABENTO")
+  createdAt  DateTime @default(now())
 
   @@unique([symbol, databentSymbol, timestamp])
   @@index([symbol])
@@ -396,21 +397,21 @@ model HistoricalData {
 }
 
 model FinancialEvent {
-  id          String   @id @default(uuid())
-  title       String
-  date        DateTime
+  id    String   @id @default(uuid())
+  title String
+  date  DateTime
 
   importance  String
   type        String
   description String?
 
-  sourceUrl   String?
-  country     String?
-  lang        String   @default("fr")
-  timezone    String   @default("UTC")
+  sourceUrl String?
+  country   String?
+  lang      String  @default("fr")
+  timezone  String  @default("UTC")
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([title, date, lang, timezone])
   @@index([date])
@@ -422,20 +423,20 @@ model FinancialEvent {
 // ============================================================================
 
 model Business {
-  id                   String                @id @default(uuid())
-  name                 String
-  userId               String
+  id     String @id @default(uuid())
+  name   String
+  userId String
 
-  traderIds            String[]              @default([])
+  traderIds String[] @default([])
 
-  createdAt            DateTime              @default(now())
-  updatedAt            DateTime              @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   businessSubscription BusinessSubscription?
   invitations          BusinessInvitation[]
   managers             BusinessManager[]
 
-  user                 User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation("UserBusinesses", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([name, userId])
   @@index([userId])
@@ -443,21 +444,21 @@ model Business {
 }
 
 model BusinessSubscription {
-  id          String    @id @unique @default(uuid())
-  email       String    @unique
-  plan        String
-  status      String    @default("ACTIVE")
-  interval    String?
+  id       String  @id @unique @default(uuid())
+  email    String  @unique
+  plan     String
+  status   String  @default("ACTIVE")
+  interval String?
 
   userId      String    @unique
   businessId  String    @unique
   endDate     DateTime?
   trialEndsAt DateTime?
 
-  createdAt   DateTime  @default(now())
+  createdAt DateTime @default(now())
 
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  business    Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  user     User     @relation("UserBusinessSubscriptions", fields: [userId], references: [id], onDelete: Cascade)
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 
   @@index([email])
   @@index([userId])
@@ -466,17 +467,17 @@ model BusinessSubscription {
 }
 
 model BusinessInvitation {
-  id         String   @id @default(uuid())
+  id         String @id @default(uuid())
   businessId String
   email      String
   invitedBy  String
-  status     String   @default("PENDING")
+  status     String @default("PENDING")
 
-  expiresAt  DateTime @default(dbgenerated("(now() + '7 days'::interval)"))
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  expiresAt DateTime @default(dbgenerated("(now() + '7 days'::interval)"))
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 
   @@unique([businessId, email])
   @@index([businessId])
@@ -486,15 +487,15 @@ model BusinessInvitation {
 }
 
 model BusinessManager {
-  id         String   @id @default(uuid())
+  id         String @id @default(uuid())
   businessId String
   managerId  String
-  access     String   @default("viewer")
+  access     String @default("viewer")
 
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 
   @@unique([businessId, managerId])
   @@index([businessId])
@@ -503,24 +504,24 @@ model BusinessManager {
 }
 
 model Team {
-  id               String       @id @default(uuid())
-  name             String
-  userId           String
-  organizationId   String?
+  id             String  @id @default(uuid())
+  name           String
+  userId         String
+  organizationId String?
 
-  traderIds        String[]     @default([])
+  traderIds String[] @default([])
 
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  organization     Organization? @relation(fields: [organizationId], references: [id])
+  organization     Organization?     @relation(fields: [organizationId], references: [id])
   teamSubscription TeamSubscription?
   members          TeamMember[]
   invitations      TeamInvitation[]
   managers         TeamManager[]
   analytics        TeamAnalytics[]
 
-  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation("UserTeams", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([name, userId])
   @@index([userId])
@@ -529,21 +530,21 @@ model Team {
 }
 
 model TeamSubscription {
-  id          String    @id @unique @default(uuid())
-  email       String    @unique
-  plan        String
-  status      String    @default("ACTIVE")
-  interval    String?
+  id       String  @id @unique @default(uuid())
+  email    String  @unique
+  plan     String
+  status   String  @default("ACTIVE")
+  interval String?
 
   userId      String    @unique
   teamId      String    @unique
   endDate     DateTime?
   trialEndsAt DateTime?
 
-  createdAt   DateTime  @default(now())
+  createdAt DateTime @default(now())
 
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  team        Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user User @relation("UserTeamSubscriptions", fields: [userId], references: [id], onDelete: Cascade)
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@index([email])
   @@index([userId])
@@ -559,11 +560,11 @@ model TeamInvitation {
   status    String     @default("PENDING")
   role      MemberRole @default(TRADER)
 
-  expiresAt DateTime   @default(dbgenerated("(now() + '7 days'::interval)"))
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  expiresAt DateTime @default(dbgenerated("(now() + '7 days'::interval)"))
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  team      Team       @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@unique([teamId, email])
   @@index([teamId])
@@ -573,15 +574,15 @@ model TeamInvitation {
 }
 
 model TeamManager {
-  id        String   @id @default(uuid())
+  id        String @id @default(uuid())
   teamId    String
   managerId String
-  access    String   @default("viewer")
+  access    String @default("viewer")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@unique([teamId, managerId])
   @@index([teamId])
@@ -590,18 +591,18 @@ model TeamManager {
 }
 
 model TeamMember {
-  id         String     @id @default(cuid())
-  teamId     String
-  userId     String
-  role       MemberRole @default(TRADER)
+  id     String     @id @default(cuid())
+  teamId String
+  userId String
+  role   MemberRole @default(TRADER)
 
-  joinedAt   DateTime   @default(now())
-  isActive   Boolean    @default(true)
-  accountIds String[]   @default([])
-  settings   Json?      @default("{}")
+  joinedAt   DateTime @default(now())
+  isActive   Boolean  @default(true)
+  accountIds String[] @default([])
+  settings   Json?    @default("{}")
 
-  team       Team       @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user User @relation("UserTeamMemberships", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([teamId, userId])
   @@index([teamId])
@@ -611,21 +612,21 @@ model TeamMember {
 }
 
 model TeamAnalytics {
-  id           String   @id @default(cuid())
-  teamId       String
-  period       String  @default("monthly")
+  id     String @id @default(cuid())
+  teamId String
+  period String @default("monthly")
 
-  totalPnl     Float    @default(0)
-  totalTrades  Int      @default(0)
-  winRate      Float    @default(0)
-  averageRr    Float    @default(0)
-  bestMemberId String?
+  totalPnl      Float   @default(0)
+  totalTrades   Int     @default(0)
+  winRate       Float   @default(0)
+  averageRr     Float   @default(0)
+  bestMemberId  String?
   bestMemberPnl Float?
 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  team         Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@unique([teamId, period])
   @@index([teamId])
@@ -633,14 +634,14 @@ model TeamAnalytics {
 }
 
 model Organization {
-  id        String   @id @default(cuid())
-  name      String
+  id   String @id @default(cuid())
+  name String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  teams     Team[]
-  users     User[]
+  teams Team[]
+  users User[] @relation("UserOrganizations")
 
   @@index([name])
   @@schema("public")
@@ -651,21 +652,21 @@ model Organization {
 // ============================================================================
 
 model Post {
-  id          String     @id @default(uuid())
-  title       String
-  content     String
-  type        PostType   @default(FEATURE_REQUEST)
-  status      PostStatus @default(OPEN)
-  userId      String
+  id      String     @id @default(uuid())
+  title   String
+  content String
+  type    PostType   @default(FEATURE_REQUEST)
+  status  PostStatus @default(OPEN)
+  userId  String
 
-  screenshots String[]   @default([])
+  screenshots String[] @default([])
 
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  comments    Comment[]
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  votes       Vote[]
+  comments Comment[]
+  user     User      @relation("UserPosts", fields: [userId], references: [id], onDelete: Cascade)
+  votes    Vote[]
 
   @@index([userId])
   @@index([type])
@@ -674,19 +675,19 @@ model Post {
 }
 
 model Comment {
-  id        String    @id @default(uuid())
-  content   String
-  postId    String
-  userId    String
-  parentId  String?
+  id       String  @id @default(uuid())
+  content  String
+  postId   String
+  userId   String
+  parentId String?
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
-  replies   Comment[] @relation("CommentReplies")
-  post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies Comment[] @relation("CommentReplies")
+  post    Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user    User      @relation("UserComments", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([postId])
   @@index([userId])
@@ -695,15 +696,15 @@ model Comment {
 }
 
 model Vote {
-  id        String   @id @default(uuid())
-  type      VoteType
-  postId    String
-  userId    String
+  id     String   @id @default(uuid())
+  type   VoteType
+  postId String
+  userId String
 
   createdAt DateTime @default(now())
 
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation("UserVotes", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([postId, userId])
   @@index([postId])
@@ -712,22 +713,22 @@ model Vote {
 }
 
 model Mood {
-  id                   String   @id @default(uuid())
-  userId               String
-  day                  DateTime
-  mood                 String
+  id     String   @id @default(uuid())
+  userId String
+  day    DateTime
+  mood   String
 
   emotionValue         Int      @default(50)
   hasTradingExperience Boolean?
 
-  conversation         Json?
-  journalContent       String?
-  selectedNews         String[] @default([])
+  conversation   Json?
+  journalContent String?
+  selectedNews   String[] @default([])
 
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation("UserMoods", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, day])
   @@index([userId])
@@ -736,16 +737,16 @@ model Mood {
 }
 
 model Tag {
-  id          String   @id @default(uuid())
+  id          String  @id @default(uuid())
   name        String
   description String?
-  color       String?  @default("#CBD5E1")
+  color       String? @default("#CBD5E1")
   userId      String
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation("UserTags", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([name, userId])
   @@index([userId])
@@ -753,15 +754,15 @@ model Tag {
 }
 
 model Notification {
-  id          String   @id @default(cuid())
+  id          String @id @default(cuid())
   userId      String
   title       String
   description String
 
-  readAt      DateTime?
-  createdAt   DateTime @default(now())
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
 
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@schema("public")
@@ -772,24 +773,24 @@ model Notification {
 // ============================================================================
 
 model Shared {
-  id             String    @id @default(uuid())
-  userId         String
-  slug           String    @unique
+  id     String @id @default(uuid())
+  userId String
+  slug   String @unique
 
-  title          String?
-  description    String?
-  dateRange      Json
+  title       String?
+  description String?
+  dateRange   Json
 
-  desktop        Json      @default("[]")
-  mobile         Json      @default("[]")
+  desktop Json @default("[]")
+  mobile  Json @default("[]")
 
   accountNumbers String[]
 
-  isPublic       Boolean   @default(true)
-  expiresAt      DateTime?
-  viewCount      Int       @default(0)
+  isPublic  Boolean   @default(true)
+  expiresAt DateTime?
+  viewCount Int       @default(0)
 
-  createdAt      DateTime  @default(now())
+  createdAt DateTime @default(now())
 
   @@index([userId])
   @@index([slug])
@@ -807,13 +808,13 @@ model Newsletter {
 }
 
 model SubscriptionFeedback {
-  id                 String   @id @default(uuid())
+  id                 String  @id @default(uuid())
   email              String
   event              String
   cancellationReason String?
   feedback           String?
 
-  createdAt          DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@index([email])
   @@schema("public")
@@ -878,27 +879,27 @@ enum MemberRole {
 // ============================================================================
 
 model PaymentTransaction {
-  id                String   @id @default(uuid())
-  userId            String
-  email             String
-  
-  whopTransactionId String   @unique
+  id     String @id @default(uuid())
+  userId String
+  email  String
+
+  whopTransactionId String  @unique
   whopMembershipId  String?
-  
-  amount            Float
-  currency          String   @default("USD")
-  status            TransactionStatus @default(PENDING)
-  
-  type              TransactionType @default(SUBSCRIPTION)
-  
-  metadata          Json?
-  errorMessage      String?
-  
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
+  amount   Float
+  currency String            @default("USD")
+  status   TransactionStatus @default(PENDING)
+
+  type TransactionType @default(SUBSCRIPTION)
+
+  metadata     Json?
+  errorMessage String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation("UserPaymentTransactions", fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
   @@index([email])
   @@index([whopTransactionId])
@@ -908,31 +909,31 @@ model PaymentTransaction {
 }
 
 model Invoice {
-  id                String   @id @default(uuid())
-  userId            String
-  email             String
-  
-  whopInvoiceId     String   @unique
-  whopMembershipId  String?
-  
-  amountDue         Float
-  amountPaid        Float    @default(0)
-  currency          String   @default("USD")
-  status            InvoiceStatus @default(DRAFT)
-  
-  dueDate           DateTime?
-  paidAt            DateTime?
-  
-  lines             Json     @default("[]")
-  
-  invoicePdf        String?
-  hostedInvoiceUrl  String?
-  
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id     String @id @default(uuid())
+  userId String
+  email  String
+
+  whopInvoiceId    String  @unique
+  whopMembershipId String?
+
+  amountDue  Float
+  amountPaid Float         @default(0)
+  currency   String        @default("USD")
+  status     InvoiceStatus @default(DRAFT)
+
+  dueDate DateTime?
+  paidAt  DateTime?
+
+  lines Json @default("[]")
+
+  invoicePdf       String?
+  hostedInvoiceUrl String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation("UserInvoices", fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
   @@index([email])
   @@index([whopInvoiceId])
@@ -942,27 +943,27 @@ model Invoice {
 }
 
 model Refund {
-  id                String   @id @default(uuid())
-  userId            String
-  email             String
-  
-  whopRefundId      String   @unique
-  whopPaymentId     String
-  
-  transactionId     String
-  amount            Float
-  currency          String   @default("USD")
-  status            RefundStatus @default(PENDING)
-  
-  reason            String?
-  metadata          Json?
-  
-  processedAt       DateTime?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id     String @id @default(uuid())
+  userId String
+  email  String
+
+  whopRefundId  String @unique
+  whopPaymentId String
+
+  transactionId String
+  amount        Float
+  currency      String       @default("USD")
+  status        RefundStatus @default(PENDING)
+
+  reason   String?
+  metadata Json?
+
+  processedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user User @relation("UserRefunds", fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
   @@index([email])
   @@index([whopRefundId])
@@ -972,19 +973,21 @@ model Refund {
 }
 
 model SubscriptionEvent {
-  id              String   @id @default(uuid())
-  userId          String
-  email           String
-  
-  subscriptionId  String
-  eventType       SubscriptionEventType
-  eventData       Json
-  
-  ipAddress       String?
-  userAgent       String?
-  
-  createdAt       DateTime @default(now())
-  
+  id     String @id @default(uuid())
+  userId String
+  email  String
+
+  subscriptionId String
+  eventType      SubscriptionEventType
+  eventData      Json
+
+  ipAddress String?
+  userAgent String?
+
+  createdAt DateTime @default(now())
+
+  user User @relation("UserSubscriptionEvents", fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
   @@index([email])
   @@index([subscriptionId])
@@ -994,23 +997,25 @@ model SubscriptionEvent {
 }
 
 model PaymentMethod {
-  id              String   @id @default(uuid())
-  userId          String
-  email           String
-  
-  whopMethodId    String   @unique
-  
-  type            String
-  last4           String?
-  brand           String?
-  expiryMonth     Int?
-  expiryYear      Int?
-  
-  isDefault       Boolean  @default(false)
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
+  id     String @id @default(uuid())
+  userId String
+  email  String
+
+  whopMethodId String @unique
+
+  type        String
+  last4       String?
+  brand       String?
+  expiryMonth Int?
+  expiryYear  Int?
+
+  isDefault Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation("UserPaymentMethods", fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
   @@index([email])
   @@index([whopMethodId])
@@ -1018,31 +1023,31 @@ model PaymentMethod {
 }
 
 model Promotion {
-  id              String   @id @default(uuid())
-  code            String   @unique
-  name            String
-  
-  type            PromotionType
-  value           Float
-  
-  durationType    DurationType
+  id   String @id @default(uuid())
+  code String @unique
+  name String
+
+  type  PromotionType
+  value Float
+
+  durationType     DurationType
   durationInMonths Int?
-  
-  maxRedemptions  Int?
-  currentRedemptions Int   @default(0)
-  
+
+  maxRedemptions     Int?
+  currentRedemptions Int  @default(0)
+
   planRestrictions String[] @default([])
-  
-  validFrom       DateTime
-  validUntil      DateTime?
-  
-  isActive        Boolean  @default(true)
-  
-  metadata        Json?
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
+
+  validFrom  DateTime
+  validUntil DateTime?
+
+  isActive Boolean @default(true)
+
+  metadata Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([code])
   @@index([isActive])
   @@index([validFrom, validUntil])
@@ -1050,25 +1055,27 @@ model Promotion {
 }
 
 model UsageMetric {
-  id              String   @id @default(uuid())
-  userId          String
-  email           String
-  
-  metricType      String
-  metricValue     Float
-  
-  periodStart     DateTime
-  periodEnd       DateTime
-  
-  metadata        Json?
-  
-  createdAt       DateTime @default(now())
-  
+  id     String @id @default(uuid())
+  userId String
+  email  String
+
+  metricType  String
+  metricValue Float
+
+  periodStart DateTime
+  periodEnd   DateTime
+
+  metadata Json?
+
+  createdAt DateTime @default(now())
+
+  user User @relation("UserUsageMetrics", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, metricType, periodStart])
   @@index([userId])
   @@index([email])
   @@index([metricType])
   @@index([periodStart, periodEnd])
-  @@unique([userId, metricType, periodStart])
   @@schema("public")
 }
 

@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic'
 import { ComponentType } from 'react'
 
 export const EquityChart = dynamic(
-  () => import('@/components/charts/equity-chart').then(mod => ({ default: mod.EquityChart })),
+  () => import('@/app/[locale]/dashboard/components/charts/equity-chart'),
   {
     loading: () => <ChartSkeleton />,
     ssr: false,
@@ -12,7 +12,7 @@ export const EquityChart = dynamic(
 ) as ComponentType<any>
 
 export const PnLBarChart = dynamic(
-  () => import('@/components/charts/pnl-bar-chart').then(mod => ({ default: mod.PnLBarChart })),
+  () => import('@/app/[locale]/dashboard/components/charts/pnl-bar-chart'),
   {
     loading: () => <ChartSkeleton />,
     ssr: false,
@@ -20,7 +20,7 @@ export const PnLBarChart = dynamic(
 ) as ComponentType<any>
 
 export const WeekdayPnL = dynamic(
-  () => import('@/components/charts/weekday-pnl').then(mod => ({ default: mod.WeekdayPnL })),
+  () => import('@/app/[locale]/dashboard/components/charts/weekday-pnl'),
   {
     loading: () => <ChartSkeleton />,
     ssr: false,
@@ -28,7 +28,7 @@ export const WeekdayPnL = dynamic(
 ) as ComponentType<any>
 
 export const TimeRangePerformance = dynamic(
-  () => import('@/components/charts/time-range-performance').then(mod => ({ default: mod.TimeRangePerformance })),
+  () => import('@/app/[locale]/dashboard/components/charts/time-range-performance'),
   {
     loading: () => <ChartSkeleton />,
     ssr: false,
@@ -36,7 +36,7 @@ export const TimeRangePerformance = dynamic(
 ) as ComponentType<any>
 
 export const TradeDistribution = dynamic(
-  () => import('@/components/charts/trade-distribution').then(mod => ({ default: mod.TradeDistribution })),
+  () => import('@/app/[locale]/dashboard/components/charts/trade-distribution'),
   {
     loading: () => <ChartSkeleton />,
     ssr: false,
@@ -44,7 +44,7 @@ export const TradeDistribution = dynamic(
 ) as ComponentType<any>
 
 export const PnLBySide = dynamic(
-  () => import('@/components/charts/pnl-by-side').then(mod => ({ default: mod.PnLBySide })),
+  () => import('@/app/[locale]/dashboard/components/charts/pnl-by-side'),
   {
     loading: () => <ChartSkeleton />,
     ssr: false,

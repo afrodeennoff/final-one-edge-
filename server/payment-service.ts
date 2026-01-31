@@ -1,5 +1,3 @@
-'use server'
-
 import { prisma } from '@/lib/prisma'
 import { whop } from '@/lib/whop'
 import { createClient } from '@/server/auth'
