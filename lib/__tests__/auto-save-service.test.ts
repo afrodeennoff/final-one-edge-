@@ -1,3 +1,4 @@
+// @ts-ignore
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { AutoSaveService, OfflineQueueManager } from '../auto-save-service'
 import { DashboardLayout } from '@/prisma/generated/prisma'
@@ -14,6 +15,9 @@ describe('AutoSaveService', () => {
             mobile: [],
             userId: 'test-user',
             id: 'test-id',
+            version: 1,
+            checksum: null,
+            deviceId: null,
             createdAt: new Date(),
             updatedAt: new Date(),
         }
@@ -66,7 +70,7 @@ describe('AutoSaveService', () => {
         })
 
         it('should prevent concurrent saves', async () => {
-            let resolveSave: () => void
+            let resolveSave: (value: unknown) => void
             const slowSaveFunction = vi.fn(() => 
                 new Promise(resolve => {
                     resolveSave = resolve
@@ -80,7 +84,7 @@ describe('AutoSaveService', () => {
             await new Promise(resolve => setTimeout(resolve, 50))
             expect(slowSaveFunction).toHaveBeenCalledTimes(1)
 
-            resolveSave!()
+            resolveSave!(undefined)
             await new Promise(resolve => setTimeout(resolve, 50))
         })
     })
@@ -406,7 +410,7 @@ describe('AutoSaveService', () => {
         })
 
         it('should handle concurrent disposal', async () => {
-            let resolveSave: () => void
+            let resolveSave: (value: unknown) => void
             mockSaveFunction = vi.fn(() => 
                 new Promise(resolve => {
                     resolveSave = resolve
@@ -419,7 +423,7 @@ describe('AutoSaveService', () => {
             await new Promise(resolve => setTimeout(resolve, 50))
             service.dispose()
 
-            resolveSave!()
+            resolveSave!(undefined)
             await new Promise(resolve => setTimeout(resolve, 50))
         })
     })
@@ -434,7 +438,7 @@ describe('OfflineQueueManager', () => {
     it('should enqueue and dequeue requests', async () => {
         const manager = OfflineQueueManager.getInstance()
         const request = {
-            layout: { desktop: [], mobile: [], userId: 'test', id: 'test', createdAt: new Date(), updatedAt: new Date() },
+            layout: { desktop: [], mobile: [], userId: 'test', id: 'test', version: 1, checksum: null, deviceId: null, createdAt: new Date(), updatedAt: new Date() },
             timestamp: Date.now(),
             retryCount: 0,
             priority: 'normal' as const,
@@ -457,7 +461,7 @@ describe('OfflineQueueManager', () => {
 
         for (let i = 0; i < 15; i++) {
             await manager.enqueue({
-                layout: { desktop: [], mobile: [], userId: 'test', id: 'test', createdAt: new Date(), updatedAt: new Date() },
+                layout: { desktop: [], mobile: [], userId: 'test', id: 'test', version: 1, checksum: null, deviceId: null, createdAt: new Date(), updatedAt: new Date() },
                 timestamp: Date.now() + i,
                 retryCount: 0,
                 priority: 'normal',
@@ -472,7 +476,7 @@ describe('OfflineQueueManager', () => {
         const manager = OfflineQueueManager.getInstance()
 
         await manager.enqueue({
-            layout: { desktop: [], mobile: [], userId: 'test', id: 'test', createdAt: new Date(), updatedAt: new Date() },
+            layout: { desktop: [], mobile: [], userId: 'test', id: 'test', version: 1, checksum: null, deviceId: null, createdAt: new Date(), updatedAt: new Date() },
             timestamp: Date.now(),
             retryCount: 0,
             priority: 'normal',

@@ -329,7 +329,7 @@ export class AutoSaveService {
   }
 }
 
-class OfflineQueueManager {
+export class OfflineQueueManager {
   private static instance: OfflineQueueManager
   private queueKey = 'autosave-offline-queue'
   private isProcessing = false

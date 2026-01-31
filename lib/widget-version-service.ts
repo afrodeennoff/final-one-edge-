@@ -170,7 +170,13 @@ class WidgetVersionService {
   async getVersionHistory(layoutId: string, limit = 20): Promise<LayoutVersion[]> {
     try {
       const { getLayoutVersionHistoryAction } = await import('@/server/database')
-      return await getLayoutVersionHistoryAction(layoutId, limit)
+      const versions = await getLayoutVersionHistoryAction(layoutId, limit)
+      return versions.map(v => ({
+        ...v,
+        desktop: v.desktop as Widget[],
+        mobile: v.mobile as Widget[],
+        changeType: v.changeType as 'manual' | 'auto' | 'migration' | 'conflict_resolution'
+      }))
     } catch (error) {
       console.error('[WidgetVersionService] Failed to load version history:', error)
       return []
