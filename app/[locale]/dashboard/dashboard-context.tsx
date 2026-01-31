@@ -80,7 +80,7 @@ interface DashboardContextType {
 
     // Helpers
     isMobile: boolean
-    
+
     // Auto-save status
     autoSaveStatus: {
         hasPending: boolean
@@ -150,7 +150,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
 
         try {
             const currentWidgets = layouts[activeLayout] || []
-            
+
             const updatedWidgets = layout.map(item => {
                 const existingWidget = currentWidgets.find(w => w.i === item.i)
                 if (!existingWidget) {
@@ -163,6 +163,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
                     y: item.y,
                     w: isMobile ? 12 : item.w,
                     h: item.h,
+                    updatedAt: new Date()
                 }
             }).filter((item): item is NonNullable<typeof item> => item !== null)
 
@@ -218,7 +219,8 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
             x: 0,
             y: lowestY, // Simple append to bottom
             w: grid.w,
-            h: grid.h
+            h: grid.h,
+            updatedAt: new Date()
         }
 
         const updatedWidgets = [...currentItems, newWidget]
@@ -253,7 +255,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
         const userId = user?.id || supabaseUser?.id
         if (!userId || !layouts) return
         const updatedWidgets = layouts[activeLayout].map(widget =>
-            widget.i === i ? { ...widget, type: newType } : widget
+            widget.i === i ? { ...widget, type: newType, updatedAt: new Date() } : widget
         )
         const newLayouts = { ...layouts, [activeLayout]: updatedWidgets, updatedAt: new Date() }
         setLayouts(newLayouts)
@@ -271,7 +273,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
 
         const grid = sizeToGrid(effectiveSize)
         const updatedWidgets = layouts[activeLayout].map(widget =>
-            widget.i === i ? { ...widget, size: effectiveSize, ...grid } : widget
+            widget.i === i ? { ...widget, size: effectiveSize, ...grid, updatedAt: new Date() } : widget
         )
         const newLayouts = { ...layouts, [activeLayout]: updatedWidgets, updatedAt: new Date() }
         setLayouts(newLayouts)

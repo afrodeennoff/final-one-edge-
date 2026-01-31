@@ -47,6 +47,7 @@ export interface Widget extends LayoutItem {
   minH?: number
   maxW?: number
   maxH?: number
+  updatedAt?: string | number | Date | null
 }
 
 export interface Layouts {
