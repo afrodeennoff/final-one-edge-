@@ -61,11 +61,11 @@
 
 @utility react-grid-item {
   &.react-grid-placeholder {
-    @apply bg-accent/40 ! border-2 ! border-dashed ! border-accent ! rounded-lg ! opacity-100 ! transition-all ! duration-200 ! backdrop-blur-xs ! shadow-[0_0_0_1px_hsl(var(--accent)/0.4)] ! origin-center !;
+    @apply !bg-accent/40 !border-2 !border-dashed !border-accent !rounded-lg !opacity-100 !transition-all !duration-200 !backdrop-blur-xs !shadow-[0_0_0_1px_hsl(var(--accent)/0.4)] !origin-center;
   }
 
   &.react-draggable-dragging {
-    @apply transition-none ! z-100 ! cursor-grabbing ! opacity-90 !;
+    @apply !transition-none !z-100 !cursor-grabbing !opacity-90;
   }
 
   &>.react-resizable-handle {
@@ -88,13 +88,13 @@
 
 @utility react-grid-placeholder {
   &.react-grid-item {
-    @apply bg-accent/40 ! border-2 ! border-dashed ! border-accent ! rounded-lg ! opacity-100 ! transition-all ! duration-200 ! backdrop-blur-xs ! shadow-[0_0_0_1px_hsl(var(--accent)/0.4)] ! origin-center !;
+    @apply !bg-accent/40 !border-2 !border-dashed !border-accent !rounded-lg !opacity-100 !transition-all !duration-200 !backdrop-blur-xs !shadow-[0_0_0_1px_hsl(var(--accent)/0.4)] !origin-center;
   }
 }
 
 @utility react-draggable-dragging {
   &.react-grid-item {
-    @apply transition-none ! z-100 ! cursor-grabbing ! opacity-90 !;
+    @apply !transition-none !z-100 !cursor-grabbing !opacity-90;
   }
 }
 
@@ -425,7 +425,7 @@
 @layer components {
 
   [data-radix-popper-content-wrapper] {
-    @apply z-9999 !;
+    @apply !z-9999;
   }
 }
 
