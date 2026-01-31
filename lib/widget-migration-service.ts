@@ -70,7 +70,7 @@ class WidgetMigrationService {
       for (const migration of this.migrations) {
         if (migration.version > currentVersion && migration.version <= this.currentVersion) {
           console.log(`[WidgetMigration] Applying migration v${migration.version}: ${migration.description}`)
-          
+
           currentLayout = migration.migrate(currentLayout)
           currentVersion = migration.version
           changes.push(`v${migration.version}: ${migration.description}`)
@@ -133,7 +133,8 @@ class WidgetMigrationService {
         x: 0,
         y: widgets.length,
         w: 6,
-        h: 4
+        h: 4,
+        updatedAt: new Date()
       }
     ]
 
@@ -163,7 +164,7 @@ class WidgetMigrationService {
     return widgets.map(widget => {
       const w = isTargetDevice ? widget.w : 12
       const x = isTargetDevice ? widget.x : 0
-      
+
       return {
         ...widget,
         w,
@@ -245,7 +246,8 @@ class WidgetMigrationService {
         x: widget.x ?? 0,
         y: widget.y ?? 0,
         w: widget.w ?? 6,
-        h: widget.h ?? 4
+        h: widget.h ?? 4,
+        updatedAt: widget.updatedAt || new Date()
       }))
   }
 
