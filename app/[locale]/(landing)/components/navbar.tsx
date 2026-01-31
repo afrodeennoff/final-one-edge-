@@ -39,16 +39,18 @@ const ListItem = React.forwardRef<
             <NavigationMenuLink asChild>
                 <a
                     ref={ref}
-                    className={`block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-hidden transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground ${className}`}
+                    className={`group flex min-h-[44px] select-none space-y-1 rounded-md p-3 leading-none no-underline transition-all duration-200 hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-2 focus:outline-offset-2 focus:outline-ring active:scale-[0.98] ${className}`}
                     {...props}
                 >
-                    <div className="text-sm font-medium leading-none flex items-center">
-                        {icon}
-                        <span className="ml-2">{title}</span>
+                    <div className="text-sm font-medium leading-none flex items-start gap-2 flex-1">
+                        {icon && <span className="mt-0.5 flex-shrink-0" aria-hidden="true">{icon}</span>}
+                        <span className="flex-1">{title}</span>
                     </div>
-                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">
-                        {children}
-                    </p>
+                    {children && (
+                        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-2">
+                            {children}
+                        </p>
+                    )}
                 </a>
             </NavigationMenuLink>
         </li>
@@ -56,9 +58,21 @@ const ListItem = React.forwardRef<
 })
 ListItem.displayName = "ListItem"
 
-const MobileNavItem = ({ href, children, onClick, className }: { href: string; children: React.ReactNode; onClick?: () => void, className?: string }) => (
+const MobileNavItem = ({ href, children, onClick, className, isActive = false }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string; isActive?: boolean }) => (
     <li>
-        <Link href={href} className={cn("block py-2 hover:text-primary transition-colors", className)} onClick={onClick}>
+        <Link
+            href={href}
+            className={cn(
+                "flex min-h-[44px] items-center py-3 px-4 rounded-md transition-all duration-200",
+                "hover:bg-accent hover:text-accent-foreground",
+                "focus:bg-accent focus:text-accent-foreground focus:outline-2 focus:outline-offset-2 focus:outline-ring",
+                "active:scale-[0.98]",
+                isActive && "bg-accent text-accent-foreground font-medium",
+                className
+            )}
+            onClick={onClick}
+            aria-current={isActive ? "page" : undefined}
+        >
             {children}
         </Link>
     </li>
@@ -360,14 +374,18 @@ export default function Navbar() {
                     </Popover>
                     <button
                         type="button"
-                        className="ml-auto lg:hidden p-2"
+                        className="ml-auto lg:inline-flex items-center justify-center min-h-[44px] min-w-[44px] p-3 rounded-md transition-all duration-200 hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-2 focus:outline-offset-2 focus:outline-ring active:scale-95"
                         onClick={toggleMenu}
+                        aria-expanded={isOpen}
+                        aria-controls="mobile-menu"
+                        aria-label={isOpen ? t('landing.navbar.closeMenu') : t('landing.navbar.openMenu')}
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width={18}
                             height={13}
                             fill="none"
+                            aria-hidden="true"
                         >
                             <path
                                 fill="currentColor"
@@ -380,6 +398,7 @@ export default function Navbar() {
 
             {isOpen && (
                 <motion.div
+                    id="mobile-menu"
                     className="fixed bg-background -top-[2px] right-0 left-0 bottom-0 h-screen z-50 px-2"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -388,6 +407,9 @@ export default function Navbar() {
                         duration: 0.3,
                         ease: "easeOut"
                     }}
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label={t('landing.navbar.mobileMenu')}
                 >
                     <motion.div
                         className="mt-4 flex justify-between p-3 px-4 relative ml-px"
@@ -412,17 +434,19 @@ export default function Navbar() {
 
                         <motion.button
                             type="button"
-                            className="ml-auto lg:hidden p-2 absolute right-[10px] top-2"
+                            className="ml-auto lg:inline-flex items-center justify-center min-h-[44px] min-w-[44px] p-3 absolute right-[10px] top-2 rounded-md transition-all duration-200 hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-2 focus:outline-offset-2 focus:outline-ring active:scale-95"
                             onClick={closeMenu}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             transition={{ duration: 0.1 }}
+                            aria-label={t('landing.navbar.closeMenu')}
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width={24}
                                 height={24}
                                 className="fill-primary"
+                                aria-hidden="true"
                             >
                                 <path fill="none" d="M0 0h24v24H0V0z" />
                                 <path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" />
@@ -449,8 +473,15 @@ export default function Navbar() {
                                             >
                                                 <Link
                                                     href={path}
-                                                    className={cn(isActive && "text-primary", "block")}
+                                                    className={cn(
+                                                        "flex min-h-[44px] items-center py-3 px-2 rounded-md transition-all duration-200",
+                                                        "hover:bg-accent hover:text-accent-foreground",
+                                                        "focus:bg-accent focus:text-accent-foreground focus:outline-2 focus:outline-offset-2 focus:outline-ring",
+                                                        "active:scale-[0.98]",
+                                                        isActive && "bg-accent text-accent-foreground font-medium"
+                                                    )}
                                                     onClick={closeMenu}
+                                                    aria-current={isActive ? "page" : undefined}
                                                 >
                                                     {title}
                                                 </Link>
@@ -493,7 +524,7 @@ export default function Navbar() {
                                                                             <Link
                                                                                 onClick={closeMenu}
                                                                                 href={child.path}
-                                                                                className="text-[#878787] flex items-center space-x-2"
+                                                                                className="flex min-h-[44px] items-center py-3 px-2 rounded-md transition-all duration-200 hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-2 focus:outline-offset-2 focus:outline-ring active:scale-[0.98]"
                                                                             >
                                                                                 <span>{child.icon}</span>
                                                                                 <span>{child.title}</span>
@@ -577,17 +608,19 @@ export default function Navbar() {
                                                         >
                                                             <button
                                                                 onClick={() => handleThemeChange("light")}
-                                                                className={`flex items-center space-x-2 w-full text-left ${theme === 'light' ? 'text-primary' : 'text-[#878787]'
+                                                                className={`flex min-h-[44px] items-center py-3 px-2 rounded-md transition-all duration-200 hover:bg-accent focus:bg-accent focus:outline-2 focus:outline-offset-2 focus:outline-ring active:scale-[0.98] ${theme === 'light' ? 'bg-accent text-accent-foreground' : ''
                                                                     }`}
+                                                                aria-pressed={theme === 'light'}
                                                             >
-                                                                <Sun className="h-4 w-4" />
-                                                                <span>{t('landing.navbar.lightMode')}</span>
+                                                                <Sun className="h-4 w-4" aria-hidden="true" />
+                                                                <span className="ml-2">{t('landing.navbar.lightMode')}</span>
                                                                 {theme === 'light' && (
                                                                     <motion.div
                                                                         initial={{ opacity: 0, scale: 0 }}
                                                                         animate={{ opacity: 1, scale: 1 }}
                                                                         transition={{ duration: 0.2 }}
                                                                         className="ml-auto"
+                                                                        aria-hidden="true"
                                                                     >
                                                                         <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                                                                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -608,17 +641,19 @@ export default function Navbar() {
                                                         >
                                                             <button
                                                                 onClick={() => handleThemeChange("dark")}
-                                                                className={`flex items-center space-x-2 w-full text-left ${theme === 'dark' ? 'text-primary' : 'text-[#878787]'
+                                                                className={`flex min-h-[44px] items-center py-3 px-2 rounded-md transition-all duration-200 hover:bg-accent focus:bg-accent focus:outline-2 focus:outline-offset-2 focus:outline-ring active:scale-[0.98] ${theme === 'dark' ? 'bg-accent text-accent-foreground' : ''
                                                                     }`}
+                                                                aria-pressed={theme === 'dark'}
                                                             >
-                                                                <Moon className="h-4 w-4" />
-                                                                <span>{t('landing.navbar.darkMode')}</span>
+                                                                <Moon className="h-4 w-4" aria-hidden="true" />
+                                                                <span className="ml-2">{t('landing.navbar.darkMode')}</span>
                                                                 {theme === 'dark' && (
                                                                     <motion.div
                                                                         initial={{ opacity: 0, scale: 0 }}
                                                                         animate={{ opacity: 1, scale: 1 }}
                                                                         transition={{ duration: 0.2 }}
                                                                         className="ml-auto"
+                                                                        aria-hidden="true"
                                                                     >
                                                                         <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                                                                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -639,17 +674,19 @@ export default function Navbar() {
                                                         >
                                                             <button
                                                                 onClick={() => handleThemeChange("system")}
-                                                                className={`flex items-center space-x-2 w-full text-left ${theme === 'system' ? 'text-primary' : 'text-[#878787]'
+                                                                className={`flex min-h-[44px] items-center py-3 px-2 rounded-md transition-all duration-200 hover:bg-accent focus:bg-accent focus:outline-2 focus:outline-offset-2 focus:outline-ring active:scale-[0.98] ${theme === 'system' ? 'bg-accent text-accent-foreground' : ''
                                                                     }`}
+                                                                aria-pressed={theme === 'system'}
                                                             >
-                                                                <Laptop className="h-4 w-4" />
-                                                                <span>{t('landing.navbar.systemTheme')}</span>
+                                                                <Laptop className="h-4 w-4" aria-hidden="true" />
+                                                                <span className="ml-2">{t('landing.navbar.systemTheme')}</span>
                                                                 {theme === 'system' && (
                                                                     <motion.div
                                                                         initial={{ opacity: 0, scale: 0 }}
                                                                         animate={{ opacity: 1, scale: 1 }}
                                                                         transition={{ duration: 0.2 }}
                                                                         className="ml-auto"
+                                                                        aria-hidden="true"
                                                                     >
                                                                         <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                                                                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
