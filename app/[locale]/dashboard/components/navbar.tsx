@@ -9,7 +9,6 @@ import {
   LayoutDashboard,
   Settings2
 } from "lucide-react"
-import { Logo } from "@/components/logo"
 import { Button } from "@/components/ui/button"
 import Link from 'next/link'
 import ImportButton from './import/import-button'
@@ -61,22 +60,6 @@ export default function Navbar() {
           {/* Left Side: Sidebar Toggle & Brand */}
           <div className="flex items-center gap-4">
             <SidebarTrigger className="-ml-1 text-fg-muted hover:text-fg-primary hover:bg-white/5 transition-all rounded-xl" />
-            <div className="h-4 w-px bg-white/10 hidden lg:block" />
-
-            <Link href="/dashboard" className="flex items-center gap-3 group/logo">
-              <div className="relative overflow-hidden flex aspect-square size-9 items-center justify-center rounded-xl bg-gradient-to-br from-accent-teal to-accent-teal-hover shadow-lg shadow-accent-teal/20 transition-all duration-500 group-hover/logo:scale-110 group-hover/logo:rotate-3">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.4),transparent)] opacity-50" />
-                <Logo className="size-4.5 fill-white relative z-10" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-fg-primary select-none group-hover/logo:text-accent-teal transition-colors">
-                  QuntEdge
-                </span>
-                <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-fg-muted select-none">
-                  Analytics
-                </span>
-              </div>
-            </Link>
           </div>
 
           {/* Center: PnL Metrics (Desktop Only) */}

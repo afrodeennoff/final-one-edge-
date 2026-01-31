@@ -37,20 +37,20 @@ export function PnLSummary() {
   const isPositive = stats.daily.pnl >= 0
 
   return (
-    <div className="hidden xl:flex items-center gap-4 px-4 py-1.5 bg-glass-subtle rounded-2xl border border-border-subtle backdrop-blur-glass">
+    <div className="hidden lg:flex items-center gap-4 px-4 py-1.5 bg-white/5 rounded-2xl border border-white/5 backdrop-blur-md">
       {/* Daily PnL */}
       <div className="flex flex-col">
         <span className="text-[8px] font-black uppercase tracking-widest text-fg-muted">Today's PnL</span>
         <div className={cn(
           "flex items-center gap-1.5 font-bold tabular-nums text-xs transition-colors",
-          isPositive ? "text-emerald-500" : "text-rose-500"
+          isPositive ? "text-accent-teal" : "text-rose-500"
         )}>
           {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
           <span>{isPositive ? "+" : ""}{stats.daily.pnl.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</span>
         </div>
       </div>
 
-      <div className="w-px h-6 bg-border-subtle" />
+      <div className="w-px h-4 bg-white/10" />
 
       {/* Win Rate */}
       <div className="flex flex-col">
@@ -61,7 +61,7 @@ export function PnLSummary() {
         </div>
       </div>
 
-      <div className="w-px h-6 bg-border-subtle" />
+      <div className="w-px h-4 bg-white/10" />
 
       {/* Trades */}
       <div className="flex flex-col">
