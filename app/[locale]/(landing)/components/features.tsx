@@ -72,35 +72,35 @@ export default function Features() {
   ]
 
   return (
-    <main className="container mx-auto px-4 py-16">
-      <h1 className="text-4xl font-bold text-center mb-4">{t("landing.features.heading")}</h1>
-      <p className="text-xl text-center text-gray-600 mb-12">{t("landing.features.subheading")}</p>
-      <div className="grid grid-cols-1 lg:grid-cols-6 gap-4">
+    <main className="container-responsive py-8 sm:py-12 md:py-16">
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-3 sm:mb-4">{t("landing.features.heading")}</h1>
+      <p className="text-base sm:text-lg md:text-xl text-center text-gray-600 dark:text-gray-400 mb-8 sm:mb-12 px-4">{t("landing.features.subheading")}</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4">
         {features.map((feature, index) => (
-          <Card 
-            id={feature.id} 
-            key={feature.id} 
+          <Card
+            id={feature.id}
+            key={feature.id}
             className={`bg-card ${
-              index < 2 ? 'lg:col-span-3' : 
+              index < 2 ? 'lg:col-span-3' :
               index === 2 ? 'lg:col-span-4' : 'lg:col-span-2'
             }`}
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-lg font-medium">{feature.title}</CardTitle>
+              <CardTitle className="text-base sm:text-lg font-medium">{feature.title}</CardTitle>
               {feature.icon}
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col space-y-4">
+              <div className="flex flex-col space-y-3 sm:space-y-4">
                 <div>
-                  <div className="text-2xl font-bold">{feature.stat}</div>
-                  <p className="text-sm text-muted-foreground mt-2">
+                  <div className="text-xl sm:text-2xl font-bold">{feature.stat}</div>
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-2">
                     {feature.description}
                   </p>
                 </div>
               <div
                 className={cn(
                   "relative w-full flex justify-center items-center rounded-xl overflow-hidden",
-                  feature.wrapperClass ?? "h-[300px]"
+                  feature.wrapperClass ?? "h-[250px] sm:h-[300px] md:h-[350px]"
                 )}
               >
                   {isImagePair(feature.image) ? (

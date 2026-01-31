@@ -246,18 +246,18 @@ export default function Navbar() {
             <div className={`fixed inset-0 bg-background/80  backdrop-blur-xs z-40 transition-opacity duration-300 ${hoveredItem ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} />
 
             <span className={`h-14 fixed top-0 left-0 right-0 bg-background z-50 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}></span>
-            <header className={`max-w-7xl mx-auto fixed top-0 left-0 right-0 px-4 lg:px-6 h-14 flex items-center justify-between z-50  text-foreground transition-transform duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
-                <Link href="/" className="flex items-center space-x-2">
-                    <Logo className='w-6 h-6 fill-black dark:fill-white' />
-                    <span className="font-bold text-xl">Qunt Edge</span>
+            <header className={`max-w-7xl mx-auto fixed top-0 left-0 right-0 px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between z-50 text-foreground transition-transform duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
+                <Link href="/" className="flex items-center space-x-2 touch-target">
+                    <Logo className='w-5 h-5 sm:w-6 sm:h-6 fill-black dark:fill-white' />
+                    <span className="font-bold text-lg sm:text-xl">Qunt Edge</span>
                 </Link>
                 <div className="hidden lg:block">
                     <NavigationMenu>
                         <NavigationMenuList className="list-none">
                             <NavigationMenuItem onMouseEnter={() => setHoveredItem('features')} onMouseLeave={() => setHoveredItem(null)}>
-                                <NavigationMenuTrigger className='bg-transparent'>{t('landing.navbar.features')}</NavigationMenuTrigger>
+                                <NavigationMenuTrigger className='bg-transparent touch-target'>{t('landing.navbar.features')}</NavigationMenuTrigger>
                                 <NavigationMenuContent onMouseEnter={() => setHoveredItem('features')} onMouseLeave={() => setHoveredItem(null)}>
-                                    <ul className="grid gap-3 p-6 md:w-[500px] lg:w-[600px] lg:grid-cols-[.75fr_1fr] list-none">
+                                    <ul className="grid gap-3 p-4 sm:p-6 md:w-[400px] lg:w-[600px] lg:grid-cols-[.75fr_1fr] list-none">
                                         <li className="row-span-3">
                                             <NavigationMenuLink asChild>
                                                 <Link className="flex h-full w-full select-none flex-col justify-end rounded-md bg-linear-to-b from-muted/50 to-muted p-6 no-underline outline-hidden focus:shadow-md" href="/">
@@ -319,20 +319,20 @@ export default function Navbar() {
                             </NavigationMenuItem>
 
                         </NavigationMenuList>
-                        <Separator orientation="vertical" className="h-6 mx-4" />
+                        <Separator orientation="vertical" className="h-6 mx-2 sm:mx-4" />
                         {!user && (
-                            <Button variant="ghost" className="text-sm font-medium hover:text-accent-foreground" asChild>
+                            <Button variant="ghost" className="text-sm font-medium hover:text-accent-foreground touch-target h-9 px-3 sm:px-4" asChild>
                                 <Link href={"/authentication"}>{t('landing.navbar.signIn')}</Link>
                             </Button>
                         )}
                     </NavigationMenu>
                 </div>
 
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2 sm:space-x-4">
                     <LanguageSelector />
                     <Popover modal>
                         <PopoverTrigger asChild>
-                            <Button variant="ghost" className="hidden lg:inline-flex h-9 w-9 px-0">
+                            <Button variant="ghost" className="hidden lg:inline-flex touch-target h-9 w-9 sm:h-10 sm:w-10 px-0">
                                 {getThemeIcon()}
                                 <span className="sr-only">{t('landing.navbar.toggleTheme')}</span>
                             </Button>
@@ -341,15 +341,15 @@ export default function Navbar() {
                             <Command>
                                 <CommandList>
                                     <CommandGroup>
-                                        <CommandItem onSelect={() => handleThemeChange("light")}>
+                                        <CommandItem onSelect={() => handleThemeChange("light")} className="touch-target">
                                             <Sun className="mr-2 h-4 w-4" />
                                             <span>{t('landing.navbar.lightMode')}</span>
                                         </CommandItem>
-                                        <CommandItem onSelect={() => handleThemeChange("dark")}>
+                                        <CommandItem onSelect={() => handleThemeChange("dark")} className="touch-target">
                                             <Moon className="mr-2 h-4 w-4" />
                                             <span>{t('landing.navbar.darkMode')}</span>
                                         </CommandItem>
-                                        <CommandItem onSelect={() => handleThemeChange("system")}>
+                                        <CommandItem onSelect={() => handleThemeChange("system")} className="touch-target">
                                             <Laptop className="mr-2 h-4 w-4" />
                                             <span>{t('landing.navbar.systemTheme')}</span>
                                         </CommandItem>
@@ -360,14 +360,16 @@ export default function Navbar() {
                     </Popover>
                     <button
                         type="button"
-                        className="ml-auto lg:hidden p-2"
+                        className="ml-auto lg:hidden touch-target p-2 rounded-md hover:bg-accent transition-colors"
                         onClick={toggleMenu}
+                        aria-label="Toggle menu"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            width={18}
-                            height={13}
+                            width={20}
+                            height={16}
                             fill="none"
+                            className="sm:w-[18px] sm:h-[13px]"
                         >
                             <path
                                 fill="currentColor"

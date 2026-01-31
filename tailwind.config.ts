@@ -1,6 +1,16 @@
 const config = {
 	darkMode: "class",
 	theme: {
+    	screen: {
+    		'xs': '320px',
+    		'sm': '640px',
+    		'md': '768px',
+    		'lg': '1024px',
+    		'xl': '1280px',
+    		'2xl': '1536px',
+    		'3xl': '1920px',
+    		'4xl': '2560px',
+    	},
     	extend: {
     		backgroundImage: {
     			'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
@@ -10,6 +20,53 @@ const config = {
     			lg: 'var(--radius)',
     			md: 'calc(var(--radius) - 2px)',
     			sm: 'calc(var(--radius) - 4px)'
+    		},
+    		fontSize: {
+    			'fluid-xs': 'clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem)',
+    			'fluid-sm': 'clamp(0.875rem, 0.8rem + 0.375vw, 1rem)',
+    			'fluid-base': 'clamp(1rem, 0.9rem + 0.5vw, 1.125rem)',
+    			'fluid-lg': 'clamp(1.125rem, 1rem + 0.625vw, 1.25rem)',
+    			'fluid-xl': 'clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem)',
+    			'fluid-2xl': 'clamp(1.5rem, 1.25rem + 1.25vw, 2rem)',
+    			'fluid-3xl': 'clamp(1.875rem, 1.5rem + 1.875vw, 2.5rem)',
+    			'fluid-4xl': 'clamp(2.25rem, 1.75rem + 2.5vw, 3rem)',
+    			'fluid-5xl': 'clamp(3rem, 2rem + 5vw, 5rem)',
+    			'fluid-6xl': 'clamp(3.75rem, 2.5rem + 6.25vw, 6rem)',
+    			'fluid-7xl': 'clamp(4.5rem, 3rem + 7.5vw, 7rem)',
+    			'fluid-8xl': 'clamp(6rem, 4rem + 10vw, 10rem)',
+    			'fluid-9xl': 'clamp(7.5rem, 5rem + 12.5vw, 12rem)',
+    		},
+    		spacing: {
+    			'fluid-xs': 'clamp(0.5rem, 0.4rem + 0.5vw, 1rem)',
+    			'fluid-sm': 'clamp(1rem, 0.8rem + 1vw, 1.5rem)',
+    			'fluid-md': 'clamp(1.5rem, 1rem + 2vw, 3rem)',
+    			'fluid-lg': 'clamp(2rem, 1.5rem + 2.5vw, 4rem)',
+    			'fluid-xl': 'clamp(3rem, 2rem + 5vw, 6rem)',
+    			'fluid-2xl': 'clamp(4rem, 2.5rem + 7.5vw, 8rem)',
+    			'18': '4.5rem',
+    			'128': '32rem',
+    		},
+    		maxWidth: {
+    			'xs': '20rem',
+    			'container-sm': '640px',
+    			'container-md': '768px',
+    			'container-lg': '1024px',
+    			'container-xl': '1280px',
+    			'container-2xl': '1536px',
+    		},
+    		gridTemplateColumns: {
+    			'13': 'repeat(13, minmax(0, 1fr))',
+    			'14': 'repeat(14, minmax(0, 1fr))',
+    			'15': 'repeat(15, minmax(0, 1fr))',
+    			'16': 'repeat(16, minmax(0, 1fr))',
+    		},
+    		zIndex: {
+    			'60': '60',
+    			'70': '70',
+    			'80': '80',
+    			'90': '90',
+    			'100': '100',
+    			'9999': '9999',
     		},
     		colors: {
     			background: 'hsl(var(--background))',

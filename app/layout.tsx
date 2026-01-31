@@ -27,6 +27,13 @@ export async function generateMetadata({
     title: "Qunt Edge",
     description: "Next generation trading dashboard",
     metadataBase: new URL("https://qunt-edge.vercel.app"),
+    viewport: {
+      width: "device-width",
+      initialScale: 1,
+      maximumScale: 5,
+      userScalable: true,
+      viewportFit: "cover",
+    },
     alternates: {
       canonical: "https://qunt-edge.vercel.app",
       languages: {
@@ -34,6 +41,10 @@ export async function generateMetadata({
         "fr-FR": "https://qunt-edge.vercel.app/fr",
       },
     },
+    themeColor: [
+      { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+      { media: "(prefers-color-scheme: dark)", color: "#000000" },
+    ],
     // ---------- OPEN GRAPH ----------
     openGraph: {
       title: "Qunt Edge",
@@ -119,6 +130,13 @@ export default async function RootLayout({
       style={{ ["--theme-intensity" as string]: "100%" }}
     >
       <head>
+        {/* Responsive Meta Tags */}
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximumScale=5, userScalable=yes, viewport-fit=cover" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="format-detection" content="telephone=no, address=no, email=no" />
+
         {/* Prevent Google Translate */}
         <meta name="google" content="notranslate" />
         <meta name="googlebot" content="notranslate" />
