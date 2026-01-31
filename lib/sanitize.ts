@@ -26,7 +26,7 @@ export function sanitizeHtml(html: string): string {
       const tagName = element.tagName.toLowerCase()
       
       if (!ALLOWED_TAGS.has(tagName)) {
-        node.replaceWith(document.createTextNode(element.textContent || ''))
+        (node as ChildNode).replaceWith(document.createTextNode(element.textContent || ''))
         return
       }
       
