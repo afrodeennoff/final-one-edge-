@@ -224,39 +224,8 @@ export default function Navbar() {
             path: "/pricing",
         },
         {
-            title: t('landing.navbar.updates'),
-            children: [
-                {
-                    path: "/updates",
-                    title: t('landing.navbar.productUpdates'),
-                    icon: <BarChart3 className="h-4 w-4" />,
-                },
-                {
-                    path: "/community",
-                    title: t('landing.navbar.community'),
-                    icon: <Users className="h-4 w-4" />,
-                },
-            ],
-        },
-        {
-            title: t('landing.navbar.developers'),
-            children: [
-                {
-                    path: "https://github.com/afrodeennoff/lassttry-edge-",
-                    title: t('landing.navbar.openSource'),
-                    icon: <Github className="h-4 w-4" />,
-                },
-                {
-                    path: "/updates", // Point to updates as documentation for now
-                    title: t('landing.navbar.documentation'),
-                    icon: <FileText className="h-4 w-4" />,
-                },
-                {
-                    path: "/updates", // Placeholder for API
-                    title: t('landing.navbar.api'),
-                    icon: <Cpu className="h-4 w-4" />,
-                },
-            ],
+            title: t('landing.navbar.propFirms'),
+            path: "/propfirms",
         },
     ]
 
@@ -318,35 +287,13 @@ export default function Navbar() {
                                     </NavigationMenuLink>
                                 </Link>
                             </NavigationMenuItem>
-                            <NavigationMenuItem onMouseEnter={() => setHoveredItem('updates')} onMouseLeave={() => setHoveredItem(null)}>
-                                <NavigationMenuTrigger className='bg-transparent'>{t('landing.navbar.updates')}</NavigationMenuTrigger>
-                                <NavigationMenuContent onMouseEnter={() => setHoveredItem('updates')} onMouseLeave={() => setHoveredItem(null)}>
-                                    <ul className="grid gap-3 p-4 md:w-[500px] lg:w-[600px] list-none">
-                                        <ListItem href="/updates" title={t('landing.navbar.productUpdates')} icon={<BarChart3 className="h-4 w-4" />}>
-                                            {t('landing.navbar.productUpdatesDescription')}
-                                        </ListItem>
-                                        <ListItem href="/community" title={t('landing.navbar.community')} icon={<Users className="h-4 w-4" />}>
-                                            {t('landing.navbar.communityDescription')}
-                                        </ListItem>
-                                    </ul>
-                                </NavigationMenuContent>
-                            </NavigationMenuItem>
 
-                            <NavigationMenuItem onMouseEnter={() => setHoveredItem('developers')} onMouseLeave={() => setHoveredItem(null)}>
-                                <NavigationMenuTrigger className='bg-transparent'>{t('landing.navbar.developers')}</NavigationMenuTrigger>
-                                <NavigationMenuContent onMouseEnter={() => setHoveredItem('developers')} onMouseLeave={() => setHoveredItem(null)}>
-                                    <ul className="grid gap-3 p-4 md:w-[500px] lg:w-[600px] list-none">
-                                        <ListItem href="https://github.com/afrodeennoff/lassttry-edge-" title={t('landing.navbar.openSource')} icon={<Github className="h-4 w-4" />}>
-                                            {t('landing.navbar.openSourceDescription')}
-                                        </ListItem>
-                                        <ListItem href="/updates" title={t('landing.navbar.documentation')} icon={<FileText className="h-4 w-4" />}>
-                                            {t('landing.navbar.documentationDescription')}
-                                        </ListItem>
-                                        <ListItem href="/updates" title={t('landing.navbar.api')} icon={<Cpu className="h-4 w-4" />}>
-                                            {t('landing.navbar.apiDescription')}
-                                        </ListItem>
-                                    </ul>
-                                </NavigationMenuContent>
+                            <NavigationMenuItem onMouseEnter={() => setHoveredItem('propfirms')} onMouseLeave={() => setHoveredItem(null)}>
+                                <Link href="/propfirms" legacyBehavior passHref>
+                                    <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                                        {t('landing.navbar.propFirms')}
+                                    </NavigationMenuLink>
+                                </Link>
                             </NavigationMenuItem>
 
                         </NavigationMenuList>

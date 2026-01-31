@@ -1,117 +1,110 @@
 'use client'
 
+import React from 'react';
 import Link from "next/link"
-import { UserAuthForm } from "../components/user-auth-form"
+import { motion } from 'framer-motion';
+import { TerminalAuthForm } from "../components/terminal-auth-form"
 import { Logo } from "@/components/logo"
 import { useI18n } from '@/locales/client'
-import { cn } from "@/lib/utils"
 
 export default function AuthenticationPage() {
   const t = useI18n()
 
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-[#020617] selection:bg-primary/30 selection:text-primary">
-      {/* Cinematic Background Layering */}
-      <div className="absolute inset-0 z-0">
-        {/* Deep mesh gradient base */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,_rgba(45,212,191,0.08)_0%,_transparent_50%),_radial-gradient(circle_at_100%_100%,_rgba(99,102,241,0.05)_0%,_transparent_50%)]" />
+    <div className="min-h-screen bg-[#030303] flex font-sans overflow-hidden relative selection:bg-teal-500/30">
+      {/* Background Architectural Layer */}
+      <div className="absolute inset-0 bg-grid-pattern opacity-[0.03] pointer-events-none"></div>
+      <div className="absolute top-0 right-0 w-2/3 h-full bg-[radial-gradient(circle_at_100%_0%,rgba(45,212,191,0.05)_0%,transparent_50%)] pointer-events-none"></div>
 
-        {/* Animated Aurora Blobs */}
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary/10 blur-[120px] animate-pulse-slow mix-blend-screen" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[60%] rounded-full bg-indigo-500/10 blur-[100px] animate-float mix-blend-screen" style={{ animationDelay: '2s' }} />
-        <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] rounded-full bg-teal-500/5 blur-[80px] animate-pulse-slow" style={{ animationDuration: '6s' }} />
-
-        {/* Noise Texture Overlay */}
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.15] mix-blend-overlay pointer-events-none" />
-
-        {/* Scanlines Effect */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.03),rgba(0,255,0,0.01),rgba(0,0,255,0.03))] bg-[length:100%_4px,3px_100%] pointer-events-none opacity-20" />
-      </div>
-
-      <div className="relative z-10 w-full max-w-[440px] px-6">
-        <div className="flex flex-col items-center">
-
-          {/* Brand Identity - Staggered Appearance */}
-          <Link href="/" className="mb-10 group flex flex-col items-center animate-slide-up" style={{ animationDelay: '0ms' }}>
-            <div className="relative mb-6">
-              {/* Spinning aura behind logo */}
-              <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-primary/40 to-indigo-500/40 blur-xl opacity-40 group-hover:opacity-100 group-hover:scale-125 transition-all duration-700 animate-spin-slow" />
-
-              <div className="relative bg-[#0a0f1e]/80 backdrop-blur-md rounded-2xl p-4 ring-1 ring-white/10 shadow-[0_0_30px_rgba(45,212,191,0.15)] transition-transform duration-500 group-hover:scale-105 group-hover:-translate-y-1">
-                <Logo className="w-12 h-12 text-primary fill-current drop-shadow-[0_0_8px_rgba(45,212,191,0.5)]" />
-              </div>
-            </div>
-
-            <div className="text-center space-y-2">
-              <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl drop-shadow-sm">
-                Qunt <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-teal-200">Edge</span>
-              </h1>
-              <p className="text-sm text-slate-400 font-medium tracking-wide uppercase">
-                {t('authentication.description')}
-              </p>
-            </div>
-          </Link>
-
-          {/* Premium Auth Container */}
-          <div className="w-full relative animate-slide-up" style={{ animationDelay: '150ms' }}>
-            {/* Outer Glow */}
-            <div className="absolute -inset-0.5 bg-gradient-to-b from-white/10 to-transparent rounded-[2rem] blur opacity-50" />
-
-            <div className="relative backdrop-blur-2xl bg-slate-950/40 border border-white/10 shadow-[24px_24px_48px_rgba(0,0,0,0.4)] rounded-[1.75rem] p-8 sm:p-10 overflow-hidden group">
-              {/* Dynamic light sweep animation */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none" />
-
-              {/* Content Header (Optional, if needed for extra flair) */}
-              <div className="mb-8 text-center sm:text-left border-b border-white/5 pb-6">
-                <h2 className="text-xl font-semibold text-white mb-1">{t('authentication.title')}</h2>
-                <p className="text-xs text-slate-500">{t('authentication.testimonialAuthor')}</p>
-              </div>
-
-              <UserAuthForm />
-
-              <div className="relative mt-10 pt-8 border-t border-white/5 text-center">
-                <p className="text-[11px] leading-relaxed text-slate-500 font-medium">
-                  {t('authentication.termsAndPrivacy.prefix')}{" "}
-                  <Link
-                    href="/terms"
-                    className="text-primary hover:text-primary/80 transition-colors underline underline-offset-4 decoration-primary/30"
-                  >
-                    {t('authentication.termsAndPrivacy.terms')}
-                  </Link>{" "}
-                  {t('authentication.termsAndPrivacy.and')}{" "}
-                  <Link
-                    href="/privacy"
-                    className="text-primary hover:text-primary/80 transition-colors underline underline-offset-4 decoration-primary/30"
-                  >
-                    {t('authentication.termsAndPrivacy.privacy')}
-                  </Link>
-                  .
-                </p>
-              </div>
-            </div>
+      {/* Left Panel - Visual Branding */}
+      <motion.div
+        initial={{ x: -20, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="hidden lg:flex w-1/2 flex-col justify-between p-20 relative z-10 border-r border-white/[0.02]"
+      >
+        <Link href="/" className="group flex items-center gap-4 text-zinc-500 hover:text-white transition-all w-fit">
+          <div className="relative p-2 rounded-lg bg-zinc-900/50 border border-zinc-800 transition-colors group-hover:border-zinc-700">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="transition-transform group-hover:-translate-x-1">
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
           </div>
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em]">Return to Base</span>
+        </Link>
 
-          {/* Footer Branding */}
-          <div className="mt-12 text-center animate-slide-up" style={{ animationDelay: '300ms' }}>
-            <div className="flex items-center justify-center space-x-2 text-[10px] text-slate-600 font-bold uppercase tracking-[0.2em]">
-              <div className="w-8 h-[1px] bg-slate-800" />
-              <span>&copy; {new Date().getFullYear()} DeltaLytix Technologies</span>
-              <div className="w-8 h-[1px] bg-slate-800" />
-            </div>
+        <div>
+          <div className="mb-8 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/20">
+            <div className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></div>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-teal-500">Node Alpha Live</span>
           </div>
-
+          <h1 className="text-7xl font-bold tracking-tighter text-white mb-8 leading-[0.9] flex flex-col">
+            <span>Welcome to</span>
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-emerald-600">Deltalytix.</span>
+          </h1>
+          <p className="text-zinc-500 max-w-sm text-lg font-medium leading-relaxed">
+            Professional trading analytics for the modern edge.
+            All protocols are encrypted. Terminal session monitored.
+          </p>
         </div>
+
+        <div className="space-y-6">
+          <div className="flex gap-10 text-[9px] font-mono text-zinc-600 uppercase tracking-[0.2em] font-bold">
+            <div className="flex flex-col gap-1">
+              <span className="text-zinc-800">Latency</span>
+              <span className="text-teal-500/60 font-mono italic">0.012 MS</span>
+            </div>
+            <div className="flex flex-col gap-1">
+              <span className="text-zinc-800">Security</span>
+              <span className="text-teal-500/60 font-mono italic">TLS 1.3</span>
+            </div>
+            <div className="flex flex-col gap-1">
+              <span className="text-zinc-800">Identity</span>
+              <span className="text-teal-500/60 font-mono italic">Zero Trust</span>
+            </div>
+          </div>
+          <div className="h-[1px] w-full bg-gradient-to-r from-zinc-900 to-transparent"></div>
+        </div>
+      </motion.div>
+
+      {/* Right Panel - Terminal Interaction */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative z-20">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="w-full max-w-md bg-[#080808] border border-white/[0.03] p-10 sm:p-14 rounded-[2.5rem] relative shadow-[0_40px_100px_rgba(0,0,0,0.8)] overflow-hidden"
+        >
+          {/* Top scanning line decoration */}
+          <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-teal-500/40 to-transparent animate-[scan_4s_linear_infinite]"></div>
+
+          <div className="mb-12">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2.5 rounded-xl bg-teal-500/10 border border-teal-500/20">
+                <Logo className="w-5 h-5 text-teal-500 fill-current" />
+              </div>
+              <div className="h-px flex-1 bg-zinc-900/50"></div>
+              <span className="text-[9px] uppercase font-bold text-zinc-600 tracking-[0.2em] whitespace-nowrap">Secure Uplink</span>
+            </div>
+            <h2 className="text-4xl font-bold text-white mb-3 tracking-tight tracking-[-0.03em]">Identify Yourself</h2>
+            <p className="text-zinc-500 text-sm font-medium leading-relaxed">Verification required for terminal access.</p>
+          </div>
+
+          <TerminalAuthForm />
+
+          <div className="mt-12 pt-8 border-t border-zinc-900 text-center">
+            <p className="text-[10px] leading-relaxed text-zinc-600 font-bold uppercase tracking-widest">
+              &copy; {new Date().getFullYear()} DeltaLytix Technologies
+            </p>
+          </div>
+        </motion.div>
       </div>
 
       <style jsx global>{`
-        @keyframes spin-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        .animate-spin-slow {
-          animation: spin-slow 12s linear infinite;
+        @keyframes scan {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
         }
       `}</style>
     </div>
-  )
+  );
 }
