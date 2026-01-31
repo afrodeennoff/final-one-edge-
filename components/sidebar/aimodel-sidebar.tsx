@@ -90,11 +90,11 @@ export function AIModelSidebar() {
         }
 
         if (pathname.includes('/admin')) {
-            if (pathname.includes('newsletter-builder')) setActiveTab('Newsletter Builder');
+            if (pathname.includes('newsletter-builder')) setActiveTab('Mail');
             else if (pathname.includes('weekly-recap')) setActiveTab('Weekly Recap');
             else if (pathname.includes('welcome-email')) setActiveTab('Welcome Email');
             else if (pathname.includes('send-email')) setActiveTab('Send Email');
-            else setActiveTab('Admin');
+            else setActiveTab('ID');
         }
 
         if (pathname.includes('/propfirms')) {
@@ -108,19 +108,19 @@ export function AIModelSidebar() {
     };
 
     const menuGroups = useMemo<SidebarGroup[]>(() => {
-        const groups: SidebarGroup[] = [
-            {
-                title: 'Inventory',
-                items: [
-                    { label: 'Dashboard', href: '/dashboard?tab=widgets', icon: <LayoutDashboard className="w-5 h-5" /> },
-                    { label: 'Trades', href: '/dashboard?tab=table', icon: <TrendingUp className="w-5 h-5" /> },
-                    { label: 'Accounts', href: '/dashboard?tab=accounts', icon: <Activity className="w-5 h-5" /> },
-                    { label: 'Journal', href: '/dashboard/strategies', icon: <BookOpen className="w-5 h-5" /> },
-                ]
-            }
-        ];
+        const isTeamPath = pathname.includes('/teams');
+        const isAdminPath = pathname.includes('/admin');
+        const groups: SidebarGroup[] = [];
 
-        if (pathname.includes('/teams')) {
+        if (isAdminPath) {
+            groups.push({
+                title: 'Admin Panel',
+                items: [
+                    { label: 'Mail', href: '/admin/newsletter-builder', icon: <Mail className="w-5 h-5" /> },
+                    { label: 'ID', href: '/admin', icon: <Shield className="w-5 h-5" /> },
+                ]
+            });
+        } else if (isTeamPath) {
             groups.push({
                 title: 'Team Management',
                 items: [
@@ -130,50 +130,58 @@ export function AIModelSidebar() {
                     { label: 'Team Members', href: slug ? `/teams/dashboard/${slug}/members` : "/teams/manage", icon: <Users className="w-5 h-5" /> },
                 ]
             });
-        }
-
-        if (pathname.includes('/admin')) {
+        } else {
             groups.push({
-                title: 'Admin Panel',
+                title: 'Inventory',
                 items: [
-                    { label: 'Newsletter Builder', href: '/admin/newsletter-builder', icon: <Mail className="w-5 h-5" /> },
-                    { label: 'Weekly Recap', href: '/admin/weekly-recap', icon: <BarChart3 className="w-5 h-5" /> },
-                    { label: 'Welcome Email', href: '/admin/welcome-email', icon: <Users className="w-5 h-5" /> },
-                    { label: 'Send Email', href: '/admin/send-email', icon: <Send className="w-5 h-5" /> },
+                    { label: 'Dashboard', href: '/dashboard?tab=widgets', icon: <LayoutDashboard className="w-5 h-5" /> },
+                    { label: 'Trades', href: '/dashboard?tab=table', icon: <TrendingUp className="w-5 h-5" /> },
+                    { label: 'Accounts', href: '/dashboard?tab=accounts', icon: <Activity className="w-5 h-5" /> },
+                    { label: 'Journal', href: '/dashboard/strategies', icon: <BookOpen className="w-5 h-5" /> },
                 ]
             });
-        }
 
-        groups.push(
-            {
+            groups.push({
                 title: 'Insights',
                 items: [
                     { label: 'Reports', href: '/dashboard/reports', icon: <BarChart3 className="w-5 h-5" /> },
                     { label: 'Behavior', href: '/dashboard/behavior', icon: <Brain className="w-5 h-5" /> },
                 ]
-            },
-            {
+            });
+
+            groups.push({
                 title: 'Social',
                 items: [
                     { label: 'Team', href: '/teams/dashboard', icon: <Building2 className="w-5 h-5" /> },
                     { label: 'Prop Firms', href: '/propfirms', icon: <Globe className="w-5 h-5" /> },
                 ]
-            },
-            {
-                title: 'System',
-                items: [
-                    { label: 'Data', href: '/dashboard/data', icon: <Database className="w-5 h-5" /> },
-                    { label: 'Export', href: '#', icon: <Download className="w-5 h-5" />, onClick: () => setIsExportOpen(true) },
-                    { label: 'Sync', href: '#', icon: <RefreshCw className="w-5 h-5" />, onClick: () => refreshAllData({ force: true }) },
-                    { label: 'Settings', href: '/dashboard/settings', icon: <Settings className="w-5 h-5" /> },
-                    { label: 'Billing', href: '/dashboard/billing', icon: <CreditCard className="w-5 h-5" /> },
-                ]
-            }
-        );
+            });
+        }
 
-        if (isAdmin && !pathname.includes('/admin')) {
-            groups[groups.length - 1].items.push({
-                label: 'Admin', href: '/admin', icon: <Shield className="w-5 h-5" />
+        if (isAdmin && !isAdminPath) {
+            groups.push({
+                title: 'Admin',
+                items: [
+                    { label: 'Mail', href: '/admin/newsletter-builder', icon: <Mail className="w-5 h-5" /> },
+                    { label: 'ID', href: '/admin', icon: <Shield className="w-5 h-5" /> },
+                ]
+            });
+        }
+
+        groups.push({
+            title: 'System',
+            items: [
+                { label: 'Data', href: '/dashboard/data', icon: <Database className="w-5 h-5" /> },
+                { label: 'Export', href: '#', icon: <Download className="w-5 h-5" />, onClick: () => setIsExportOpen(true) },
+                { label: 'Sync', href: '#', icon: <RefreshCw className="w-5 h-5" />, onClick: () => refreshAllData({ force: true }) },
+                { label: 'Settings', href: '/dashboard/settings', icon: <Settings className="w-5 h-5" /> },
+                { label: 'Billing', href: '/dashboard/billing', icon: <CreditCard className="w-5 h-5" /> },
+            ]
+        });
+
+        if (isTeamPath || isAdminPath) {
+            groups[groups.length - 1].items.unshift({
+                label: 'Main Dashboard', href: '/dashboard', icon: <LayoutDashboard className="w-5 h-5" />
             });
         }
 
@@ -217,7 +225,7 @@ export function AIModelSidebar() {
 
                 <div className="flex flex-col h-full overflow-hidden w-full relative">
 
-                    <div className="h-24 flex items-center px-6 mb-2 relative flex-shrink-0">
+                    <div className="h-16 flex items-center px-6 mb-2 relative flex-shrink-0">
                         <div className={`flex items-center transition-all duration-300 ${!open && !isMobile ? 'justify-center w-full' : 'gap-4'}`}>
                             <Link href="/dashboard" className="w-10 h-10 flex items-center justify-center text-teal-400 bg-teal-500/5 border border-teal-500/10 rounded-xl flex-shrink-0 relative overflow-hidden group">
                                 <div className="absolute inset-0 bg-teal-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -245,11 +253,6 @@ export function AIModelSidebar() {
                         {menuGroups.map((group: SidebarGroup, groupIdx: number) => {
                             return (
                                 <div key={groupIdx}>
-                                    {(open || isMobile) && (
-                                        <div className="px-3 mb-2">
-                                            <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em]">{group.title}</span>
-                                        </div>
-                                    )}
                                     <div className="space-y-1">
                                         {group.items.map((item: SidebarItem) => {
                                             const isActive = activeTab === item.label;
@@ -319,7 +322,17 @@ export function AIModelSidebar() {
                             {(open || isMobile) && (
                                 <div className="flex flex-col overflow-hidden min-w-0">
                                     <span className="text-xs font-bold text-white truncate">{user?.user_metadata?.name || user?.email || 'Trader'}</span>
-                                    <span className="text-[10px] text-zinc-500 truncate font-mono">PRO ACCOUNT</span>
+                                    <div className="flex flex-col">
+                                        <span className="text-[10px] text-zinc-500 truncate font-mono">
+                                            {isAdmin ? 'ADMIN ACCOUNT' : 'PRO ACCOUNT'}
+                                        </span>
+                                        {isAdmin && (
+                                            <div className="flex flex-col gap-0.5 mt-0.5 opacity-50">
+                                                <span className="text-[7px] text-zinc-600 truncate uppercase">Mail: {user?.email}</span>
+                                                <span className="text-[7px] text-zinc-600 truncate uppercase tracking-tighter">ID: {user?.id}</span>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             )}
 
