@@ -1,44 +1,49 @@
 import React from 'react'
 import { WidgetType, WidgetSize } from '../types/dashboard'
-import EquityChart from '../components/charts/equity-chart'
-import TickDistributionChart from '../components/charts/tick-distribution'
-import PNLChart from '../components/charts/pnl-bar-chart'
-import TimeOfDayTradeChart from '../components/charts/pnl-time-bar-chart'
-import TimeInPositionChart from '../components/charts/time-in-position'
-import TimeRangePerformanceChart from '../components/charts/time-range-performance'
-import WeekdayPNLChart from '../components/charts/weekday-pnl'
-import PnLBySideChart from '../components/charts/pnl-by-side'
-import PnLPerContractChart from '../components/charts/pnl-per-contract'
-import PnLPerContractDailyChart from '../components/charts/pnl-per-contract-daily'
-import AveragePositionTimeCard from '../components/statistics/average-position-time-card'
-import CumulativePnlCard from '../components/statistics/cumulative-pnl-card'
-import LongShortPerformanceCard from '../components/statistics/long-short-card'
-import TradePerformanceCard from '../components/statistics/trade-performance-card'
-import WinningStreakCard from '../components/statistics/winning-streak-card'
-import RiskRewardRatioCard from '../components/statistics/risk-reward-ratio-card'
-import CalendarPnl from '../components/calendar/calendar-widget'
-import CommissionsPnLChart from '../components/charts/commissions-pnl'
-import StatisticsWidget from '../components/statistics/statistics-widget'
-import { TradeTableReview } from '../components/tables/trade-table-review'
-import { MoodSelector } from '../components/calendar/mood-selector'
-import TradeDistributionChart from '../components/charts/trade-distribution'
+import dynamic from 'next/dynamic'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { AccountsOverview } from '../components/accounts/accounts-overview'
-import { TagWidget } from '../components/filters/tag-widget'
-import ProfitFactorCard from '../components/statistics/profit-factor-card'
-import DailyTickTargetChart from '../components/charts/daily-tick-target'
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts'
-import { MindsetWidget } from '../components/mindset/mindset-widget'
-import ChatWidget from '../components/chat/chat'
-import TradingScoreWidget from '../components/widgets/trading-score-widget'
-import ExpectancyWidget from '../components/widgets/expectancy-widget'
-import RiskMetricsWidget from '../components/widgets/risk-metrics-widget'
 import { useI18n } from '@/locales/client'
 import { translateWeekday } from '@/lib/translation-utils'
-// import MarketChart from '../components/market/market-chart'
+
+const WidgetSkeleton = () => <Skeleton className="w-full h-full rounded-2xl" />
+
+const EquityChart = dynamic(() => import('../components/charts/equity-chart'), { ssr: false, loading: () => <WidgetSkeleton /> })
+const TickDistributionChart = dynamic(() => import('../components/charts/tick-distribution'), { ssr: false, loading: () => <WidgetSkeleton /> })
+const PNLChart = dynamic(() => import('../components/charts/pnl-bar-chart'), { ssr: false, loading: () => <WidgetSkeleton /> })
+const TimeOfDayTradeChart = dynamic(() => import('../components/charts/pnl-time-bar-chart'), { ssr: false, loading: () => <WidgetSkeleton /> })
+const TimeInPositionChart = dynamic(() => import('../components/charts/time-in-position'), { ssr: false, loading: () => <WidgetSkeleton /> })
+const TimeRangePerformanceChart = dynamic(() => import('../components/charts/time-range-performance'), { ssr: false, loading: () => <WidgetSkeleton /> })
+const WeekdayPNLChart = dynamic(() => import('../components/charts/weekday-pnl'), { ssr: false, loading: () => <WidgetSkeleton /> })
+const PnLBySideChart = dynamic(() => import('../components/charts/pnl-by-side'), { ssr: false, loading: () => <WidgetSkeleton /> })
+const PnLPerContractChart = dynamic(() => import('../components/charts/pnl-per-contract'), { ssr: false, loading: () => <WidgetSkeleton /> })
+const PnLPerContractDailyChart = dynamic(() => import('../components/charts/pnl-per-contract-daily'), { ssr: false, loading: () => <WidgetSkeleton /> })
+const AveragePositionTimeCard = dynamic(() => import('../components/statistics/average-position-time-card'), { ssr: false, loading: () => <WidgetSkeleton /> })
+const CumulativePnlCard = dynamic(() => import('../components/statistics/cumulative-pnl-card'), { ssr: false, loading: () => <WidgetSkeleton /> })
+const LongShortPerformanceCard = dynamic(() => import('../components/statistics/long-short-card'), { ssr: false, loading: () => <WidgetSkeleton /> })
+const TradePerformanceCard = dynamic(() => import('../components/statistics/trade-performance-card'), { ssr: false, loading: () => <WidgetSkeleton /> })
+const WinningStreakCard = dynamic(() => import('../components/statistics/winning-streak-card'), { ssr: false, loading: () => <WidgetSkeleton /> })
+const RiskRewardRatioCard = dynamic(() => import('../components/statistics/risk-reward-ratio-card'), { ssr: false, loading: () => <WidgetSkeleton /> })
+const CalendarPnl = dynamic(() => import('../components/calendar/calendar-widget'), { ssr: false, loading: () => <WidgetSkeleton /> })
+const CommissionsPnLChart = dynamic(() => import('../components/charts/commissions-pnl'), { ssr: false, loading: () => <WidgetSkeleton /> })
+const StatisticsWidget = dynamic(() => import('../components/statistics/statistics-widget'), { ssr: false, loading: () => <WidgetSkeleton /> })
+const TradeTableReview = dynamic(() => import('../components/tables/trade-table-review').then(mod => mod.TradeTableReview), { ssr: false, loading: () => <WidgetSkeleton /> })
+const MoodSelector = dynamic(() => import('../components/calendar/mood-selector').then(mod => mod.MoodSelector), { ssr: false, loading: () => <WidgetSkeleton /> })
+const TradeDistributionChart = dynamic(() => import('../components/charts/trade-distribution'), { ssr: false, loading: () => <WidgetSkeleton /> })
+const AccountsOverview = dynamic(() => import('../components/accounts/accounts-overview').then(mod => mod.AccountsOverview), { ssr: false, loading: () => <WidgetSkeleton /> })
+const TagWidget = dynamic(() => import('../components/filters/tag-widget').then(mod => mod.TagWidget), { ssr: false, loading: () => <WidgetSkeleton /> })
+const ProfitFactorCard = dynamic(() => import('../components/statistics/profit-factor-card'), { ssr: false, loading: () => <WidgetSkeleton /> })
+const DailyTickTargetChart = dynamic(() => import('../components/charts/daily-tick-target'), { ssr: false, loading: () => <WidgetSkeleton /> })
+const MindsetWidget = dynamic(() => import('../components/mindset/mindset-widget').then(mod => mod.MindsetWidget), { ssr: false, loading: () => <WidgetSkeleton /> })
+const ChatWidget = dynamic(() => import('../components/chat/chat'), { ssr: false, loading: () => <WidgetSkeleton /> })
+const TradingScoreWidget = dynamic(() => import('../components/widgets/trading-score-widget'), { ssr: false, loading: () => <WidgetSkeleton /> })
+const ExpectancyWidget = dynamic(() => import('../components/widgets/expectancy-widget'), { ssr: false, loading: () => <WidgetSkeleton /> })
+const RiskMetricsWidget = dynamic(() => import('../components/widgets/risk-metrics-widget'), { ssr: false, loading: () => <WidgetSkeleton /> })
+
 
 export interface WidgetConfig {
   type: WidgetType

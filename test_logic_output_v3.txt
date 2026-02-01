@@ -1,0 +1,180 @@
+
+> quntedge@0.3 test:payment
+> vitest --config vitest.payment.config.ts --run lib/__tests__/payment-flows.test.ts
+
+
+ RUN  v2.1.9 /Users/timon/Downloads/lassttry-edge--main
+
+stdout | lib/__tests__/payment-flows.test.ts
+[2026-02-01T22:28:02.586Z] WARN: [SecurityManager] Encryption key not configured 
+
+stderr | lib/__tests__/payment-flows.test.ts
+DATABASE_URL not configured. Using IN-MEMORY MOCK.
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > Payment Service Tests > Checkout Session Creation > should create a checkout session for monthly plan
+[2026-02-01T22:28:02.611Z] INFO: [PaymentService] Checkout session created {"userId":"test-user-1","email":"test@example.com","plan":"monthly"}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > Payment Service Tests > Checkout Session Creation > should create a checkout session with referral code
+[2026-02-01T22:28:02.613Z] INFO: [PaymentService] Checkout session created {"userId":"test-user-2","email":"test@example.com","plan":"yearly"}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > Payment Service Tests > Transaction Recording > should record a successful transaction
+[2026-02-01T22:28:02.618Z] INFO: [PaymentService] Transaction recorded {"transactionId":"xw7cu","userId":"test-user","amount":2900}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > Payment Service Tests > Transaction Recording > should not record duplicate transactions
+[2026-02-01T22:28:02.619Z] INFO: [PaymentService] Transaction recorded {"transactionId":"kgmmay","userId":"test-user","amount":2900}
+[2026-02-01T22:28:02.620Z] ERROR: [PaymentService] Failed to record transaction {"error":{"code":"P2002"},"data":{"userId":"test-user","email":"test@example.com","whopTransactionId":"txn_test_123","amount":2900,"currency":"USD","type":"SUBSCRIPTION","status":"COMPLETED"}}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > Payment Service Tests > Invoice Creation > should create an invoice
+[2026-02-01T22:28:02.622Z] INFO: [PaymentService] Invoice created {"invoiceId":"o7mep8","userId":"test-user","amountDue":2900}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > Payment Service Tests > Refund Processing > should process a full refund
+[2026-02-01T22:28:02.625Z] INFO: [PaymentService] Refund initiated {"refundId":"benpob","transactionId":"9l75m4","amount":2900}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > Payment Service Tests > Refund Processing > should process a partial refund
+[2026-02-01T22:28:02.627Z] INFO: [PaymentService] Refund initiated {"refundId":"p3br5o","transactionId":"ra24ys","amount":1450}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > Subscription Manager Tests > Subscription Creation > should create a monthly subscription
+[2026-02-01T22:28:02.630Z] INFO: [SubscriptionManager] Subscription created/updated {"subscriptionId":"8ygwr","userId":"test-user-monthly","plan":"monthly","status":"ACTIVE"}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > Subscription Manager Tests > Subscription Creation > should create a trial subscription
+[2026-02-01T22:28:02.631Z] INFO: [SubscriptionManager] Subscription created/updated {"subscriptionId":"ttg8xw","userId":"test-user-trial","plan":"monthly","status":"TRIAL"}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > Subscription Manager Tests > Subscription Creation > should create a lifetime subscription
+[2026-02-01T22:28:02.631Z] INFO: [SubscriptionManager] Subscription created/updated {"subscriptionId":"e5ysmo","userId":"test-user-lifetime","plan":"lifetime","status":"ACTIVE"}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > Subscription Manager Tests > Subscription Updates > should upgrade subscription plan
+[2026-02-01T22:28:02.632Z] INFO: [SubscriptionManager] Subscription updated {"userId":"test-user-upgrade","updateData":{"plan":"YEARLY","interval":"year"}}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > Subscription Manager Tests > Subscription Updates > should downgrade subscription plan
+[2026-02-01T22:28:02.633Z] INFO: [SubscriptionManager] Subscription updated {"userId":"test-user-downgrade","updateData":{"plan":"MONTHLY","interval":"month"}}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > Subscription Manager Tests > Subscription Cancellation > should cancel subscription immediately
+[2026-02-01T22:28:02.634Z] INFO: [SubscriptionManager] Subscription cancelled immediately {"userId":"test-user-cancel-immediate"}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > Subscription Manager Tests > Subscription Cancellation > should schedule subscription cancellation
+[2026-02-01T22:28:02.635Z] INFO: [SubscriptionManager] Subscription scheduled for cancellation {"userId":"test-user-cancel-end","effectiveDate":"2026-03-03T22:28:02.635Z"}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > Subscription Manager Tests > Payment Failure Handling > should mark subscription as past due on first failure
+[2026-02-01T22:28:02.637Z] INFO: [SubscriptionManager] Payment failure recorded, subscription past due {"userId":"test-user-fail-1","attemptNumber":1}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > Subscription Manager Tests > Payment Failure Handling > should cancel subscription after 3 failures
+[2026-02-01T22:28:02.638Z] WARN: [SubscriptionManager] Subscription cancelled due to payment failure {"userId":"test-user-fail-3","attempts":3}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > Subscription Manager Tests > Payment Success Handling > should update subscription on successful payment
+[2026-02-01T22:28:02.640Z] INFO: [PaymentService] Transaction recorded {"transactionId":"njivix","userId":"test-user-success","amount":2900}
+[2026-02-01T22:28:02.640Z] INFO: [SubscriptionManager] Payment success handled {"userId":"test-user-success","amount":2900,"endDate":"2026-04-02T22:28:02.640Z"}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > Subscription Manager Tests > Grace Period Management > should start grace period for expired subscriptions
+[2026-02-01T22:28:02.643Z] INFO: [SubscriptionManager] Grace period started {"subscriptionId":"lzxcz","gracePeriodEndsAt":"2026-02-07T22:28:02.642Z"}
+[2026-02-01T22:28:02.643Z] INFO: [SubscriptionManager] Grace period check completed {"processed":1,"errors":0}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > Webhook Service Tests > Membership Events > should process membership.activated event
+[2026-02-01T22:28:02.645Z] INFO: [WebhookService] Processing webhook event {"eventType":"membership.activated","eventId":"evt_test_activated"}
+[2026-02-01T22:28:02.646Z] INFO: [SubscriptionManager] Subscription created/updated {"subscriptionId":"m5en4e","userId":"user_webhook","plan":"monthly","status":"ACTIVE"}
+[2026-02-01T22:28:02.646Z] INFO: [WebhookService] Membership activated {"email":"webhook@example.com","plan":"monthly","interval":"month","isTrial":false}
+[2026-02-01T22:28:02.646Z] INFO: [WebhookService] Webhook event logged {"eventId":"evt_test_activated","eventType":"membership.activated","success":true,"processed":true}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > Webhook Service Tests > Membership Events > should process membership.deactivated event
+[2026-02-01T22:28:02.647Z] INFO: [WebhookService] Processing webhook event {"eventType":"membership.deactivated","eventId":"evt_test_deactivated"}
+[2026-02-01T22:28:02.647Z] INFO: [WebhookService] Membership deactivated {"email":"webhook@example.com"}
+[2026-02-01T22:28:02.648Z] INFO: [WebhookService] Webhook event logged {"eventId":"evt_test_deactivated","eventType":"membership.deactivated","success":true,"processed":true}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > Webhook Service Tests > Membership Events > should process membership.updated event
+[2026-02-01T22:28:02.648Z] INFO: [WebhookService] Processing webhook event {"eventType":"membership.updated","eventId":"evt_test_updated"}
+[2026-02-01T22:28:02.649Z] INFO: [WebhookService] Membership updated {"email":"webhook@example.com","plan":"yearly"}
+[2026-02-01T22:28:02.649Z] INFO: [WebhookService] Webhook event logged {"eventId":"evt_test_updated","eventType":"membership.updated","success":true,"processed":true}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > Webhook Service Tests > Payment Events > should process payment.failed event
+[2026-02-01T22:28:02.664Z] INFO: [WebhookService] Processing webhook event {"eventType":"payment.failed","eventId":"evt_test_payment_failed"}
+[2026-02-01T22:28:02.665Z] INFO: [WebhookService] Payment failed {"email":"test@example.com","attemptNumber":1}
+[2026-02-01T22:28:02.665Z] INFO: [WebhookService] Webhook event logged {"eventId":"evt_test_payment_failed","eventType":"payment.failed","success":true,"processed":true}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > Webhook Service Tests > Invoice Events > should process invoice.created event
+[2026-02-01T22:28:02.666Z] INFO: [WebhookService] Processing webhook event {"eventType":"invoice.created","eventId":"evt_test_invoice_created"}
+[2026-02-01T22:28:02.666Z] INFO: [PaymentService] Invoice created {"invoiceId":"udrjrb","userId":"user_invoice","amountDue":2900}
+[2026-02-01T22:28:02.666Z] INFO: [WebhookService] Invoice created {"invoiceId":"inv_test_webhook","email":"invoice@example.com"}
+[2026-02-01T22:28:02.666Z] INFO: [WebhookService] Webhook event logged {"eventId":"evt_test_invoice_created","eventType":"invoice.created","success":true,"processed":true}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > Webhook Service Tests > Invoice Events > should process invoice.paid event
+[2026-02-01T22:28:02.666Z] INFO: [WebhookService] Processing webhook event {"eventType":"invoice.paid","eventId":"evt_test_invoice_paid"}
+[2026-02-01T22:28:02.667Z] INFO: [WebhookService] Invoice paid {"invoiceId":"inv_test_paid"}
+[2026-02-01T22:28:02.667Z] INFO: [WebhookService] Webhook event logged {"eventId":"evt_test_invoice_paid","eventType":"invoice.paid","success":true,"processed":true}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > Security Manager Tests > Encryption/Decryption > should encrypt and decrypt text correctly
+[2026-02-01T22:28:02.668Z] ERROR: [SecurityManager] Encryption failed {"error":{}}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > Security Manager Tests > Encryption/Decryption > should produce different encrypted values for same input
+[2026-02-01T22:28:02.670Z] ERROR: [SecurityManager] Encryption failed {"error":{}}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > End-to-End Payment Flow Tests > should complete full subscription lifecycle
+[2026-02-01T22:28:02.683Z] INFO: [PaymentService] Checkout session created {"userId":"e2e-test-user","email":"e2e@example.com","plan":"monthly"}
+[2026-02-01T22:28:02.683Z] INFO: [SubscriptionManager] Subscription created/updated {"subscriptionId":"ih7kn","userId":"e2e-test-user","plan":"monthly","status":"ACTIVE"}
+[2026-02-01T22:28:02.683Z] INFO: [PaymentService] Transaction recorded {"transactionId":"uo8dg","userId":"e2e-test-user","amount":2900}
+[2026-02-01T22:28:02.684Z] INFO: [SubscriptionManager] Subscription cancelled immediately {"userId":"e2e-test-user"}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > End-to-End Payment Flow Tests > should handle payment failure and retry
+[2026-02-01T22:28:02.684Z] INFO: [SubscriptionManager] Subscription created/updated {"subscriptionId":"fw7pmi","userId":"e2e-retry-user","plan":"monthly","status":"ACTIVE"}
+[2026-02-01T22:28:02.684Z] INFO: [SubscriptionManager] Payment failure recorded, subscription past due {"userId":"e2e-retry-user","attemptNumber":1}
+[2026-02-01T22:28:02.684Z] INFO: [SubscriptionManager] Payment failure recorded, subscription past due {"userId":"e2e-retry-user","attemptNumber":2}
+[2026-02-01T22:28:02.684Z] WARN: [SubscriptionManager] Subscription cancelled due to payment failure {"userId":"e2e-retry-user","attempts":3}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > End-to-End Payment Flow Tests > should handle plan upgrade
+[2026-02-01T22:28:02.685Z] INFO: [SubscriptionManager] Subscription created/updated {"subscriptionId":"jl9npo","userId":"e2e-upgrade-user","plan":"monthly","status":"ACTIVE"}
+[2026-02-01T22:28:02.685Z] INFO: [SubscriptionManager] Subscription updated {"userId":"e2e-upgrade-user","updateData":{"plan":"YEARLY","interval":"year"}}
+
+stdout | lib/__tests__/payment-flows.test.ts > Payment System Tests > End-to-End Payment Flow Tests > should handle refund flow
+[2026-02-01T22:28:02.685Z] INFO: [PaymentService] Refund initiated {"refundId":"cfujjr","transactionId":"p040iw","amount":2900}
+
+ ❯ lib/__tests__/payment-flows.test.ts (46 tests | 3 failed) 84ms
+   × Payment System Tests > Webhook Service Tests > Payment Events > should process payment.succeeded event 15ms
+     → whop is not defined
+   × Payment System Tests > Security Manager Tests > Encryption/Decryption > should encrypt and decrypt text correctly 3ms
+     → Encryption failed
+   × Payment System Tests > Security Manager Tests > Encryption/Decryption > should produce different encrypted values for same input 1ms
+     → Encryption failed
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/__tests__/payment-flows.test.ts > Payment System Tests > Webhook Service Tests > Payment Events > should process payment.succeeded event
+ReferenceError: whop is not defined
+ ❯ lib/__tests__/payment-flows.test.ts:542:38
+    540| 
+    541|         // Spy on whop.memberships.retrieve instead of non-existent fe…
+    542|         const retrieveSpy = vi.spyOn(whop.memberships, 'retrieve').moc…
+       |                                      ^
+    543|           id: 'membership_test',
+    544|           valid: true,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  lib/__tests__/payment-flows.test.ts > Payment System Tests > Security Manager Tests > Encryption/Decryption > should encrypt and decrypt text correctly
+Error: Encryption failed
+ ❯ SecurityManager.encrypt server/payment-security.ts:74:13
+     72|     } catch (error) {
+     73|       logger.error('[SecurityManager] Encryption failed', { error })
+     74|       throw new Error('Encryption failed')
+       |             ^
+     75|     }
+     76|   }
+ ❯ lib/__tests__/payment-flows.test.ts:630:43
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  lib/__tests__/payment-flows.test.ts > Payment System Tests > Security Manager Tests > Encryption/Decryption > should produce different encrypted values for same input
+Error: Encryption failed
+ ❯ SecurityManager.encrypt server/payment-security.ts:74:13
+     72|     } catch (error) {
+     73|       logger.error('[SecurityManager] Encryption failed', { error })
+     74|       throw new Error('Encryption failed')
+       |             ^
+     75|     }
+     76|   }
+ ❯ lib/__tests__/payment-flows.test.ts:638:44
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 43 passed (46)
+   Start at  03:57:51
+   Duration  10.28s (transform 942ms, setup 804ms, collect 477ms, tests 84ms, environment 1ms, prepare 2.64s)
+

@@ -4,9 +4,12 @@ import { subscriptionManager } from '@/server/subscription-manager'
 import { webhookService } from '@/server/webhook-service'
 import { securityManager } from '@/server/payment-security'
 import { prisma } from '@/lib/prisma'
+import { whop } from '@/lib/whop'
 
 describe('Payment System Tests', () => {
   beforeEach(async () => {
+    // Set encryption key for SecurityManager tests
+    process.env.ENCRYPTION_KEY = 'test-encryption-key-must-be-32-chars-longg'
     vi.clearAllMocks()
   })
 
@@ -538,11 +541,17 @@ describe('Payment System Tests', () => {
           created_at: Date.now() / 1000,
         }
 
-        vi.spyOn(webhookService as any, 'fetchMembership').mockResolvedValue({
+        // Spy on whop.memberships.retrieve instead of non-existent fetchMembership method
+        const retrieveSpy = vi.spyOn(whop.memberships, 'retrieve').mockResolvedValue({
+          id: 'membership_test',
+          valid: true,
+          status: 'active',
           user: { email: 'payment@example.com', id: 'user_payment' },
           metadata: { user_id: 'user_payment', plan: 'monthly' },
-          renewal_period_end: (Date.now() + 30 * 24 * 60 * 60 * 1000) / 1000,
+          renewal_period_end: Math.floor(Date.now() / 1000) + 86400 * 30,
         })
+
+        // ... (rest of the test might need adjustment if it calls processWebhook)
 
         const result = await webhookService.processWebhook(event)
 
@@ -663,7 +672,7 @@ describe('Payment System Tests', () => {
         const cardNumber = '4242424242424242'
         const masked = securityManager.maskCardNumber(cardNumber)
 
-        expect(masked).toBe('4242************4242')
+        expect(masked).toBe('4242********4242')
       })
 
       it('should mask email correctly', () => {

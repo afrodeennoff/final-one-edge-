@@ -124,22 +124,35 @@ export function TerminalAuthForm({ className }: TerminalAuthFormProps) {
                     >
                         <div className="space-y-2 group">
                             <label className="text-[10px] uppercase font-bold text-zinc-500 group-focus-within:text-teal-500 transition-colors tracking-widest">Operator Identity</label>
-                            <input
-                                autoFocus
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="w-full bg-zinc-950/50 border-b border-zinc-800 text-white py-4 focus:border-teal-500 focus:bg-zinc-900/40 transition-all outline-none text-lg font-mono placeholder:text-zinc-800 rounded-t-md px-1"
-                                placeholder="trader@deltalytix.app"
-                                required
-                            />
+                            <div className="relative">
+                                <input
+                                    autoFocus
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="w-full bg-zinc-950/30 border-b border-zinc-800 text-white py-4 focus:border-teal-500 focus:bg-zinc-900/20 transition-all outline-none text-lg font-mono placeholder:text-zinc-800 rounded-t-lg px-2"
+                                    placeholder="trader@quntedge.app"
+                                    required
+                                />
+                                <motion.div
+                                    className="absolute bottom-0 left-0 h-0.5 bg-teal-500"
+                                    initial={{ width: 0 }}
+                                    whileFocus={{ width: "100%" }}
+                                    transition={{ duration: 0.3 }}
+                                />
+                            </div>
                         </div>
 
                         <div className="space-y-3">
-                            <button type="submit" className="w-full bg-white text-black font-bold uppercase tracking-widest text-[10px] py-4 hover:bg-zinc-200 transition-all flex items-center justify-center gap-2 group rounded-sm shadow-lg shadow-white/5 active:scale-[0.98]">
+                            <motion.button
+                                whileHover={{ scale: 1.01 }}
+                                whileTap={{ scale: 0.99 }}
+                                type="submit"
+                                className="w-full bg-white text-black font-bold uppercase tracking-widest text-[10px] py-4 hover:bg-zinc-200 transition-all flex items-center justify-center gap-2 group rounded-lg shadow-lg shadow-white/5"
+                            >
                                 <span>Continue</span>
                                 <Icons.chevronRight className="w-3 h-3 transition-transform group-hover:translate-x-1" />
-                            </button>
+                            </motion.button>
 
                             <div className="relative py-2">
                                 <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-zinc-900"></div></div>
@@ -179,26 +192,37 @@ export function TerminalAuthForm({ className }: TerminalAuthFormProps) {
                     >
                         <div className="space-y-4">
                             <div className="space-y-2 group">
-                                <div className="flex justify-between items-center">
-                                    <label className="text-[10px] uppercase font-bold text-zinc-500 group-focus-within:text-teal-500 transition-colors tracking-widest">Encryption Key</label>
-                                    <button type="button" onClick={() => setStep('identify')} className="text-[9px] text-zinc-500 hover:text-white transition-colors uppercase font-bold tracking-tighter decoration-teal-500/50 underline-offset-4 hover:underline">Revise ID</button>
+                                <label className="text-[10px] uppercase font-bold text-zinc-500 group-focus-within:text-teal-500 transition-colors tracking-widest">Encryption Key</label>
+                                <div className="relative">
+                                    <input
+                                        autoFocus
+                                        type="password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        className="w-full bg-zinc-950/30 border-b border-zinc-800 text-white py-4 focus:border-teal-500 focus:bg-zinc-900/20 transition-all outline-none text-lg font-mono placeholder:text-zinc-800 rounded-t-lg px-2"
+                                        placeholder="••••••••••••"
+                                        required
+                                    />
+                                    <motion.div
+                                        className="absolute bottom-0 left-0 h-0.5 bg-teal-500"
+                                        initial={{ width: 0 }}
+                                        whileFocus={{ width: "100%" }}
+                                        transition={{ duration: 0.3 }}
+                                    />
                                 </div>
-                                <input
-                                    autoFocus
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full bg-zinc-950/50 border-b border-zinc-800 text-white py-4 focus:border-teal-500 focus:bg-zinc-900/40 transition-all outline-none text-lg font-mono placeholder:text-zinc-800 rounded-t-md px-1"
-                                    placeholder="••••••••••••"
-                                    required
-                                />
+                                <button type="button" onClick={() => setStep('identify')} className="text-[9px] text-zinc-500 hover:text-white transition-colors uppercase font-bold tracking-tighter decoration-teal-500/50 underline-offset-4 hover:underline mt-1">Revise ID</button>
                             </div>
                         </div>
 
                         <div className="space-y-3">
-                            <button type="submit" className="w-full bg-teal-500 text-black font-bold uppercase tracking-widest text-[10px] py-4 hover:bg-teal-400 transition-all shadow-[0_0_20px_-5px_rgba(45,212,191,0.3)] hover:shadow-[0_0_25px_-5px_rgba(45,212,191,0.5)] rounded-sm active:scale-[0.98]">
+                            <motion.button
+                                whileHover={{ scale: 1.01 }}
+                                whileTap={{ scale: 0.99 }}
+                                type="submit"
+                                className="w-full bg-teal-500 text-black font-bold uppercase tracking-widest text-[10px] py-4 hover:bg-teal-400 transition-all shadow-[0_0_20px_-5px_rgba(45,212,191,0.3)] hover:shadow-[0_0_25px_-5px_rgba(45,212,191,0.5)] rounded-lg"
+                            >
                                 Initiate Session
-                            </button>
+                            </motion.button>
 
                             <button
                                 type="button"

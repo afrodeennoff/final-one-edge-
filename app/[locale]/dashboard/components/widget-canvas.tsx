@@ -224,6 +224,11 @@ export default function WidgetCanvas() {
     isMobile
   } = useDashboard()
 
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   const [isUserAction, setIsUserAction] = useState(false)
   const ResponsiveGridLayout = useMemo(() => WidthProvider(Responsive), [])
 
@@ -237,8 +242,6 @@ export default function WidgetCanvas() {
   const responsiveLayout = useMemo(() => {
     return generateResponsiveLayout(currentLayout)
   }, [currentLayout])
-
-
 
   useAutoScroll(isMobile && isCustomizing)
 
@@ -259,6 +262,8 @@ export default function WidgetCanvas() {
 
     return getWidgetComponent(widget.type as WidgetType, effectiveSize)
   }, [isMobile, removeWidget])
+
+  if (!mounted) return null
 
   return (
     <div className={cn(

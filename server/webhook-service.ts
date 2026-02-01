@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { whop } from '@/lib/whop'
 import { PrismaClient } from '@/prisma/generated/prisma'
-import { PrismaPg } from '@prisma/adapter-pg'
-import pg from 'pg'
+import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
 import { subscriptionManager } from './subscription-manager'
 import { paymentService } from './payment-service'
@@ -48,7 +47,7 @@ export class WebhookService {
       const hmac = crypto.createHmac('sha256', secret)
       hmac.update(payload)
       const digest = hmac.digest('hex')
-      
+
       return crypto.timingSafeEqual(
         Buffer.from(signature),
         Buffer.from(digest)
@@ -84,19 +83,45 @@ export class WebhookService {
   }
 
   private async processEvent(event: WebhookEvent): Promise<WebhookProcessingResult> {
-    const pool = new pg.Pool({
-      connectionString: process.env.DATABASE_URL,
-    })
-    const adapter = new PrismaPg(pool)
-    const prisma = new PrismaClient({ adapter })
-
     try {
       logger.info('[WebhookService] Processing webhook event', {
         eventType: event.type,
         eventId: event.id,
       })
 
+      // Check for already processed webhook (Idempotency)
+      const existing = await prisma.processedWebhook.findUnique({
+        where: {
+          webhookId_type: {
+            webhookId: event.id,
+            type: event.type,
+          }
+        }
+      })
+
+      if (existing) {
+        logger.info('[WebhookService] Event already processed (db)', { eventId: event.id })
+        return {
+          success: true,
+          eventType: event.type,
+          processed: false,
+        }
+      }
+
       const result = await this.handleEventByType(event, prisma)
+
+      if (result.success && result.processed) {
+        await prisma.processedWebhook.create({
+          data: {
+            webhookId: event.id,
+            type: event.type,
+            metadata: JSON.stringify({
+              timestamp: new Date().toISOString(),
+              eventType: event.type
+            })
+          }
+        })
+      }
 
       await this.logWebhookEvent({
         eventId: event.id,
@@ -128,8 +153,6 @@ export class WebhookService {
         processed: false,
         error: error instanceof Error ? error.message : 'Unknown error',
       }
-    } finally {
-      await pool.end()
     }
   }
 
@@ -142,37 +165,37 @@ export class WebhookService {
     switch (type) {
       case 'membership.activated':
         return await this.handleMembershipActivated(data, prisma)
-      
+
       case 'membership.deactivated':
         return await this.handleMembershipDeactivated(data, prisma)
-      
+
       case 'membership.updated':
         return await this.handleMembershipUpdated(data, prisma)
-      
+
       case 'membership.trialing':
         return await this.handleMembershipTrialing(data, prisma)
-      
+
       case 'payment.succeeded':
         return await this.handlePaymentSucceeded(data, prisma)
-      
+
       case 'payment.failed':
         return await this.handlePaymentFailed(data, prisma)
-      
+
       case 'payment.refunded':
         return await this.handlePaymentRefunded(data, prisma)
-      
+
       case 'payment.partially_refunded':
         return await this.handlePaymentPartiallyRefunded(data, prisma)
-      
+
       case 'invoice.created':
         return await this.handleInvoiceCreated(data, prisma)
-      
+
       case 'invoice.paid':
         return await this.handleInvoicePaid(data, prisma)
-      
+
       case 'invoice.payment_failed':
         return await this.handleInvoicePaymentFailed(data, prisma)
-      
+
       default:
         logger.warn('[WebhookService] Unhandled event type', { eventType: type })
         return {
@@ -201,7 +224,7 @@ export class WebhookService {
       const metadata = membership.metadata || {}
       const userId = metadata.user_id
       const planName = metadata.plan || membership.product?.title || 'PLUS'
-      
+
       const interval = planName.toLowerCase().includes('monthly') ? 'month' :
         planName.toLowerCase().includes('quarterly') ? 'quarter' :
           planName.toLowerCase().includes('yearly') ? 'year' :
@@ -343,7 +366,7 @@ export class WebhookService {
           plan: planName.toUpperCase(),
           interval,
           status: membership.status.toUpperCase(),
-          endDate: membership.renewal_period_end 
+          endDate: membership.renewal_period_end
             ? new Date(membership.renewal_period_end * 1000)
             : undefined,
         },

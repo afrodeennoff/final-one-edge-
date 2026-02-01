@@ -6,7 +6,7 @@ import { headers } from 'next/headers'
 
 const ALGORITHM = 'aes-256-gcm'
 const KEY_LENGTH = 32
-const IV_LENGTH = 16
+const IV_LENGTH = 12
 const SALT_LENGTH = 64
 const TAG_LENGTH = 16
 const TAG_POSITION = SALT_LENGTH + IV_LENGTH
@@ -70,7 +70,7 @@ class SecurityManager {
       const buffer = Buffer.concat([salt, iv, tag, encrypted])
       return buffer.toString('base64')
     } catch (error) {
-      logger.error('[SecurityManager] Encryption failed', { error })
+      logger.error('[SecurityManager] Encryption failed', { error: error instanceof Error ? error.message : error })
       throw new Error('Encryption failed')
     }
   }

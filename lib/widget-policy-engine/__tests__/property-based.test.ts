@@ -22,7 +22,7 @@ describe('Property-Based Tests', () => {
             action: fc.string(),
             inputs: fc.constant({}),
             environmentContext: fc.record({
-              deploymentEnv: fc.constantFrom('development', 'staging', 'production' as const),
+              deploymentEnv: fc.constantFrom('development' as const, 'staging' as const, 'production' as const),
               region: fc.string(),
               telemetryEnabled: fc.boolean(),
             }),
@@ -35,6 +35,7 @@ describe('Property-Based Tests', () => {
               policyVersion: '1.0.0',
               riskAssessment: {
                 severityTier: 'Medium' as SeverityTier,
+                residualRiskScore: 0,
                 ...assessment,
               },
               features: [],
@@ -77,8 +78,8 @@ describe('Property-Based Tests', () => {
           fc.integer({ min: 0, max: 100 }).chain(impact =>
             fc.integer({ min: 0, max: 5 }).map(control => ({ impact, control }))
           ),
-          fc.float({ min: 0.3, max: 0.7 }),
-          fc.float({ min: 0.01, max: 0.2 }),
+          fc.float({ min: Math.fround(0.3), max: Math.fround(0.7) }),
+          fc.float({ min: Math.fround(0.01), max: Math.fround(0.2) }),
           async ({ impact, control }, prob1, prob2) => {
             if (prob1 === prob2) return true
 
@@ -220,8 +221,8 @@ describe('Property-Based Tests', () => {
       fc.assert(
         fc.property(
           fc.integer({ min: 301, max: 1000 }),
-          fc.float({ min: 0.0011, max: 0.1 }),
-          fc.float({ min: 0.051, max: 1 }),
+          fc.float({ min: Math.fround(0.0011), max: Math.fround(0.1) }),
+          fc.float({ min: Math.fround(0.051), max: 1 }),
           (latency, errorRate, drift) => {
             const manifest = {
               schemaVersion: '1.0.0',

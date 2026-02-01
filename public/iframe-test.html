@@ -1326,7 +1326,7 @@
 
         // Load configuration from localStorage
         function loadConfiguration() {
-            const saved = localStorage.getItem('deltalytix-embed-config');
+            const saved = localStorage.getItem('quntedge-embed-config');
             if (saved) {
                 try {
                     currentConfig = { ...currentConfig, ...JSON.parse(saved) };
@@ -1344,7 +1344,7 @@
 
         // Save configuration to localStorage
         function saveConfiguration() {
-            localStorage.setItem('deltalytix-embed-config', JSON.stringify(currentConfig));
+            localStorage.setItem('quntedge-embed-config', JSON.stringify(currentConfig));
         }
 
         // Update configuration and reload iframe

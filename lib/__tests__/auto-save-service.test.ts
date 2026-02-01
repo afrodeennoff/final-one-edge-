@@ -70,9 +70,9 @@ describe('AutoSaveService', () => {
         })
 
         it('should prevent concurrent saves', async () => {
-            let resolveSave: (value: unknown) => void
-            const slowSaveFunction = vi.fn(() => 
-                new Promise(resolve => {
+            let resolveSave: (value: { success: boolean }) => void
+            const slowSaveFunction = vi.fn(() =>
+                new Promise<{ success: boolean }>(resolve => {
                     resolveSave = resolve
                 })
             )
@@ -84,7 +84,7 @@ describe('AutoSaveService', () => {
             await new Promise(resolve => setTimeout(resolve, 50))
             expect(slowSaveFunction).toHaveBeenCalledTimes(1)
 
-            resolveSave!(undefined)
+            resolveSave!({ success: true })
             await new Promise(resolve => setTimeout(resolve, 50))
         })
     })
@@ -411,7 +411,7 @@ describe('AutoSaveService', () => {
 
         it('should handle concurrent disposal', async () => {
             let resolveSave: (value: unknown) => void
-            mockSaveFunction = vi.fn(() => 
+            mockSaveFunction = vi.fn(() =>
                 new Promise(resolve => {
                     resolveSave = resolve
                 })

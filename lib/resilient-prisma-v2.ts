@@ -31,10 +31,12 @@ const poolConfig: pg.PoolConfig = {
 let pool: pg.Pool
 
 if (process.env.NODE_ENV === 'production') {
-  pool = globalForPrisma.pool || new pg.Pool(poolConfig)
-  if (process.env.NODE_ENV !== 'production') globalForPrisma.pool = pool
-} else {
   pool = new pg.Pool(poolConfig)
+} else {
+  if (!globalForPrisma.pool) {
+    globalForPrisma.pool = new pg.Pool(poolConfig)
+  }
+  pool = globalForPrisma.pool
 }
 
 pool.on('error', (err) => {

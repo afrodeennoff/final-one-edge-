@@ -32,21 +32,23 @@ const poolConfig: pg.PoolConfig = {
   connectionTimeoutMillis: 15000,
 }
 
-const pool = new pg.Pool(poolConfig)
+export const prisma = globalForPrisma.prisma ?? (() => {
+  const pool = new pg.Pool(poolConfig)
 
-pool.on('error', (err) => {
-  console.error('[Prisma] Unexpected error on idle client', err)
-})
+  pool.on('error', (err) => {
+    console.error('[Prisma] Unexpected error on idle client', err)
+  })
 
-pool.on('connect', () => {
-  console.log('[Prisma] New client connected to database')
-})
+  pool.on('connect', () => {
+    console.log('[Prisma] New client connected to database')
+  })
 
-const adapter = new PrismaPg(pool)
+  const adapter = new PrismaPg(pool)
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient({
-  adapter,
-  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-})
+  return new PrismaClient({
+    adapter,
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  })
+})()
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma 
