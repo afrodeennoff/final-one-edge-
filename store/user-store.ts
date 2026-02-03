@@ -16,7 +16,7 @@ import {
   updateGroupAction,
 } from "@/server/groups";
 
-type SubscriptionData = {
+export type SubscriptionData = {
   id: string;
   email: string;
   plan: string;
@@ -37,7 +37,7 @@ export type DashboardLayoutWithWidgets = {
   updatedAt: Date;
 };
 
-type UserStore = {
+export type UserStore = {
   user: User | null;
   supabaseUser: SupabaseUser | null;
   subscription: SubscriptionData;
