@@ -21,6 +21,7 @@ export default async function DashboardLayout({
 
   return (
     <DashboardProvider>
+      <DashboardLayoutLoader />
       <div className="flex min-h-screen w-full bg-background selection:bg-accent-teal/30 selection:text-fg-primary">
         <AIModelSidebar />
         <SidebarInset className="flex-1 relative overflow-hidden">

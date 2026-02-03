@@ -1,0 +1,1 @@
+export const DASHBOARD_LAYOUT_VERSION = 1
