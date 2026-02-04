@@ -29,9 +29,9 @@ export async function GET(request: Request) {
   if (code) {
     try {
       const supabase = await createClient()
-      const { error } = await supabase.auth.exchangeCodeForSession(code)
+      const { error, data } = await supabase.auth.exchangeCodeForSession(code)
 
-      if (!error) {
+      if (!error && data?.session) {
         // Handle password recovery redirect
         if (type === 'recovery') {
           const forwardedHost = request.headers.get('x-forwarded-host')
@@ -86,6 +86,10 @@ export async function GET(request: Request) {
         }
       } else {
         console.log('Auth callback error:', error)
+        // Redirect with specific error information
+        const errorParam = error?.message?.includes('Invalid code') ? 'invalid_code' : 
+                          error?.message?.includes('Session') ? 'session_invalid' : 'auth_failed'
+        return NextResponse.redirect(`${origin}/authentication?auth_error=${errorParam}`)
       }
     } catch (error: any) {
       // Handle JSON parsing errors from Supabase API
@@ -103,6 +107,15 @@ export async function GET(request: Request) {
     }
   }
 
-  // return the user to the authentication page
-  return NextResponse.redirect(`${origin}/authentication`)
+  // Handle authentication errors by redirecting with error parameter
+  const error = searchParams.get('error')
+  const errorDescription = searchParams.get('error_description')
+  
+  if (error) {
+    console.log('OAuth error received:', { error, errorDescription })
+    return NextResponse.redirect(`${origin}/authentication?auth_error=${error}${errorDescription ? `&error_description=${encodeURIComponent(errorDescription)}` : ''}`)
+  }
+  
+  // return the user to the authentication page with session invalid error
+  return NextResponse.redirect(`${origin}/authentication?auth_error=session_invalid`)
 }
