@@ -522,20 +522,20 @@ export async function saveDashboardLayoutWithVersionAction(
     changeType: 'manual' | 'auto' | 'migration' | 'conflict_resolution'
     deviceId: string
   }
-): Promise<SaveLayoutResult> {
+): Promise<void> {
   const userId = await getUserId()
   
   if (!userId) {
-    return { success: false, error: 'User not authenticated' }
+    throw new Error('User not authenticated')
   }
   
   if (!layouts) {
-    return { success: false, error: 'Layouts data is required' }
+    throw new Error('Layouts data is required')
   }
   
   if (!validateLayouts(layouts)) {
     logger.error('[saveDashboardLayoutWithVersion] Validation failed', { userId })
-    return { success: false, error: 'Invalid layout structure' }
+    throw new Error('Invalid layout structure')
   }
 
   try {
@@ -590,13 +590,9 @@ export async function saveDashboardLayoutWithVersionAction(
     revalidatePath('/')
     
     logger.info('[saveDashboardLayoutWithVersion] Success', { userId })
-    return { success: true }
   } catch (error) {
     logger.error('[saveDashboardLayoutWithVersion] Error', { error, userId })
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Unknown database error' 
-    }
+    throw error
   }
 }
 
