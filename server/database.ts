@@ -532,11 +532,6 @@ export async function saveDashboardLayoutWithVersionAction(
   if (!layouts) {
     throw new Error('Layouts data is required')
   }
-  
-  if (!validateLayouts(layouts)) {
-    logger.error('[saveDashboardLayoutWithVersion] Validation failed', { userId })
-    throw new Error('Invalid layout structure')
-  }
 
   try {
     await prisma.$transaction(async (tx) => {
