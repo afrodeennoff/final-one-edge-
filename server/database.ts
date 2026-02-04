@@ -314,12 +314,24 @@ export async function updateTradeVideoUrlAction(tradeId: string, videoUrl: strin
 
 export async function loadDashboardLayoutAction(): Promise<Layouts | null> {
   const userId = await getUserId()
+  console.log('[loadDashboardLayoutAction] Loading layout for userId:', userId)
+  
   try {
     const dashboard = await prisma.dashboardLayout.findUnique({
       where: { userId },
     })
 
-    if (!dashboard) return null
+    if (!dashboard) {
+      console.log('[loadDashboardLayoutAction] No layout found for userId:', userId)
+      return null
+    }
+
+    console.log('[loadDashboardLayoutAction] Layout found:', {
+      userId,
+      desktopWidgets: Array.isArray(dashboard.desktop) ? dashboard.desktop.length : 0,
+      mobileWidgets: Array.isArray(dashboard.mobile) ? dashboard.mobile.length : 0,
+      updatedAt: dashboard.updatedAt
+    })
 
     const parse = (json: any): Widget[] => {
       if (Array.isArray(json)) return json as unknown as Widget[]
@@ -331,6 +343,7 @@ export async function loadDashboardLayoutAction(): Promise<Layouts | null> {
       mobile: parse(dashboard.mobile)
     }
   } catch (error) {
+    console.error('[loadDashboardLayoutAction] Error loading layout:', error)
     logger.error('[loadDashboardLayout] Error', { error })
     return null
   }
@@ -339,16 +352,26 @@ export async function loadDashboardLayoutAction(): Promise<Layouts | null> {
 export async function saveDashboardLayoutAction(layouts: DashboardLayout): Promise<SaveLayoutResult> {
   const userId = await getUserId()
   
+  console.log('[saveDashboardLayoutAction] Starting save for userId:', userId)
+  
   if (!userId) {
+    console.error('[saveDashboardLayoutAction] No userId found')
     return { success: false, error: 'User not authenticated' }
   }
   
   if (!layouts) {
+    console.error('[saveDashboardLayoutAction] No layouts provided')
     return { success: false, error: 'Layouts data is required' }
   }
   
+  console.log('[saveDashboardLayoutAction] Layout data:', {
+    desktopWidgets: layouts.desktop?.length || 0,
+    mobileWidgets: layouts.mobile?.length || 0
+  })
+  
   if (!validateLayouts(layouts)) {
     logger.error('[saveDashboardLayout] Validation failed', { userId })
+    console.error('[saveDashboardLayoutAction] Validation failed for userId:', userId)
     return { success: false, error: 'Invalid layout structure' }
   }
 
@@ -356,11 +379,13 @@ export async function saveDashboardLayoutAction(layouts: DashboardLayout): Promi
   
   if (saveLocks.has(lockKey)) {
     logger.info('[saveDashboardLayout] Debouncing concurrent save', { userId })
+    console.log('[saveDashboardLayoutAction] Debouncing concurrent save for userId:', userId)
     return { success: true }
   }
 
   const savePromise = (async (): Promise<SaveLayoutResult> => {
     try {
+      console.log('[saveDashboardLayoutAction] Executing database upsert for userId:', userId)
       await prisma.$transaction(async (tx) => {
         await tx.dashboardLayout.upsert({
           where: { userId },
@@ -380,6 +405,7 @@ export async function saveDashboardLayoutAction(layouts: DashboardLayout): Promi
       updateTag(`dashboard-${userId}`)
       revalidatePath('/')
       
+      console.log('[saveDashboardLayoutAction] Successfully saved for userId:', userId)
       logger.info('[saveDashboardLayout] Success', { userId })
       return { success: true }
     } catch (error) {

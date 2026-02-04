@@ -531,7 +531,7 @@ export async function getUserId(): Promise<string> {
   const userIdFromMiddleware = headersList.get("x-user-id")
 
   if (userIdFromMiddleware) {
-    console.log("[Auth] Using user ID from middleware")
+    console.log("[Auth] Using user ID from middleware:", userIdFromMiddleware)
     return userIdFromMiddleware
   }
 
@@ -545,11 +545,14 @@ export async function getUserId(): Promise<string> {
     } = await supabase.auth.getUser()
 
     if (error || !user) {
+      console.error("[Auth] User not authenticated:", error)
       throw new Error("User not authenticated")
     }
 
+    console.log("[Auth] Using user ID from Supabase:", user.id)
     return user.id
   } catch (error: any) {
+    console.error("[Auth] Error getting user ID:", error)
     handleAuthError(error)
   }
 }

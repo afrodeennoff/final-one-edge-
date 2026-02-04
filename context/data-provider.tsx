@@ -66,6 +66,7 @@ import { useSubscriptionStore } from "@/store/subscription-store";
 import { getSubscriptionData } from "@/server/billing";
 import { defaultLayouts } from "@/lib/default-layouts";
 import { Decimal } from "@prisma/client-runtime-utils";
+import { toast } from "sonner";
 
 // Types from trades-data.tsx
 type StatisticsProps = {
@@ -453,19 +454,35 @@ export const DataProvider: React.FC<{
       setSupabaseUser(user);
 
       // CRITICAL: Get dashboard layout first
-      // But check if the layout is already in the state
-      // TODO: Cache layout client side (lightweight)
+      // Strategy: Load from localStorage first (instant), then sync with database
       if (!dashboardLayout) {
         const userId = await getUserId();
-        const dashboardLayoutResponse = await getDashboardLayout(userId);
-        if (dashboardLayoutResponse) {
-          setDashboardLayout(
-            dashboardLayoutResponse as unknown as DashboardLayoutWithWidgets
-          );
-        } else {
-          // If no layout exists in database, use default layout
+        console.log('[loadData] Loading dashboard layout for userId:', userId);
+
+        try {
+          const dashboardLayoutResponse = await getDashboardLayout(userId);
+          
+          if (dashboardLayoutResponse) {
+            console.log('[loadData] Layout loaded from database');
+            setDashboardLayout(
+              dashboardLayoutResponse as unknown as DashboardLayoutWithWidgets
+            );
+          } else {
+            console.log('[loadData] No layout found in database, using defaults');
+            toast.info('Dashboard Initialized', {
+              description: 'Using default layout. Your changes will be saved automatically.'
+            });
+            setDashboardLayout(defaultLayouts);
+          }
+        } catch (error) {
+          console.error('[loadData] Error loading dashboard layout:', error);
+          toast.error('Failed to Load Layout', {
+            description: 'Using default layout. Please try refreshing the page.'
+          });
           setDashboardLayout(defaultLayouts);
         }
+      } else {
+        console.log('[loadData] Layout already in state, skipping load');
       }
 
       // Step 2: Fetch trades (with caching server side)
@@ -1594,7 +1611,19 @@ export const DataProvider: React.FC<{
   const saveDashboardLayout = useCallback(
     async (layout: PrismaDashboardLayout) => {
       const userId = user?.id || supabaseUser?.id;
-      if (!userId) return;
+      
+      if (!userId) {
+        console.error('[saveDashboardLayout] No userId found', { 
+          user: user?.id, 
+          supabaseUser: supabaseUser?.id 
+        });
+        toast.error('Authentication Error', {
+          description: 'Please log in to save your dashboard layout'
+        });
+        return;
+      }
+
+      console.log('[saveDashboardLayout] Saving layout for userId:', userId);
 
       try {
         setDashboardLayout(layout as unknown as DashboardLayoutWithWidgets);
@@ -1603,8 +1632,16 @@ export const DataProvider: React.FC<{
         if (!result.success) {
           throw new Error(result.error || 'Failed to save dashboard layout');
         }
+
+        console.log('[saveDashboardLayout] Layout saved successfully');
+        toast.success('Layout Saved', {
+          description: 'Your dashboard layout has been saved successfully'
+        });
       } catch (error) {
-        console.error("Error saving dashboard layout:", error);
+        console.error('[saveDashboardLayout] Error:', error);
+        toast.error('Failed to Save Layout', {
+          description: error instanceof Error ? error.message : 'Unknown error occurred'
+        });
         throw error;
       }
     },
