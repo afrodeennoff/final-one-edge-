@@ -364,10 +364,13 @@ export async function saveDashboardLayoutAction(layouts: DashboardLayout): Promi
     return { success: false, error: 'Layouts data is required' }
   }
   
+  const desktopWidgetsCount = Array.isArray(layouts?.desktop) ? layouts.desktop.length : 0;
+  const mobileWidgetsCount = Array.isArray(layouts?.mobile) ? layouts.mobile.length : 0;
+
   console.log('[saveDashboardLayoutAction] Layout data:', {
-    desktopWidgets: layouts.desktop?.length || 0,
-    mobileWidgets: layouts.mobile?.length || 0
-  })
+    desktopWidgets: desktopWidgetsCount,
+    mobileWidgets: mobileWidgetsCount
+  });
   
   if (!validateLayouts(layouts)) {
     logger.error('[saveDashboardLayout] Validation failed', { userId })
