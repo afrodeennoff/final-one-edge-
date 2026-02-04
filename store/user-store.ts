@@ -203,9 +203,9 @@ export const useUserStore = create<UserStore>()(
     {
       name: "qunt-edge-user-store",
       storage: createJSONStorage(() => localStorage),
-      // Only persist timezone and other non-sensitive settings
+      // Only persist timezone and UI preferences - NOT dashboardLayout
+      // Dashboard layout is always loaded from database to ensure latest version
       partialize: (state) => ({
-        dashboardLayout: state.dashboardLayout,
         timezone: state.timezone,
         isMobile: state.isMobile,
         isSharedView: state.isSharedView,

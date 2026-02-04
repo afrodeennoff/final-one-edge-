@@ -453,36 +453,36 @@ export const DataProvider: React.FC<{
 
       setSupabaseUser(user);
 
-      // CRITICAL: Get dashboard layout first
-      // Strategy: Load from localStorage first (instant), then sync with database
-      if (!dashboardLayout) {
-        const userId = await getUserId();
-        console.log('[loadData] Loading dashboard layout for userId:', userId);
+      // CRITICAL: Always sync dashboard layout with database on load
+      // This ensures we have the latest saved layout, not localStorage version
+      const userId = await getUserId();
+      console.log('[loadData] Loading dashboard layout for userId:', userId);
 
-        try {
-          const dashboardLayoutResponse = await getDashboardLayout(userId);
-          
-          if (dashboardLayoutResponse) {
-            console.log('[loadData] Layout loaded from database');
-            setDashboardLayout(
-              dashboardLayoutResponse as unknown as DashboardLayoutWithWidgets
-            );
-          } else {
-            console.log('[loadData] No layout found in database, using defaults');
-            toast.info('Dashboard Initialized', {
-              description: 'Using default layout. Your changes will be saved automatically.'
-            });
-            setDashboardLayout(defaultLayouts);
-          }
-        } catch (error) {
-          console.error('[loadData] Error loading dashboard layout:', error);
-          toast.error('Failed to Load Layout', {
-            description: 'Using default layout. Please try refreshing the page.'
+      try {
+        const dashboardLayoutResponse = await getDashboardLayout(userId);
+
+        if (dashboardLayoutResponse) {
+          console.log('[loadData] Layout loaded from database:', {
+            hasDesktop: !!dashboardLayoutResponse.desktop,
+            hasMobile: !!dashboardLayoutResponse.mobile,
+            updatedAt: dashboardLayoutResponse.updatedAt
+          });
+          setDashboardLayout(
+            dashboardLayoutResponse as unknown as DashboardLayoutWithWidgets
+          );
+        } else {
+          console.log('[loadData] No layout found in database, using defaults');
+          toast.info('Dashboard Initialized', {
+            description: 'Using default layout. Your changes will be saved automatically.'
           });
           setDashboardLayout(defaultLayouts);
         }
-      } else {
-        console.log('[loadData] Layout already in state, skipping load');
+      } catch (error) {
+        console.error('[loadData] Error loading dashboard layout:', error);
+        toast.error('Failed to Load Layout', {
+          description: 'Using default layout. Please try refreshing the page.'
+        });
+        setDashboardLayout(defaultLayouts);
       }
 
       // Step 2: Fetch trades (with caching server side)
