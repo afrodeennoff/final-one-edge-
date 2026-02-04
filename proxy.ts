@@ -85,9 +85,15 @@ async function updateSession(request: NextRequest) {
 export default async function proxy(req: NextRequest) {
   const pathname = req.nextUrl.pathname
 
+  const isPublicApi =
+    pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/api/whop") ||
+    pathname.startsWith("/api/og") ||
+    pathname.startsWith("/api/cron");
+
   if (
     pathname.startsWith("/_next/") ||
-    pathname.startsWith("/api/") ||
+    (pathname.startsWith("/api/") && isPublicApi) ||
     pathname.includes(".") ||
     pathname.includes("/videos/") ||
     pathname === "/favicon.ico" ||
@@ -108,14 +114,14 @@ export default async function proxy(req: NextRequest) {
 
   if (pathname.includes("/embed")) {
     response.headers.delete('X-Frame-Options');
-    
+
     const origin = req.headers.get('origin');
     const referer = req.headers.get('referer');
     const isLocalFile = origin === 'null' || referer?.startsWith('file://') || (!origin && !referer);
     const isDev = process.env.NODE_ENV === 'development';
-    
+
     console.log('Embed request debug:', { origin, referer, isLocalFile, nodeEnv: process.env.NODE_ENV, pathname });
-    
+
     if (isLocalFile) {
       response.headers.delete('Content-Security-Policy');
       return response;
@@ -136,7 +142,7 @@ export default async function proxy(req: NextRequest) {
       "https://thortradecopier.com",
       "https://app.thortradecopier.com",
     ].join(" ");
-    
+
     response.headers.set('Content-Security-Policy',
       `frame-ancestors ${allowedOrigins}; ` +
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live; " +
@@ -148,7 +154,7 @@ export default async function proxy(req: NextRequest) {
       "base-uri 'self'; " +
       "form-action 'self';"
     );
-    
+
     return response;
   }
 
