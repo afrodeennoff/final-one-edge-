@@ -23,10 +23,29 @@ const forceIPv4ConnectionString = (connectionString: string): string => {
   }
 }
 
-const connectionString = process.env.DIRECT_URL || process.env.DATABASE_URL || ''
+const fixSSLCertificateIssue = (connectionString: string): string => {
+  if (!connectionString) return ''
+  try {
+    const url = new URL(connectionString)
+    const params = new URLSearchParams(url.search)
+
+    params.set('sslmode', 'no-verify')
+    
+    url.search = params.toString()
+    return url.toString()
+  } catch (error) {
+    return connectionString
+  }
+}
+
+const connectionString = fixSSLCertificateIssue(
+  forceIPv4ConnectionString(
+    process.env.DIRECT_URL || process.env.DATABASE_URL || ''
+  )
+)
 
 const poolConfig: pg.PoolConfig = {
-  connectionString: forceIPv4ConnectionString(connectionString),
+  connectionString: connectionString,
   max: 10,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 15000,
