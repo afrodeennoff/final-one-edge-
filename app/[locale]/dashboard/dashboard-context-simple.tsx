@@ -96,6 +96,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     const [isCustomizing, setIsCustomizing] = useState(false)
     const [isUserAction, setIsUserAction] = useState(false)
 
+    const tt = t as any
     const activeLayout = useMemo(() => isMobile ? 'mobile' : 'desktop', [isMobile])
 
     const toggleCustomizing = useCallback(() => setIsCustomizing(prev => !prev), [])
@@ -145,11 +146,11 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
             if (isUserAction) setIsUserAction(false)
         } catch (error) {
             console.error('[DashboardContext] Error updating layout:', error)
-            toast.error(t('dashboard.saveError') || 'Failed to Update Layout', {
+            toast.error(tt('dashboard.saveError') as any || 'Failed to Update Layout', {
                 description: 'Please try again'
             })
         }
-    }, [user?.id, supabaseUser?.id, setLayouts, layouts, activeLayout, isMobile, isUserAction, saveDashboardLayout, t])
+    }, [user?.id, supabaseUser?.id, setLayouts, layouts, activeLayout, isMobile, isUserAction, saveDashboardLayout, tt])
 
     const addWidget = useCallback(async (type: WidgetType, size: WidgetSize = 'medium') => {
         const userId = user?.id || supabaseUser?.id
@@ -167,7 +168,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
 
         const currentItems = layouts[activeLayout]
         if (currentItems.some(widget => widget.type === type)) {
-            toast.error(t('widgets.duplicate.title'), { description: t('widgets.duplicate.description') })
+            toast.error(tt('widgets.duplicate.title') as any, { description: tt('widgets.duplicate.description') as any })
             return
         }
 
@@ -194,14 +195,14 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
             setLayouts(updatedLayouts)
             saveDashboardLayout(toPrismaLayout(updatedLayouts))
 
-            toast.success(t('widgets.widgetAdded'), { description: t('widgets.widgetAddedDescription') })
+            toast.success(tt('widgets.widgetAdded') as any, { description: tt('widgets.widgetAddedDescription') as any })
         } catch (error) {
             console.error('[DashboardContext] Error adding widget:', error)
-            toast.error(t('dashboard.saveError') || 'Failed to Add Widget', {
+            toast.error(tt('dashboard.saveError') as any || 'Failed to Add Widget', {
                 description: 'Please try again'
             })
         }
-    }, [user?.id, supabaseUser?.id, layouts, activeLayout, setLayouts, saveDashboardLayout, isMobile, t])
+    }, [user?.id, supabaseUser?.id, layouts, activeLayout, setLayouts, saveDashboardLayout, isMobile, tt])
 
     const removeWidget = useCallback(async (id: string) => {
         const userId = user?.id || supabaseUser?.id
@@ -216,8 +217,8 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
         setLayouts(updatedLayouts)
         saveDashboardLayout(toPrismaLayout(updatedLayouts))
 
-        toast.success(t('widgets.removedTitle') || 'Widget Removed', { description: t('widgets.removedDescription') || 'The widget has been removed.' })
-    }, [user?.id, supabaseUser?.id, layouts, activeLayout, setLayouts, saveDashboardLayout, t])
+        toast.success(tt('widgets.removedTitle') as any || 'Widget Removed', { description: tt('widgets.removedDescription') as any || 'The widget has been removed.' })
+    }, [user?.id, supabaseUser?.id, layouts, activeLayout, setLayouts, saveDashboardLayout, tt])
 
     const changeWidgetType = useCallback(async (i: string, newType: WidgetType) => {
         const userId = user?.id || supabaseUser?.id
@@ -225,7 +226,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
         const widget = layouts[activeLayout].find(w => w.i === i)
         if (!widget) return
 
-        let effectiveSize = newType === 'trading-score' ? 'medium' : widget.size
+        let effectiveSize = newType === 'tradingScore' ? 'medium' : widget.size
         if (newType.includes('Chart') && widget.size === 'tiny') effectiveSize = 'medium'
 
         const grid = getWidgetGrid(newType, effectiveSize, isMobile)
@@ -236,8 +237,8 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
         setLayouts(newLayouts)
         saveDashboardLayout(toPrismaLayout(newLayouts))
 
-        toast.success(t('widgets.typeChangedTitle') || 'Type Changed', { description: t('widgets.typeChangedDescription') || 'Widget type has been updated.' })
-    }, [user?.id, supabaseUser?.id, layouts, activeLayout, setLayouts, saveDashboardLayout, isMobile, t])
+        toast.success(tt('widgets.typeChangedTitle') as any || 'Type Changed', { description: tt('widgets.typeChangedDescription') as any || 'Widget type has been updated.' })
+    }, [user?.id, supabaseUser?.id, layouts, activeLayout, setLayouts, saveDashboardLayout, isMobile, tt])
 
     const changeWidgetSize = useCallback(async (i: string, newSize: WidgetSize) => {
         const userId = user?.id || supabaseUser?.id
@@ -256,8 +257,8 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
         setLayouts(newLayouts)
         saveDashboardLayout(toPrismaLayout(newLayouts))
 
-        toast.success(t('widgets.resizedTitle') || 'Widget Resized', { description: t('widgets.resizedDescription') || 'Widget size has been updated.' })
-    }, [user?.id, supabaseUser?.id, layouts, activeLayout, setLayouts, saveDashboardLayout, t])
+        toast.success(tt('widgets.resizedTitle') as any || 'Widget Resized', { description: tt('widgets.resizedDescription') as any || 'Widget size has been updated.' })
+    }, [user?.id, supabaseUser?.id, layouts, activeLayout, setLayouts, saveDashboardLayout, tt])
 
     const removeAllWidgets = useCallback(async () => {
         const userId = user?.id || supabaseUser?.id
@@ -266,8 +267,8 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
         setLayouts(newLayouts)
         saveDashboardLayout(toPrismaLayout(newLayouts))
 
-        toast.success(t('widgets.clearedTitle') || 'All Widgets Removed', { description: t('widgets.clearedDescription') || 'Your dashboard is now empty.' })
-    }, [user?.id, supabaseUser?.id, layouts, setLayouts, saveDashboardLayout, t])
+        toast.success(tt('widgets.clearedTitle') as any || 'All Widgets Removed', { description: tt('widgets.clearedDescription') as any || 'Your dashboard is now empty.' })
+    }, [user?.id, supabaseUser?.id, layouts, setLayouts, saveDashboardLayout, tt])
 
     const restoreDefaultLayout = useCallback(async () => {
         const userId = user?.id || supabaseUser?.id
@@ -281,8 +282,8 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
         setLayouts(newLayouts)
         saveDashboardLayout(toPrismaLayout(newLayouts))
 
-        toast.success(t('widgets.restoredDefaultsTitle'), { description: t('widgets.restoredDefaultsDescription') })
-    }, [user?.id, supabaseUser?.id, layouts, setLayouts, saveDashboardLayout, t])
+        toast.success(tt('widgets.restoredDefaultsTitle') as any, { description: tt('widgets.restoredDefaultsDescription') as any })
+    }, [user?.id, supabaseUser?.id, layouts, setLayouts, saveDashboardLayout, tt])
 
     const flushPendingSaves = useCallback(async () => {
         // Simple direct save has no pending queue

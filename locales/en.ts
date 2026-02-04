@@ -2169,6 +2169,14 @@ export default {
   "widgets.duplicate.title": "Widget already added",
   "widgets.duplicate.description":
     "You can't add the same widget twice to your dashboard.",
+  "widgets.removedTitle": "Widget Removed",
+  "widgets.removedDescription": "The widget has been removed from your dashboard.",
+  "widgets.typeChangedTitle": "Widget Type Changed",
+  "widgets.typeChangedDescription": "The widget type has been successfully updated.",
+  "widgets.resizedTitle": "Widget Resized",
+  "widgets.resizedDescription": "The widget size has been successfully updated.",
+  "widgets.clearedTitle": "Dashboard Cleared",
+  "widgets.clearedDescription": "All widgets have been removed from your dashboard.",
   editor: {
     ai: {
       button: "AI actions",
